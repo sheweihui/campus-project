@@ -22,8 +22,14 @@ Page({
         data: { action: 'getHomeConfig' }
       })
       if (result.code === 0 && result.data) {
+        // 兼容字符串格式（banner 管理页写入）与对象格式（本页写入）
+        const bannerList = (result.data.bannerList || []).map((item, index) =>
+          typeof item === 'string'
+            ? { id: `banner_${index}_${Date.now()}`, image: item, link: '' }
+            : item
+        )
         this.setData({
-          bannerList: result.data.bannerList || [],
+          bannerList,
           announcement: result.data.announcement || { show: false }
         })
       }

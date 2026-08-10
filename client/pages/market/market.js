@@ -44,7 +44,8 @@ Page({
 
   onPullDownRefresh() {
     this.setData({ page: 1, hasMore: true })
-    this.loadData().then(() => {
+    const task = this.data.keyword ? this.searchData() : this.loadData()
+    Promise.resolve(task).then(() => {
       wx.stopPullDownRefresh()
     })
   },
@@ -52,7 +53,11 @@ Page({
   onReachBottom() {
     if (this.data.hasMore && !this.data.isLoading) {
       this.setData({ page: this.data.page + 1 })
-      this.loadData(true)
+      if (this.data.keyword) {
+        this.searchData(true)
+      } else {
+        this.loadData(true)
+      }
     }
   },
 
@@ -60,6 +65,7 @@ Page({
     const category = e.currentTarget.dataset.category
     this.setData({
       currentCategory: category,
+      keyword: '',
       page: 1,
       hasMore: true,
       list: []
@@ -115,12 +121,15 @@ Page({
     }
   },
 
-  async searchData() {
+  async searchData(isLoadMore = false) {
     if (!this.data.keyword.trim()) {
       this.loadData()
       return
     }
 
+    if (this.data.isLoading) return
+
+    this.setData({ isLoading: true })
     showLoading()
     try {
       const { result } = await wx.cloud.callFunction({
@@ -137,7 +146,7 @@ Page({
 
       if (result.code === 0) {
         this.setData({
-          list: result.data,
+          list: isLoadMore ? [...this.data.list, ...result.data] : result.data,
           hasMore: result.data.length === this.data.pageSize
         })
       }
@@ -145,6 +154,7 @@ Page({
       console.error('搜索失败:', error)
     } finally {
       hideLoading()
+      this.setData({ isLoading: false })
     }
   },
 

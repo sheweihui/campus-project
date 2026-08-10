@@ -586,9 +586,12 @@ async function processWithdraw(data) {
 
     const record = records[idx]
 
-    // 系统自动转账的提现记录不允许人工审批，防止重复打款/误退款
+    // 系统自动转账的提现记录：不允许盲批/盲拒，但提供“核实落定”兜底
     if (record.source === 'auto') {
-      return { code: -1, msg: '该提现由系统自动转账处理，无需审批' }
+      if (record.status !== 'processing') {
+        return { code: -1, msg: '该提现已由系统自动处理' }
+      }
+      return await verifyAutoWithdraw(finance, idx, record)
     }
 
     const newStatus = processAction === 'approve' ? 'completed' : 'failed'
@@ -617,6 +620,53 @@ async function processWithdraw(data) {
   } catch (e) {
     console.error('processWithdraw error:', e)
     return { code: -1, msg: e.message }
+  }
+}
+
+// 核实系统自动提现的真实状态并落定（解决转账结果查询失败导致记录卡在“处理中”的问题）
+async function verifyAutoWithdraw(finance, idx, record) {
+  try {
+    const q = await cloud.cloudPay.queryTransfer({ partnerTradeNo: record.partnerTradeNo })
+    const status = (q && q.status) || ''
+    const records = finance.data.withdrawRecords || []
+
+    if (status === 'SUCCESS') {
+      records[idx] = {
+        ...record,
+        status: 'completed',
+        result: q,
+        processedAt: db.serverDate(),
+        remark: '系统核实转账成功'
+      }
+      await db.collection('finance').doc(finance._id).update({
+        data: { withdrawRecords: records, updateTime: db.serverDate() }
+      })
+      return { code: 0, msg: '已核实：转账成功，提现完成' }
+    }
+
+    if (status === 'FAILED' || status === 'FAIL') {
+      records[idx] = {
+        ...record,
+        status: 'failed',
+        error: (q && q.reason) || '转账失败',
+        processedAt: db.serverDate(),
+        remark: '系统核实转账失败'
+      }
+      await db.collection('finance').doc(finance._id).update({
+        data: {
+          withdrawRecords: records,
+          availableAmount: _.inc(record.amount || 0),
+          withdrawAmount: _.inc(-(record.amount || 0)),
+          updateTime: db.serverDate()
+        }
+      })
+      return { code: 0, msg: '已核实：转账失败，金额已退回用户余额' }
+    }
+
+    return { code: -1, msg: '转账仍在处理中，请稍后再试' }
+  } catch (e) {
+    console.error('核实自动提现失败:', e)
+    return { code: -1, msg: '查询转账状态失败，请稍后再试' }
   }
 }
 
