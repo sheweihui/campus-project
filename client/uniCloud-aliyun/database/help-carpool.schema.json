@@ -1,0 +1,64 @@
+{
+  "bsonType": "object",
+  "required": ["type", "from", "to", "time", "people", "contact"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": true,
+    "delete": true
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "type": {
+      "bsonType": "string",
+      "description": "类型：carpool-拼车",
+      "enum": ["carpool"]
+    },
+    "from": {
+      "bsonType": "string",
+      "description": "出发地"
+    },
+    "to": {
+      "bsonType": "string",
+      "description": "目的地"
+    },
+    "time": {
+      "bsonType": "string",
+      "description": "出发时间"
+    },
+    "people": {
+      "bsonType": "int",
+      "description": "人数"
+    },
+    "remark": {
+      "bsonType": "string",
+      "description": "备注"
+    },
+    "contact": {
+      "bsonType": "string",
+      "description": "联系方式"
+    },
+    "status": {
+      "bsonType": "string",
+      "description": "状态：active-进行中，completed-已完成",
+      "defaultValue": "active"
+    },
+    "openid": {
+      "bsonType": "string",
+      "description": "发布者openid"
+    },
+    "createTime": {
+      "bsonType": "timestamp",
+      "description": "创建时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+    },
+    "updateTime": {
+      "bsonType": "timestamp",
+      "description": "更新时间"
+    }
+  }
+}

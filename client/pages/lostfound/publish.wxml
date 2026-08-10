@@ -1,0 +1,71 @@
+<view class="container">
+  <view class="card">
+    <!-- 类型选择 -->
+    <view class="form-item">
+      <text class="form-label">发布类型</text>
+      <view class="type-selector">
+        <view class="type-option {{form.type === 'lost' ? 'active' : ''}}" bindtap="selectType" data-type="lost">
+          <text class="type-icon">🔍</text>
+          <text class="type-text">我要寻物</text>
+        </view>
+        <view class="type-option {{form.type === 'found' ? 'active' : ''}}" bindtap="selectType" data-type="found">
+          <text class="type-icon">📦</text>
+          <text class="type-text">我要归还</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 物品名称 -->
+    <view class="form-item">
+      <text class="form-label">物品名称 <text class="required">*</text></text>
+      <input class="form-input" placeholder="请输入物品名称" value="{{form.title}}" bindinput="onInput" data-field="title" />
+    </view>
+
+    <!-- 物品描述 -->
+    <view class="form-item">
+      <text class="form-label">物品描述 <text class="required">*</text></text>
+      <textarea class="form-textarea" placeholder="请详细描述物品特征、品牌、颜色等信息" value="{{form.description}}" bindinput="onInput" data-field="description" />
+    </view>
+
+    <!-- 地点 -->
+    <view class="form-item">
+      <text class="form-label">{{form.type === 'lost' ? '丢失地点' : '拾获地点'}}</text>
+      <input class="form-input" placeholder="请输入地点" value="{{form.location}}" bindinput="onInput" data-field="location" />
+    </view>
+
+    <!-- 时间 -->
+    <view class="form-item">
+      <text class="form-label">{{form.type === 'lost' ? '丢失时间' : '拾获时间'}}</text>
+      <picker mode="multiSelector" range="{{timeRange}}" value="{{timeIndex}}" bindchange="onTimeChange">
+        <view class="picker">
+          {{form.time || '请选择时间'}}
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="form-item">
+      <text class="form-label">联系方式 <text class="required">*</text></text>
+      <input class="form-input" placeholder="请输入手机号或微信号" value="{{form.contact}}" bindinput="onInput" data-field="contact" />
+    </view>
+
+    <!-- 图片上传 -->
+    <view class="form-item">
+      <text class="form-label">物品图片</text>
+      <view class="image-list">
+        <view class="image-item" wx:for="{{form.images}}" wx:key="index">
+          <image src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" />
+          <view class="delete-btn" bindtap="deleteImage" data-index="{{index}}">×</view>
+        </view>
+        <view class="upload-box" bindtap="chooseImage" wx:if="{{form.images.length < 6}}">
+          <text class="upload-icon">+</text>
+          <text class="upload-text">添加图片</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <button class="btn-primary submit-btn" bindtap="submit">发布</button>
+</view>

@@ -1,0 +1,130 @@
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.detail-type {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.route-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.route-item {
+  flex: 1;
+  text-align: center;
+}
+
+.route-label {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.route-value {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #1976D2;
+}
+
+.route-arrow {
+  font-size: 48rpx;
+  color: #1976D2;
+  margin: 0 20rpx;
+}
+
+.detail-section {
+  margin-bottom: 30rpx;
+}
+
+.section-label {
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 10rpx;
+}
+
+.section-value {
+  font-size: 30rpx;
+  color: #333;
+  line-height: 1.6;
+}
+
+.section-value.highlight {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #1976D2;
+}
+
+.section-value.reward {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #f44336;
+}
+
+.section-value.contact {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.section-value.hidden {
+  color: #999;
+  font-style: italic;
+}
+
+.detail-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 30rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: #fff;
+  padding: 20rpx 30rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.bar-btn {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  margin: 0 10rpx;
+  background: #f0f0f0;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.bar-btn.disabled {
+  background: #e0e0e0;
+  color: #999;
+}
+
+.bar-btn.delete {
+  background: #ffebee;
+  color: #f44336;
+}
+
+.bar-btn.primary {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: #fff;
+}

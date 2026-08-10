@@ -1,0 +1,65 @@
+{
+  "bsonType": "object",
+  "required": ["type", "partnerType", "time", "location", "people", "contact"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": true,
+    "delete": true
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "type": {
+      "bsonType": "string",
+      "description": "类型：partner-找搭子",
+      "enum": ["partner"]
+    },
+    "partnerType": {
+      "bsonType": "string",
+      "description": "搭子类型：study-自习，sport-运动，eat-吃饭，game-游戏，travel-旅游，others-其他",
+      "enum": ["study", "sport", "eat", "game", "travel", "others"]
+    },
+    "time": {
+      "bsonType": "string",
+      "description": "时间"
+    },
+    "location": {
+      "bsonType": "string",
+      "description": "地点"
+    },
+    "people": {
+      "bsonType": "int",
+      "description": "需要人数"
+    },
+    "description": {
+      "bsonType": "string",
+      "description": "详细描述"
+    },
+    "contact": {
+      "bsonType": "string",
+      "description": "联系方式"
+    },
+    "status": {
+      "bsonType": "string",
+      "description": "状态：active-进行中，completed-已完成",
+      "defaultValue": "active"
+    },
+    "openid": {
+      "bsonType": "string",
+      "description": "发布者openid"
+    },
+    "createTime": {
+      "bsonType": "timestamp",
+      "description": "创建时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+    },
+    "updateTime": {
+      "bsonType": "timestamp",
+      "description": "更新时间"
+    }
+  }
+}

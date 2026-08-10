@@ -1,0 +1,64 @@
+<wxs src="../../utils/util.wxs" module="util" />
+
+<view class="page-withdraws">
+  <!-- 状态标签 -->
+  <view class="tab-bar">
+    <view class="tab-item {{statusFilter === item.key ? 'active' : ''}}"
+      wx:for="{{statusTabs}}" wx:key="key"
+      data-key="{{item.key}}"
+      bindtap="onStatusChange"
+    >{{item.label}}</view>
+  </view>
+
+  <!-- 汇总 -->
+  <view class="summary-bar">
+    <text>共 {{total}} 条提现记录</text>
+  </view>
+
+  <!-- 提现列表 -->
+  <view wx:if="{{withdraws.length === 0 && !loading}}" class="empty-state">
+    <text class="icon">💳</text>
+    <text>暂无提现记录</text>
+  </view>
+
+  <view class="withdraw-list" wx:else>
+    <view class="withdraw-card card" wx:for="{{withdraws}}" wx:key="partnerTradeNo">
+      <view class="wc-header flex-between">
+        <text class="wc-amount">{{util.formatAmount(item.amount)}}</text>
+        <text class="tag {{util.getWithdrawTagClass(item.status)}}">
+          {{util.getWithdrawStatusName(item.status)}}
+        </text>
+      </view>
+      <view class="wc-body">
+        <view class="wc-row">
+          <text class="wc-label">用户ID</text>
+          <text class="wc-value">{{item.stuId || item.openid || '未知'}}</text>
+        </view>
+        <view class="wc-row" wx:if="{{item.remark}}">
+          <text class="wc-label">备注</text>
+          <text class="wc-value">{{item.remark}}</text>
+        </view>
+        <view class="wc-row">
+          <text class="wc-label">交易号</text>
+          <text class="wc-value mono">{{item.partnerTradeNo}}</text>
+        </view>
+        <view class="wc-row">
+          <text class="wc-label">申请时间</text>
+          <text class="wc-value">{{util.formatTime(item.createTime)}}</text>
+        </view>
+        <view class="wc-row" wx:if="{{item.error}}">
+          <text class="wc-label">失败原因</text>
+          <text class="wc-value error">{{item.error}}</text>
+        </view>
+      </view>
+      <!-- 待处理的操作按钮 -->
+      <view class="wc-actions" wx:if="{{item.status === 'pending'}}">
+        <view class="btn-danger btn-sm" bindtap="rejectWithdraw" data-item="{{item}}">拒绝</view>
+        <view class="btn-primary btn-sm" bindtap="approveWithdraw" data-item="{{item}}">批准</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="load-more" wx:if="{{loading}}">加载中...</view>
+  <view class="load-more" wx:elif="{{!hasMore && withdraws.length > 0}}">— 已加载全部 —</view>
+</view>

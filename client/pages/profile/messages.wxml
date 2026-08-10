@@ -1,0 +1,40 @@
+<view class="container">
+  <!-- 标签切换 -->
+  <view class="tabs">
+    <view class="tab {{currentTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">
+      <text>全部</text>
+      <text class="badge" wx:if="{{unreadCount > 0}}">{{unreadCount > 99 ? '99+' : unreadCount}}</text>
+    </view>
+    <view class="tab {{currentTab === 'unread' ? 'active' : ''}}" bindtap="switchTab" data-tab="unread">
+      <text>未读</text>
+      <text class="badge" wx:if="{{unreadCount > 0}}">{{unreadCount > 99 ? '99+' : unreadCount}}</text>
+    </view>
+    <view class="tab {{currentTab === 'read' ? 'active' : ''}}" bindtap="switchTab" data-tab="read">已读</view>
+  </view>
+
+  <!-- 消息列表 -->
+  <view class="message-list">
+    <view class="message-item {{item.isRead ? 'read' : 'unread'}}" wx:for="{{messageList}}" wx:key="_id" bindtap="readMessage" data-id="{{item._id}}" data-related-id="{{item.relatedId}}" data-related-type="{{item.relatedType}}" data-type="{{item.type}}">
+      <view class="message-icon {{item.type === 'system' ? 'system' : 'user'}}">
+        {{item.type === 'system' ? '🔔' : '📬'}}
+      </view>
+      <view class="message-content">
+        <view class="message-header">
+          <text class="message-title">{{item.title || '新消息'}}</text>
+          <text class="message-time">{{item.createTime}}</text>
+        </view>
+        <view class="message-body">{{item.content}}</view>
+      </view>
+      <view class="message-status" wx:if="{{!item.isRead}}"></view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{!isLoading && hasMore}}">上拉加载更多</view>
+  <view class="load-more" wx:if="{{!isLoading && !hasMore && messageList.length > 0}}">没有更多了</view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!isLoading && messageList.length === 0}}">
+    <text class="empty-text">暂无消息</text>
+  </view>
+</view>

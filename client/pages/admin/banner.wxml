@@ -1,0 +1,89 @@
+<view class="container">
+  <view class="page-header">
+    <view class="header-title">轮播图管理</view>
+    <view class="header-desc">设置首页显示的轮播图</view>
+  </view>
+
+  <!-- 当前轮播图预览 -->
+  <view class="card">
+    <view class="section-title">当前轮播图预览</view>
+    <swiper 
+      indicator-dots 
+      autoplay 
+      circular 
+      class="preview-swiper"
+      wx:if="{{bannerList.length > 0}}">
+      <swiper-item wx:for="{{bannerList}}" wx:key="index">
+        <image src="{{item}}" mode="aspectFill" class="preview-image"/>
+      </swiper-item>
+    </swiper>
+    <view class="empty-preview" wx:else>
+      <text>暂无轮播图</text>
+    </view>
+  </view>
+
+  <!-- 添加轮播图 -->
+  <view class="card">
+    <view class="section-title">添加新图片</view>
+    <view class="upload-section">
+      <view class="upload-btn" bindtap="chooseImage">
+        <text class="upload-icon">+</text>
+        <text class="upload-text">选择图片</text>
+      </view>
+      <view class="preview-thumb" wx:if="{{tempImage}}">
+        <image src="{{tempImage}}" mode="aspectFill"/>
+        <view class="remove-btn" bindtap="removeTempImage">×</view>
+      </view>
+    </view>
+    <button class="add-btn" bindtap="addBanner" wx:if="{{tempImage}}">添加轮播图</button>
+  </view>
+
+  <!-- 轮播图列表 -->
+  <view class="card">
+    <view class="section-header">
+      <view class="section-title">轮播图列表</view>
+      <text class="count">{{bannerList.length}} 张</text>
+    </view>
+    <view class="banner-list">
+      <view class="banner-item" wx:for="{{bannerList}}" wx:key="index">
+        <image src="{{item}}" mode="aspectFill" class="banner-image"/>
+        <view class="banner-info">
+          <text class="banner-index">第 {{index + 1}} 张</text>
+        </view>
+        <view class="banner-actions">
+          <text class="action-btn up" bindtap="moveUp" data-index="{{index}}" wx:if="{{index > 0}}">上移</text>
+          <text class="action-btn down" bindtap="moveDown" data-index="{{index}}" wx:if="{{index < bannerList.length - 1}}">下移</text>
+          <text class="action-btn delete" bindtap="deleteBanner" data-index="{{index}}">删除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 公告设置 -->
+  <view class="card">
+    <view class="section-title">公告设置</view>
+    <view class="form-group">
+      <switch bindchange="toggleAnnouncement" checked="{{announcement.show}}"/>
+      <text class="form-label">显示公告</text>
+    </view>
+    <view class="form-group" wx:if="{{announcement.show}}">
+      <view class="form-label">公告标题</view>
+      <input 
+        class="form-input" 
+        value="{{announcement.title}}" 
+        placeholder="请输入公告标题"
+        bindinput="inputTitle"/>
+    </view>
+    <view class="form-group" wx:if="{{announcement.show}}">
+      <view class="form-label">公告内容</view>
+      <textarea 
+        class="form-textarea" 
+        value="{{announcement.content}}" 
+        placeholder="请输入公告内容"
+        bindinput="inputContent"/>
+    </view>
+    <button class="save-btn" bindtap="saveAnnouncement" wx:if="{{announcement.show}}">保存公告</button>
+  </view>
+
+  <view class="bottom-space"></view>
+</view>

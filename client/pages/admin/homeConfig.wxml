@@ -1,0 +1,37 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">轮播图管理</view>
+    <view class="banner-list">
+      <view class="banner-item" wx:for="{{bannerList}}" wx:key="id">
+        <image src="{{item.image}}" class="banner-thumb" mode="aspectFill" />
+        <view class="banner-info">
+          <text class="banner-index">第{{index + 1}}张</text>
+          <text class="banner-link">{{item.link || '无链接'}}</text>
+        </view>
+        <view class="banner-actions">
+          <button class="btn-small" bindtap="chooseImage" data-index="{{index}}">更换</button>
+          <button class="btn-small btn-danger" bindtap="removeBanner" data-index="{{index}}">删除</button>
+        </view>
+      </view>
+    </view>
+    <button class="btn-add" bindtap="addBanner">+ 添加轮播图</button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">公告设置</view>
+    <view class="form-item">
+      <switch checked="{{announcement.show}}" bindchange="toggleAnnouncement" />
+      <text class="form-label">显示公告</text>
+    </view>
+    <view class="form-item column">
+      <text class="form-label">公告标题</text>
+      <input class="form-input" value="{{announcement.title}}" bindinput="inputTitle" placeholder="请输入公告标题" />
+    </view>
+    <view class="form-item column">
+      <text class="form-label">公告内容</text>
+      <textarea class="form-textarea" value="{{announcement.content}}" bindinput="inputContent" placeholder="请输入公告内容" />
+    </view>
+  </view>
+
+  <button class="btn-save" bindtap="saveConfig">保存修改</button>
+</view>

@@ -1,0 +1,62 @@
+<view class="container">
+  <view class="card" wx:if="{{detail}}">
+    <!-- 头部 -->
+    <view class="detail-header">
+      <text class="tag {{detail.type === 'lost' ? 'tag-warning' : 'tag-primary'}}">{{detail.type === 'lost' ? '寻物' : '归还'}}</text>
+      <text class="status {{detail.status}}">{{detail.status === 'pending' ? '进行中' : '已完成'}}</text>
+    </view>
+
+    <!-- 标题 -->
+    <view class="detail-title">{{detail.title}}</view>
+
+    <!-- 描述 -->
+    <view class="detail-section">
+      <view class="section-label">物品描述</view>
+      <view class="section-content">{{detail.description}}</view>
+    </view>
+
+    <!-- 地点 -->
+    <view class="detail-section" wx:if="{{detail.location}}">
+      <view class="section-label">{{detail.type === 'lost' ? '丢失地点' : '拾获地点'}}</view>
+      <view class="section-content">📍 {{detail.location}}</view>
+    </view>
+
+    <!-- 时间 -->
+    <view class="detail-section" wx:if="{{detail.time}}">
+      <view class="section-label">{{detail.type === 'lost' ? '丢失时间' : '拾获时间'}}</view>
+      <view class="section-content">🕐 {{detail.time}}</view>
+    </view>
+
+    <!-- 联系方式：所有人可见，方便联系 -->
+    <view class="detail-section">
+      <view class="section-label">联系方式</view>
+      <view class="section-content contact" bindtap="copyContact">{{detail.contact}}</view>
+    </view>
+
+    <!-- 图片 -->
+    <view class="detail-section" wx:if="{{detail.images && detail.images.length > 0}}">
+      <view class="section-label">物品图片</view>
+      <view class="image-list">
+        <image wx:for="{{detail.images}}" wx:key="index" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" />
+      </view>
+    </view>
+
+    <!-- 发布时间 -->
+    <view class="detail-time">发布时间：{{createTime}}</view>
+  </view>
+</view>
+
+<!-- 底部操作栏 -->
+<view class="bottom-bar" wx:if="{{isOwner}}">
+  <view class="bar-btn {{detail.status === 'completed' ? 'disabled' : ''}}" bindtap="updateStatus">
+    {{detail.status === 'pending' ? '标记为已完成' : '已完成'}}
+  </view>
+  <view class="bar-btn" bindtap="editItem">编辑</view>
+  <view class="bar-btn primary" bindtap="startChat">聊天</view>
+</view>
+
+<!-- 浏览者操作栏 -->
+<view class="bottom-bar" wx:if="{{isVisitor}}">
+  <view class="bar-btn primary" bindtap="startChat">联系发布者</view>
+  <view class="bar-btn" bindtap="copyContact">复制联系方式</view>
+</view>

@@ -1,0 +1,26 @@
+<view class="container">
+  <view class="page-header">
+    <view class="header-title">{{pageTitle}}</view>
+    <view class="header-desc">共 {{buyerList.length}} 位{{pageSubtitle}}</view>
+  </view>
+
+  <scroll-view class="buyer-list" scroll-y>
+    <view class="buyer-item" wx:for="{{buyerList}}" wx:key="stuId" bindtap="startChat" data-stuId="{{item.stuId}}">
+      <view class="buyer-avatar">
+        <text>{{item.name || item.stuId}}</text>
+      </view>
+      <view class="buyer-info">
+        <view class="buyer-name">{{item.name || item.stuId}}</view>
+        <view class="buyer-stuId">学号：{{item.stuId}}</view>
+        <view class="buyer-lastMsg" wx:if="{{item.lastMsg}}">最后消息：{{item.lastMsg}}</view>
+      </view>
+      <view class="buyer-time">{{item.lastTime}}</view>
+    </view>
+
+    <view class="empty-state" wx:if="{{buyerList.length === 0}}">
+      <text class="empty-icon">💬</text>
+      <text class="empty-text">{{emptyText}}</text>
+      <text class="empty-desc">{{emptyDesc}}</text>
+    </view>
+  </scroll-view>
+</view>

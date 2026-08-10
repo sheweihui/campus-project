@@ -1,0 +1,42 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">申请提现</view>
+    
+    <view class="form-section">
+      <view class="form-item">
+        <text class="form-label">可提现金额</text>
+        <view class="amount-display">¥{{finance.availableAmount || 0}}</view>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">提现金额 <text class="required">*</text></text>
+        <input class="form-input" type="digit" placeholder="请输入提现金额" value="{{withdrawAmount}}" bindinput="onAmountInput" />
+        <text class="form-tip">最低提现 ¥10</text>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">收款姓名 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入真实姓名（与微信实名一致）" value="{{realName}}" bindinput="onNameInput" />
+        <text class="form-tip">必须与微信实名认证姓名一致</text>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">备注</text>
+        <textarea class="form-textarea" placeholder="请输入备注（选填）" value="{{remark}}" bindinput="onRemarkInput" />
+      </view>
+    </view>
+
+    <view class="withdraw-info">
+      <view class="info-title">提现说明</view>
+      <view class="info-content">
+        <text class="info-item">1. 提现手续费：免费</text>
+        <text class="info-item">2. 提现到账时间：1-3个工作日</text>
+        <text class="info-item">3. 提现方式：企业转账到微信零钱</text>
+      </view>
+    </view>
+
+    <button class="btn-primary submit-btn" bindtap="submitWithdraw" disabled="{{!canSubmit}}">
+      确认提现
+    </button>
+  </view>
+</view>

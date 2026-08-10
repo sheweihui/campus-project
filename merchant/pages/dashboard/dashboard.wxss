@@ -1,0 +1,180 @@
+.page-dashboard {
+  padding-bottom: 40rpx;
+}
+
+/* 顶部标题栏 */
+.header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 40rpx 32rpx 48rpx;
+}
+.header-title {
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: 700;
+}
+.header-date {
+  color: rgba(255,255,255,0.6);
+  font-size: 24rpx;
+  margin-top: 8rpx;
+}
+
+/* KPI 网格 */
+.kpi-grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 20rpx;
+  margin-top: -24rpx;
+}
+.kpi-card {
+  width: calc(50% - 28rpx);
+  margin: 8rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: #fff;
+  box-shadow: 0 2rpx 16rpx rgba(0,0,0,0.06);
+}
+.kpi-label {
+  font-size: 24rpx;
+  color: #8a8a9a;
+  margin-bottom: 8rpx;
+}
+.kpi-value {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 6rpx;
+}
+.kpi-sub {
+  font-size: 22rpx;
+  color: #9ca3af;
+}
+
+.kpi-revenue { border-left: 6rpx solid #4a6cf7; }
+.kpi-orders { border-left: 6rpx solid #10b981; }
+.kpi-users { border-left: 6rpx solid #f59e0b; }
+.kpi-withdraw { border-left: 6rpx solid #ef4444; }
+
+/* 卡片标题 */
+.card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 20rpx;
+}
+.card-more {
+  font-size: 24rpx;
+  color: #4a6cf7;
+}
+
+/* 分类列表 */
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.category-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  background: #f9fafb;
+  border-radius: 12rpx;
+}
+.cat-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+.cat-info {
+  flex: 1;
+}
+.cat-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #1a1a2e;
+}
+.cat-count {
+  font-size: 22rpx;
+  color: #9ca3af;
+  margin-top: 4rpx;
+}
+.cat-amount {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #4a6cf7;
+}
+
+/* 图表 */
+.chart-container {
+  padding: 16rpx 0;
+}
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 320rpx;
+  gap: 4rpx;
+}
+.bar-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+.bar-value {
+  font-size: 18rpx;
+  color: #9ca3af;
+  margin-bottom: 4rpx;
+  writing-mode: vertical-lr;
+}
+.bar {
+  width: 20rpx;
+  min-height: 4rpx;
+  background: linear-gradient(180deg, #4a6cf7, #818cf8);
+  border-radius: 4rpx 4rpx 0 0;
+  transition: height 0.3s;
+}
+.bar-label {
+  font-size: 18rpx;
+  color: #9ca3af;
+  margin-top: 8rpx;
+  transform: rotate(-45deg);
+  white-space: nowrap;
+}
+
+/* 交易列表 */
+.tx-list {
+  display: flex;
+  flex-direction: column;
+}
+.tx-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f3f4f6;
+}
+.tx-item:last-child {
+  border-bottom: none;
+}
+.tx-type {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #1a1a2e;
+}
+.tx-people {
+  font-size: 22rpx;
+  color: #9ca3af;
+  margin-top: 4rpx;
+}
+.tx-right {
+  text-align: right;
+}
+.tx-amount {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+.tx-status {
+  margin-top: 4rpx;
+}

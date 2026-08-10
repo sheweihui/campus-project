@@ -1,0 +1,14 @@
+<view class="custom-navbar">
+  <view class="navbar-status" style="height: {{statusBarHeight}}px;"></view>
+  <view class="navbar-content">
+    <view class="navbar-left" bindtap="handleBack" wx:if="{{showBack}}">
+      <text class="back-icon">‹</text>
+    </view>
+    <view class="navbar-left" wx:else></view>
+    <view class="navbar-title">{{title}}</view>
+    <view class="navbar-right">
+      <slot name="right"></slot>
+    </view>
+  </view>
+</view>
+<view class="navbar-placeholder" style="height: {{navbarHeight}}px;"></view>

@@ -1,0 +1,39 @@
+{
+  "bsonType": "object",
+  "required": [],
+  "permission": {
+    "read": "doc._openid == auth.openid",
+    "write": "doc._openid == auth.openid"
+  },
+  "properties": {
+    "_id": "string",
+    "openid": {
+      "bsonType": "string",
+      "description": "用户openid"
+    },
+    "totalCommission": {
+      "bsonType": "number",
+      "description": "累计佣金"
+    },
+    "availableAmount": {
+      "bsonType": "number",
+      "description": "可提现金额"
+    },
+    "withdrawAmount": {
+      "bsonType": "number",
+      "description": "已提现金额"
+    },
+    "withdrawRecords": {
+      "bsonType": "array",
+      "description": "提现记录"
+    },
+    "createTime": {
+      "bsonType": "date",
+      "description": "创建时间"
+    },
+    "updateTime": {
+      "bsonType": "date",
+      "description": "更新时间"
+    }
+  }
+}

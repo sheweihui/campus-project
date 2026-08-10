@@ -1,0 +1,63 @@
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.grid-item {
+  width: 33.33%;
+  text-align: center;
+  padding: 40rpx 0;
+}
+
+.grid-icon {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56rpx;
+  margin: 0 auto 15rpx;
+}
+
+.grid-icon.classroom {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+}
+
+.grid-icon.calendar {
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+.grid-icon.map {
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+}
+
+.grid-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.quick-list {
+  margin-top: 10rpx;
+}
+
+.quick-item {
+  display: flex;
+  align-items: center;
+  padding: 25rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.quick-item:last-child {
+  border-bottom: none;
+}
+
+.quick-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+}
+
+.quick-text {
+  font-size: 30rpx;
+  color: #333;
+}

@@ -1,0 +1,60 @@
+<wxs src="../../utils/util.wxs" module="util" />
+
+<view class="page-users">
+  <!-- 搜索 -->
+  <view class="search-bar">
+    <input class="search-input"
+      placeholder="搜索学号或昵称"
+      value="{{keyword}}"
+      bindinput="onSearchInput"
+      bindconfirm="onSearch"
+    />
+    <view class="search-btn" bindtap="onSearch">搜索</view>
+  </view>
+
+  <!-- 统计 -->
+  <view class="summary-bar">
+    <text>共 {{total}} 名用户</text>
+  </view>
+
+  <!-- 用户列表 -->
+  <view wx:if="{{users.length === 0 && !loading}}" class="empty-state">
+    <text class="icon">👥</text>
+    <text>暂无用户数据</text>
+  </view>
+
+  <view class="user-list" wx:else>
+    <view class="user-card card" wx:for="{{users}}" wx:key="openid">
+      <view class="user-header flex-between">
+        <view class="user-info">
+          <view class="user-name">{{item.nickName || item.stuId || '未命名'}}</view>
+          <view class="user-id">{{item.stuId || '未绑定学号'}}</view>
+        </view>
+        <view class="user-balance">
+          <view class="balance-amount">{{util.formatAmount(item.availableAmount || 0)}}</view>
+          <view class="balance-label">可用余额</view>
+        </view>
+      </view>
+      <view class="user-stats">
+        <view class="stat-item">
+          <text class="stat-value">{{util.formatAmount(item.totalCommission || 0)}}</text>
+          <text class="stat-label">累计抽成</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value">{{util.formatAmount(item.withdrawAmount || 0)}}</text>
+          <text class="stat-label">已提现</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value">{{item.withdrawCount || 0}}</text>
+          <text class="stat-label">提现次数</text>
+        </view>
+      </view>
+      <view class="user-footer" wx:if="{{item.createTime}}">
+        <text class="user-time">注册时间：{{util.formatTime(item.createTime)}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="load-more" wx:if="{{loading}}">加载中...</view>
+  <view class="load-more" wx:elif="{{!hasMore && users.length > 0}}">— 已加载全部 —</view>
+</view>

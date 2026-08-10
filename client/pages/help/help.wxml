@@ -1,0 +1,108 @@
+<view class="container">
+  <!-- 功能模块 -->
+  <view class="card">
+    <view class="grid">
+      <view class="grid-item" bindtap="goToPage" data-page="carpool">
+        <view class="grid-icon carpool">🚗</view>
+        <text class="grid-text">拼车出行</text>
+      </view>
+      <view class="grid-item" bindtap="goToPage" data-page="express">
+        <view class="grid-icon express">📦</view>
+        <text class="grid-text">代取快递</text>
+      </view>
+      <view class="grid-item" bindtap="goToPage" data-page="partner">
+        <view class="grid-icon partner">👥</view>
+        <text class="grid-text">找搭子</text>
+      </view>
+      <view class="grid-item" bindtap="goToPage" data-page="other">
+        <view class="grid-icon other">📝</view>
+        <text class="grid-text">其他互助</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最新拼车信息 -->
+  <view class="card" wx:if="{{carpoolList.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最新拼车</text>
+      <text class="more" bindtap="goToPage" data-page="carpool">查看更多 ></text>
+    </view>
+    <view class="list">
+      <view class="list-item" wx:for="{{carpoolList}}" wx:key="_id" bindtap="goToDetail" data-type="carpool" data-id="{{item._id}}">
+        <view class="item-icon carpool">🚗</view>
+        <view class="item-content">
+          <view class="item-route">{{item.from}} → {{item.to}}</view>
+          <view class="item-info">
+            <text>🕐 {{item.time}}</text>
+            <text>👥 {{item.people}}人</text>
+          </view>
+        </view>
+        <view class="item-status {{item.status}}">{{item.status === 'active' ? '进行中' : '已完成'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最新代取快递 -->
+  <view class="card" wx:if="{{expressList.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最新代取</text>
+      <text class="more" bindtap="goToPage" data-page="express">查看更多 ></text>
+    </view>
+    <view class="list">
+      <view class="list-item" wx:for="{{expressList}}" wx:key="_id" bindtap="goToDetail" data-type="express" data-id="{{item._id}}">
+        <view class="item-icon express">📦</view>
+        <view class="item-content">
+          <view class="item-route">{{item.pickupLocation || '代取快递'}}</view>
+          <view class="item-info">
+            <text>📍 {{item.address}}</text>
+            <text>💰 ¥{{item.reward}}</text>
+          </view>
+        </view>
+        <view class="item-status {{item.status}}">{{expressStatusMap[item.status]}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最新找搭子 -->
+  <view class="card" wx:if="{{partnerList.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最新搭子</text>
+      <text class="more" bindtap="goToPage" data-page="partner">查看更多 ></text>
+    </view>
+    <view class="list">
+      <view class="list-item" wx:for="{{partnerList}}" wx:key="_id" bindtap="goToDetail" data-type="partner" data-id="{{item._id}}">
+        <view class="item-icon partner">👥</view>
+        <view class="item-content">
+          <view class="item-route">{{partnerTypeMap[item.partnerType]}}</view>
+          <view class="item-info">
+            <text>🕐 {{item.date || item.time}} {{item.timeSlot || ''}}</text>
+            <text>📍 {{item.location}}</text>
+          </view>
+        </view>
+        <view class="item-status {{item.status}}">{{item.status === 'active' ? '进行中' : '已完成'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最新其他互助 -->
+  <view class="card" wx:if="{{otherList.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最新其他互助</text>
+      <text class="more" bindtap="goToPage" data-page="other">查看更多 ></text>
+    </view>
+    <view class="list">
+      <view class="list-item" wx:for="{{otherList}}" wx:key="_id" bindtap="goToDetail" data-type="other" data-id="{{item._id}}">
+        <view class="item-icon other">📝</view>
+        <view class="item-content">
+          <view class="item-route">{{item.title}}</view>
+          <view class="item-info">
+            <text>🕐 {{item.date || item.time}} {{item.timeSlot || ''}}</text>
+            <text>📍 {{item.location}}</text>
+            <text wx:if="{{item.reward}}">💰 ¥{{item.reward}}</text>
+          </view>
+        </view>
+        <view class="item-status {{item.status}}">{{expressStatusMap[item.status]}}</view>
+      </view>
+    </view>
+  </view>
+</view>

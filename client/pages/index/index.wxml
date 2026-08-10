@@ -1,0 +1,133 @@
+<view class="container">
+
+  <!-- 轮播图 -->
+  <swiper  
+  indicator-dots
+  indicator-color
+  autoplay
+  circular
+  wx:if="{{bannerList.length > 0}}">
+    <swiper-item wx:for="{{bannerList}}" wx:key="index">
+    <image src="{{item}}" mode="aspectFill" style="width: 100%;height: 100%;"/> 
+    </swiper-item>
+  </swiper>
+  <swiper wx:else
+  indicator-dots
+  indicator-color
+  autoplay
+  circular>
+    <swiper-item>
+    <image src="/tabbar/工具.png" mode="aspectFill" style="width: 100%;height: 100%;"/> 
+    </swiper-item>
+    <swiper-item>
+    <image src="/tabbar/我的.png" mode="" style="width: 100%;height: 100%;"/>
+    </swiper-item>
+    <swiper-item>
+    <image src="/tabbar/首页.png" mode="" style="width: 100%;height: 100%;"/>
+    </swiper-item>
+</swiper>
+
+  <!-- 公告 -->
+  <view class="announcement" wx:if="{{announcement.show}}">
+    <view class="announcement-icon">📢</view>
+    <view class="announcement-content">
+      <text class="announcement-title">{{announcement.title}}</text>
+      <text class="announcement-text">{{announcement.content}}</text>
+    </view>
+  </view>
+
+  <!-- 功能模块 -->
+  <view class="card">
+    <view class="section-title">常用功能</view>
+    <view class="grid">
+      <view class="grid-item" bindtap="navigateTo" data-page="lostfound">
+        <view class="grid-icon lostfound">📋</view>
+        <text class="grid-text">失物招领</text>
+      </view>
+      <view class="grid-item" bindtap="navigateTo" data-page="market">
+        <view class="grid-icon market">🛒</view>
+        <text class="grid-text">二手集市</text>
+      </view>
+      <view class="grid-item" bindtap="navigateTo" data-page="help">
+        <view class="grid-icon help">🤝</view>
+        <text class="grid-text">校园互助</text>
+      </view>
+      <view class="grid-item" bindtap="navigateTo" data-page="tools">
+        <view class="grid-icon tools">🗺️</view>
+        <text class="grid-text">校园地图</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最新失物招领 -->
+  <view class="card" wx:if="{{lostfoundList.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最新失物招领</text>
+      <text class="more" bindtap="navigateTo" data-page="lostfound">查看更多 ></text>
+    </view>
+    <view class="list">
+      <view class="list-item" wx:for="{{lostfoundList}}" wx:key="_id" bindtap="goToDetail" data-type="lostfound" data-id="{{item._id}}">
+        <view class="item-left">
+          <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" class="item-image" mode="aspectFill" />
+          <view wx:else class="item-image placeholder">{{item.type === 'lost' ? '🔍' : '📦'}}</view>
+        </view>
+        <view class="item-right">
+          <view class="item-header">
+            <text class="tag {{item.type === 'lost' ? 'tag-warning' : 'tag-primary'}}">{{item.type === 'lost' ? '寻物' : '归还'}}</text>
+            <text class="item-title">{{item.title}}</text>
+          </view>
+          <text class="item-desc">{{item.description}}</text>
+          <text class="item-time">{{item.time}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最新二手商品 -->
+  <view class="card" wx:if="{{marketList.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最新二手商品</text>
+      <text class="more" bindtap="navigateTo" data-page="market">查看更多 ></text>
+    </view>
+    <view class="market-grid">
+      <view class="market-item" wx:for="{{marketList}}" wx:key="_id" bindtap="goToDetail" data-type="market" data-id="{{item._id}}">
+        <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" class="market-image" mode="aspectFill" />
+        <view wx:else class="market-image placeholder">🛒</view>
+        <text class="market-title">{{item.title}}</text>
+        <view class="market-footer">
+          <text class="market-price">¥{{item.price}}</text>
+          <text class="market-condition">{{conditionMap[item.condition]}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最新互助信息 -->
+  <view class="card" wx:if="{{helpList.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最新互助信息</text>
+      <text class="more" bindtap="navigateTo" data-page="help">查看更多 ></text>
+    </view>
+    <view class="list">
+      <view class="list-item" wx:for="{{helpList}}" wx:key="_id" bindtap="goToDetail" data-type="{{item.type}}" data-id="{{item._id}}">
+        <view class="item-left">
+          <view class="help-icon {{item.type}}">{{helpIconMap[item.type]}}</view>
+        </view>
+        <view class="item-right">
+          <view class="item-header">
+            <text class="tag tag-primary">{{helpTypeMap[item.type]}}</text>
+            <text class="item-title">{{item.title || (item.type === 'express' ? item.pickupLocation || '代取快递' : (item.type === 'partner' ? item.description : (item.from + ' → ' + item.to)))}}</text>
+          </view>
+          <text class="item-desc" wx:if="{{item.description}}">{{item.description}}</text>
+          <text class="item-desc" wx:elif="{{item.remark}}">{{item.remark}}</text>
+          <text class="item-time">{{item.date || item.time}} {{item.timeSlot || ''}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{lostfoundList.length === 0 && marketList.length === 0 && helpList.length === 0}}">
+    <text class="empty-text">暂无数据，快去发布吧！</text>
+  </view>
+</view>

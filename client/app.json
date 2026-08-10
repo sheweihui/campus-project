@@ -1,0 +1,74 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/index/index",
+    "pages/lostfound/lostfound",
+    "pages/lostfound/publish",
+    "pages/lostfound/detail",
+    "pages/lostfound/mylist",
+    "pages/market/market",
+    "pages/market/publish",
+    "pages/market/detail",
+    "pages/market/mylist",
+    "pages/help/help",
+    "pages/help/carpool",
+    "pages/help/express",
+    "pages/help/partner",
+    "pages/help/other",
+    "pages/help/publish",
+    "pages/help/detail",
+    "pages/chat/chat",
+    "pages/chat/buyerList",
+    "pages/tools/tools",
+    "pages/tools/classroom",
+    "pages/tools/calendar",
+    "pages/tools/map",
+    "pages/finance/finance",
+    "pages/finance/withdraw",
+    "pages/finance/records",
+    "pages/profile/profile",
+    "pages/profile/edit",
+    "pages/profile/messages",
+    "pages/profile/settings",
+    "pages/profile/myposts",
+    "pages/admin/homeConfig",
+    "pages/admin/banner"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#667eea",
+    "navigationBarTitleText": "校园便利圈",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f7fa"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#667eea",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "tabbar/主页.png",
+        "selectedIconPath": "tabbar/主页 (1).png"
+      },
+      {
+        "pagePath": "pages/tools/tools",
+        "text": "工具",
+        "iconPath": "tabbar/工具.png",
+        "selectedIconPath": "tabbar/工具 (1).png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "tabbar/我的.png",
+        "selectedIconPath": "tabbar/我的 (1).png"
+      }
+    ]
+  },
+  "lazyCodeLoading":"requiredComponents",
+  "usingComponents": {},
+  "cloud": true,
+  "sitemapLocation": "sitemap.json"
+}

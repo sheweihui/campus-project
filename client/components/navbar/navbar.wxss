@@ -1,0 +1,48 @@
+.custom-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.navbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+  padding: 0 32rpx;
+}
+
+.navbar-left {
+  width: 100rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+}
+
+.back-icon {
+  font-size: 56rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+.navbar-title {
+  flex: 1;
+  text-align: center;
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.navbar-right {
+  width: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.navbar-placeholder {
+  width: 100%;
+}

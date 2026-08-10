@@ -1,0 +1,9 @@
+{
+  "name": "transfer",
+  "version": "1.0.0",
+  "description": "企业转账提现",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

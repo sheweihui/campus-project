@@ -1,0 +1,61 @@
+<view class="container">
+  <view class="card" wx:if="{{detail}}">
+    <!-- 图片轮播 -->
+    <swiper class="image-swiper" indicator-dots autoplay circular wx:if="{{detail.images && detail.images.length > 0}}">
+      <swiper-item wx:for="{{detail.images}}" wx:key="index">
+        <image src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" />
+      </swiper-item>
+    </swiper>
+    <view wx:else class="image-placeholder">🛒</view>
+
+    <!-- 价格信息 -->
+    <view class="price-section">
+      <text class="current-price">¥{{detail.price}}</text>
+      <text class="original-price" wx:if="{{detail.originalPrice}}">¥{{detail.originalPrice}}</text>
+    </view>
+
+    <!-- 标题 -->
+    <view class="detail-title">{{detail.title}}</view>
+
+    <!-- 标签 -->
+    <view class="detail-tags">
+      <text class="tag tag-primary">{{categoryMap[detail.category]}}</text>
+      <text class="tag tag-secondary">{{conditionMap[detail.condition]}}</text>
+      <text class="status {{detail.status}}">{{statusMap[detail.status]}}</text>
+    </view>
+
+    <!-- 描述 -->
+    <view class="detail-section">
+      <view class="section-label">商品描述</view>
+      <view class="section-content">{{detail.description}}</view>
+    </view>
+
+    <!-- 联系方式：所有人可见，方便咨询 -->
+    <view class="detail-section">
+      <view class="section-label">联系方式</view>
+      <view class="section-content contact" bindtap="copyContact">{{detail.contact}}</view>
+    </view>
+
+    <!-- 浏览次数 -->
+    <view class="detail-time">浏览 {{detail.viewCount || 0}} 次 · 发布于 {{createTime}}</view>
+  </view>
+</view>
+
+<!-- 卖家操作栏 -->
+<view class="bottom-bar" wx:if="{{isOwner}}">
+  <view class="bar-btn {{detail.status !== 'onSale' ? 'disabled' : ''}}" bindtap="updateStatus" wx:if="{{detail.status === 'onSale'}}">
+    标记为已售出
+  </view>
+  <view class="bar-btn {{detail.status !== 'onSale' ? 'disabled' : ''}}" bindtap="updateStatusOff" wx:if="{{detail.status === 'onSale'}}">
+    下架
+  </view>
+  <view class="bar-btn" bindtap="editItem">编辑</view>
+  <view class="bar-btn primary" bindtap="startChat">聊天</view>
+</view>
+
+<!-- 买家操作栏 -->
+<view class="bottom-bar" wx:if="{{isVisitor && detail.status === 'onSale'}}">
+  <view class="bar-btn primary" bindtap="buyNow">立即购买</view>
+  <view class="bar-btn" bindtap="startChat">聊天</view>
+  <view class="bar-btn" bindtap="copyContact">联系卖家</view>
+</view>

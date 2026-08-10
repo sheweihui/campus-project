@@ -1,0 +1,34 @@
+<view class="container">
+  <!-- 列表 -->
+  <view class="list">
+    <view class="list-item" wx:for="{{list}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
+      <view class="item-icon">📦</view>
+      <view class="item-content">
+        <view class="item-code">📍 {{item.pickupLocation || '代取快递'}}</view>
+        <view class="item-info">
+          <text>👤 {{item.recipient}}</text>
+          <text>📍 {{item.address}}</text>
+        </view>
+        <view class="item-footer">
+          <text class="item-reward">💰 ¥{{item.reward}}</text>
+          <text class="item-deadline">⏰ {{item.deadline}}</text>
+        </view>
+      </view>
+      <view class="item-status {{item.status}}">{{expressStatusMap[item.status]}}</view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{!isLoading && hasMore}}">上拉加载更多</view>
+  <view class="load-more" wx:if="{{!isLoading && !hasMore && list.length > 0}}">没有更多了</view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!isLoading && list.length === 0}}">
+    <text class="empty-text">暂无代取快递信息</text>
+  </view>
+</view>
+
+<!-- 发布按钮 -->
+<view class="fab" bindtap="goToPublish">
+  <text class="fab-icon">+</text>
+</view>

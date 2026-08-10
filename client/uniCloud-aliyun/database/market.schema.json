@@ -1,0 +1,74 @@
+{
+  "bsonType": "object",
+  "required": ["title", "price", "category", "condition", "contact"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": true,
+    "delete": true
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "title": {
+      "bsonType": "string",
+      "description": "商品名称"
+    },
+    "price": {
+      "bsonType": "number",
+      "description": "价格"
+    },
+    "originalPrice": {
+      "bsonType": "number",
+      "description": "原价"
+    },
+    "category": {
+      "bsonType": "string",
+      "description": "分类：books-书籍，digital-数码，daily-生活用品，others-其他",
+      "enum": ["books", "digital", "daily", "others"]
+    },
+    "condition": {
+      "bsonType": "string",
+      "description": "成色：new-全新，likeNew-99新，good-良好，fair-一般",
+      "enum": ["new", "likeNew", "good", "fair"]
+    },
+    "description": {
+      "bsonType": "string",
+      "description": "商品描述"
+    },
+    "images": {
+      "bsonType": "array",
+      "description": "商品图片"
+    },
+    "contact": {
+      "bsonType": "string",
+      "description": "联系方式"
+    },
+    "status": {
+      "bsonType": "string",
+      "description": "状态：onSale-在售，sold-已售出，off-已下架",
+      "defaultValue": "onSale"
+    },
+    "viewCount": {
+      "bsonType": "int",
+      "description": "浏览次数",
+      "defaultValue": 0
+    },
+    "openid": {
+      "bsonType": "string",
+      "description": "发布者openid"
+    },
+    "createTime": {
+      "bsonType": "timestamp",
+      "description": "创建时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+    },
+    "updateTime": {
+      "bsonType": "timestamp",
+      "description": "更新时间"
+    }
+  }
+}

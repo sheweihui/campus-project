@@ -1,0 +1,47 @@
+<view class="container">
+  <!-- 校园地图图片 -->
+  <view class="map-section">
+    <view class="section-title">校园地图</view>
+    <view class="map-image-wrapper" bindtap="previewMap">
+      <image class="map-image" src="/tabbar/地图.jpg" mode="widthFix" />
+      <view class="map-hint">点击查看大图</view>
+    </view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <text class="search-icon">🔍</text>
+    <input class="search-input" placeholder="搜索校园地点..." value="{{keyword}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch" />
+  </view>
+
+  <!-- 地点分类 -->
+  <view class="category-bar">
+    <scroll-view scroll-x class="category-scroll">
+      <view class="category-list">
+        <view class="category-item {{currentCategory === 'all' ? 'active' : ''}}" bindtap="selectCategory" data-category="all">全部</view>
+        <view class="category-item {{currentCategory === 'teaching' ? 'active' : ''}}" bindtap="selectCategory" data-category="teaching">教学楼</view>
+        <view class="category-item {{currentCategory === 'dormitory' ? 'active' : ''}}" bindtap="selectCategory" data-category="dormitory">宿舍楼</view>
+        <view class="category-item {{currentCategory === 'library' ? 'active' : ''}}" bindtap="selectCategory" data-category="library">图书馆</view>
+        <view class="category-item {{currentCategory === 'canteen' ? 'active' : ''}}" bindtap="selectCategory" data-category="canteen">食堂</view>
+        <view class="category-item {{currentCategory === 'sports' ? 'active' : ''}}" bindtap="selectCategory" data-category="sports">运动场</view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 地点列表 -->
+  <view class="location-list">
+    <view class="location-item" wx:for="{{locationList}}" wx:key="index" bindtap="selectLocation" data-item="{{item}}">
+      <view class="location-icon">{{item.icon}}</view>
+      <view class="location-info">
+        <view class="location-name">{{item.name}}</view>
+        <view class="location-address">📍 {{item.address}}</view>
+      </view>
+      <view class="location-arrow">></view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{locationList.length === 0}}">
+    <text class="empty-text">暂无相关地点</text>
+  </view>
+</view>

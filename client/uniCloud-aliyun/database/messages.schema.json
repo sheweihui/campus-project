@@ -1,0 +1,48 @@
+{
+  "bsonType": "object",
+  "required": ["toOpenid", "content", "type"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": true,
+    "delete": true
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "type": {
+      "bsonType": "string",
+      "description": "消息类型：system-系统消息，user-用户消息",
+      "enum": ["system", "user"]
+    },
+    "fromOpenid": {
+      "bsonType": "string",
+      "description": "发送者openid"
+    },
+    "toOpenid": {
+      "bsonType": "string",
+      "description": "接收者openid"
+    },
+    "title": {
+      "bsonType": "string",
+      "description": "消息标题"
+    },
+    "content": {
+      "bsonType": "string",
+      "description": "消息内容"
+    },
+    "isRead": {
+      "bsonType": "bool",
+      "description": "是否已读",
+      "defaultValue": false
+    },
+    "createTime": {
+      "bsonType": "timestamp",
+      "description": "创建时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+<view class="container">
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <view class="user-avatar" bindtap="editAvatar">
+      <image wx:if="{{userInfo.avatarUrl}}" class="avatar-image" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+      <text wx:else class="avatar-text">{{userInfo.name ? userInfo.name.charAt(0) : '游'}}</text>
+      <view class="avatar-edit-icon">+</view>
+    </view>
+    <view class="user-info">
+      <view class="user-name">{{userInfo.name || '未设置姓名'}}</view>
+      <view class="user-id" wx:if="{{userInfo.stuId}}">学号：{{userInfo.stuId}}</view>
+      <view class="user-phone" wx:if="{{userInfo.phone}}">手机：{{userInfo.phone}}</view>
+    </view>
+    <view class="edit-btn" bindtap="goToSettings">设置</view>
+  </view>
+
+  <!-- 统计数据 -->
+  <view class="card">
+    <view class="section-title">我的数据</view>
+    <view class="stats-grid">
+      <view class="stats-item" bindtap="goToMyPosts" data-type="lostfound">
+        <text class="stats-value">{{stats.lostfound || 0}}</text>
+        <text class="stats-label">失物招领</text>
+      </view>
+      <view class="stats-item" bindtap="goToMyPosts" data-type="market">
+        <text class="stats-value">{{stats.market || 0}}</text>
+        <text class="stats-label">二手商品</text>
+      </view>
+      <view class="stats-item" bindtap="goToMyPosts" data-type="help">
+        <text class="stats-value">{{stats.help || 0}}</text>
+        <text class="stats-label">互助信息</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="card">
+    <view class="section-title">常用功能</view>
+    <view class="function-list">
+      <view class="function-item" bindtap="goToMyPostsCenter">
+        <text class="function-icon">📋</text>
+        <text class="function-text">我的发布</text>
+        <text class="function-arrow">></text>
+      </view>
+      <view class="function-item" bindtap="goToFinance">
+        <text class="function-icon">💰</text>
+        <text class="function-text">我的财务</text>
+        <text class="function-arrow">></text>
+      </view>
+      <view class="function-item" bindtap="goToMessages">
+        <text class="function-icon">📬</text>
+        <text class="function-text">消息通知</text>
+        <view class="badge" wx:if="{{stats.unreadMessages > 0}}">{{stats.unreadMessages}}</view>
+        <text class="function-arrow">></text>
+      </view>
+      <view class="function-item" bindtap="goToSettings">
+        <text class="function-icon">⚙️</text>
+        <text class="function-text">设置与反馈</text>
+        <text class="function-arrow">></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关于 -->
+  <view class="card">
+    <view class="section-title">关于</view>
+    <view class="about-info">
+      <view class="about-item">
+        <text class="about-label">版本</text>
+        <text class="about-value">1.0.0</text>
+      </view>
+      <view class="about-item">
+        <text class="about-label">联系客服</text>
+        <text class="about-value contact" bindtap="contactService">在线客服</text>
+      </view>
+    </view>
+  </view>
+</view>

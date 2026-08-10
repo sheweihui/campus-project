@@ -1,0 +1,286 @@
+.banner-section {
+  margin-bottom: 20rpx;
+}
+
+.banner-swiper {
+  width: 100%;
+  height: 300rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+}
+
+.announcement {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #fff9e6, #fff3cc);
+  padding: 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+  border-left: 6rpx solid #ffc107;
+}
+
+.announcement-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+
+.announcement-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.announcement-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.announcement-text {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 20rpx;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 20rpx 30rpx;
+  border-radius: 40rpx;
+  margin-bottom: 20rpx;
+}
+
+.search-icon {
+  font-size: 32rpx;
+  margin-right: 15rpx;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.more {
+  font-size: 26rpx;
+  color: #4CAF50;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.grid-item {
+  width: 25%;
+  text-align: center;
+  padding: 20rpx 0;
+}
+
+.grid-icon {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  margin: 0 auto 10rpx;
+}
+
+.grid-icon.lostfound {
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+}
+
+.grid-icon.market {
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+.grid-icon.help {
+  background: linear-gradient(135deg, #4CAF50, #388E3C);
+}
+
+.grid-icon.tools {
+  background: linear-gradient(135deg, #d4eb7b, #daef64  );
+}
+
+.grid-text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.list {
+  margin-top: 10rpx;
+}
+
+.list-item {
+  display: flex;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.item-left {
+  margin-right: 20rpx;
+}
+
+.item-image {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+}
+
+.item-image.placeholder {
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+}
+
+.help-icon {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+}
+
+.help-icon.carpool {
+  background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+.help-icon.express {
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+}
+
+.help-icon.partner {
+  background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+}
+
+.help-icon.other {
+  background: linear-gradient(135deg, #00BCD4, #0097A7);
+}
+
+.item-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.item-title {
+  font-size: 30rpx;
+  font-weight: 500;
+  margin-left: 10rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-desc {
+  font-size: 26rpx;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 10rpx;
+}
+
+.item-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.market-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -10rpx;
+}
+
+.market-item {
+  width: calc(50% - 20rpx);
+  margin: 10rpx;
+  background: #f8f8f8;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.market-image {
+  width: 100%;
+  height: 300rpx;
+}
+
+.market-image.placeholder {
+  height: 300rpx;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64rpx;
+}
+
+.market-title {
+  display: block;
+  font-size: 28rpx;
+  padding: 15rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.market-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15rpx 15rpx;
+}
+
+.market-price {
+  font-size: 32rpx;
+  color: #f44336;
+  font-weight: bold;
+}
+
+.market-condition {
+  font-size: 24rpx;
+  color: #999;
+  background: #f0f0f0;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}

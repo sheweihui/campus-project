@@ -1,0 +1,196 @@
+<view class="container">
+  <view class="card">
+    <!-- 拼车表单 -->
+    <block wx:if="{{type === 'carpool'}}">
+      <view class="form-item">
+        <text class="form-label">出发地 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入出发地" value="{{form.from}}" bindinput="onInput" data-field="from" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">目的地 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入目的地" value="{{form.to}}" bindinput="onInput" data-field="to" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">出发时间 <text class="required">*</text></text>
+        <view class="picker" bindtap="showDateTimePicker">
+          {{form.time || '请选择时间'}}
+          <text class="picker-arrow">></text>
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">人数 <text class="required">*</text></text>
+        <input class="form-input" type="number" placeholder="请输入人数" value="{{form.people}}" bindinput="onInput" data-field="people" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">联系方式 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入手机号或微信号" value="{{form.contact}}" bindinput="onInput" data-field="contact" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">备注</text>
+        <textarea class="form-textarea" placeholder="请输入备注信息" value="{{form.remark}}" bindinput="onInput" data-field="remark" />
+      </view>
+    </block>
+
+    <!-- 代取快递表单 -->
+    <block wx:if="{{type === 'express'}}">
+      <view class="form-item">
+        <text class="form-label">取件地点 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入取件地点（如：菜鸟驿站）" value="{{form.pickupLocation}}" bindinput="onInput" data-field="pickupLocation" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">取件码 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入取件码" value="{{form.pickupCode}}" bindinput="onInput" data-field="pickupCode" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">收件人 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入收件人姓名" value="{{form.recipient}}" bindinput="onInput" data-field="recipient" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">收件地址 <text class="required">*</text></text>
+        <textarea class="form-textarea" placeholder="请输入收件地址" value="{{form.address}}" bindinput="onInput" data-field="address" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">酬金 <text class="required">*</text></text>
+        <view class="price-input">
+          <text class="price-symbol">¥</text>
+          <input class="form-input" type="digit" placeholder="请输入酬金" value="{{form.reward}}" bindinput="onInput" data-field="reward" />
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">截止时间 <text class="required">*</text></text>
+        <view class="picker" bindtap="showDateTimePicker">
+          {{form.deadline || '请选择截止时间'}}
+          <text class="picker-arrow">></text>
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">联系方式 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入手机号或微信号" value="{{form.contact}}" bindinput="onInput" data-field="contact" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">备注</text>
+        <textarea class="form-textarea" placeholder="请输入备注信息" value="{{form.remark}}" bindinput="onInput" data-field="remark" />
+      </view>
+    </block>
+
+    <!-- 找搭子表单 -->
+    <block wx:if="{{type === 'partner'}}">
+      <view class="form-item">
+        <text class="form-label">搭子类型 <text class="required">*</text></text>
+        <picker bindchange="onPartnerTypeChange" value="{{partnerTypeIndex}}" range="{{partnerTypes}}" range-key="name">
+          <view class="picker">
+            {{form.partnerType ? partnerTypeMap[form.partnerType] : '请选择类型'}}
+            <text class="picker-arrow">></text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">时间 <text class="required">*</text></text>
+        <view class="picker" bindtap="showDateTimePicker">
+          {{form.time || '请选择时间'}}
+          <text class="picker-arrow">></text>
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">地点 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入地点" value="{{form.location}}" bindinput="onInput" data-field="location" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">需要人数 <text class="required">*</text></text>
+        <input class="form-input" type="number" placeholder="请输入需要人数" value="{{form.people}}" bindinput="onInput" data-field="people" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">联系方式 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入手机号或微信号" value="{{form.contact}}" bindinput="onInput" data-field="contact" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">详细描述</text>
+        <textarea class="form-textarea" placeholder="请详细描述你的需求" value="{{form.description}}" bindinput="onInput" data-field="description" />
+      </view>
+    </block>
+
+    <!-- 其他互助表单 -->
+    <block wx:if="{{type === 'other'}}">
+      <view class="form-item">
+        <text class="form-label">标题 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入互助标题" value="{{form.title}}" bindinput="onInput" data-field="title" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">时间 <text class="required">*</text></text>
+        <view class="picker" bindtap="showDateTimePicker">
+          {{form.time || '请选择时间'}}
+          <text class="picker-arrow">></text>
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">地点 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入地点" value="{{form.location}}" bindinput="onInput" data-field="location" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">酬金 <text class="required">*</text></text>
+        <view class="price-input">
+          <text class="price-symbol">¥</text>
+          <input class="form-input" type="digit" placeholder="请输入酬金" value="{{form.reward}}" bindinput="onInput" data-field="reward" />
+        </view>
+      </view>
+      <view class="form-item">
+        <text class="form-label">联系方式 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入手机号或微信号" value="{{form.contact}}" bindinput="onInput" data-field="contact" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">详细描述</text>
+        <textarea class="form-textarea" placeholder="请详细描述你的需求" value="{{form.description}}" bindinput="onInput" data-field="description" />
+      </view>
+    </block>
+  </view>
+
+  <!-- 提交按钮 -->
+  <button class="btn-primary submit-btn" bindtap="submit">发布</button>
+</view>
+
+<!-- 日期时间选择器弹窗 -->
+<view class="picker-overlay" wx:if="{{showDateTimePicker}}" bindtap="hideDateTimePicker">
+  <view class="picker-popup" catchtap="onPickerTap">
+    <view class="picker-header">
+      <text class="picker-title">选择时间</text>
+      <text class="picker-close" bindtap="hideDateTimePicker">✕</text>
+    </view>
+    <view class="picker-body">
+      <view class="picker-tabs">
+        <view class="picker-tab {{pickerTab === 'date' ? 'active' : ''}}" data-tab="date" bindtap="setPickerTab">日期</view>
+        <view class="picker-tab {{pickerTab === 'time' ? 'active' : ''}}" data-tab="time" bindtap="setPickerTab">时间</view>
+      </view>
+      <scroll-view class="picker-content" scroll-y>
+        <view wx:if="{{pickerTab === 'date'}}">
+          <view class="calendar-header">
+            <text class="calendar-prev" bindtap="prevMonth">‹</text>
+            <text class="calendar-title">{{pickerYear}}年{{pickerMonth}}月</text>
+            <text class="calendar-next" bindtap="nextMonth">›</text>
+          </view>
+          <view class="calendar-weekdays">
+            <text wx:for="{{weekdays}}" wx:key="*this">{{item}}</text>
+          </view>
+          <view class="calendar-days">
+            <view wx:for="{{calendarDays}}" wx:key="index" 
+              class="calendar-day {{item.type === 'prev' || item.type === 'next' ? 'other-month' : ''}} {{item.isSelected ? 'selected' : ''}} {{item.isToday ? 'today' : ''}}"
+              bindtap="selectDate" data-date="{{item.date}}">
+              {{item.day}}
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{pickerTab === 'time'}}">
+          <view class="time-list">
+            <view wx:for="{{timeSlots}}" wx:key="*this" 
+              class="time-slot {{selectedTime === item ? 'selected' : ''}}"
+              bindtap="selectTime" data-time="{{item}}">
+              {{item}}
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    <view class="picker-footer">
+      <view class="picker-confirm" bindtap="confirmDateTime">确定</view>
+    </view>
+  </view>
+</view>

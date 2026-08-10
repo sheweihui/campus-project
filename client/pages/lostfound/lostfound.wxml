@@ -1,0 +1,44 @@
+<view class="container">
+  <!-- 标签切换 -->
+  <view class="tabs">
+    <view class="tab {{currentTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">全部</view>
+    <view class="tab {{currentTab === 'lost' ? 'active' : ''}}" bindtap="switchTab" data-tab="lost">寻物</view>
+    <view class="tab {{currentTab === 'found' ? 'active' : ''}}" bindtap="switchTab" data-tab="found">归还</view>
+  </view>
+
+  <!-- 列表 -->
+  <view class="list">
+    <view class="list-item" wx:for="{{list}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
+      <view class="item-left">
+        <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" class="item-image" mode="aspectFill" />
+        <view wx:else class="item-image placeholder">{{item.type === 'lost' ? '🔍' : '📦'}}</view>
+      </view>
+      <view class="item-right">
+        <view class="item-header">
+          <text class="tag {{item.type === 'lost' ? 'tag-warning' : 'tag-primary'}}">{{item.type === 'lost' ? '寻物' : '归还'}}</text>
+          <text class="status {{item.status}}">{{item.status === 'pending' ? '进行中' : '已完成'}}</text>
+        </view>
+        <text class="item-title">{{item.title}}</text>
+        <text class="item-desc">{{item.description}}</text>
+        <view class="item-info">
+          <text class="item-location">📍 {{item.location || '未知地点'}}</text>
+          <text class="item-time">{{item.time || '未知时间'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{!isLoading && hasMore}}">上拉加载更多</view>
+  <view class="load-more" wx:if="{{!isLoading && !hasMore && list.length > 0}}">没有更多了</view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!isLoading && list.length === 0}}">
+    <text class="empty-text">暂无{{currentTab === 'all' ? '' : (currentTab === 'lost' ? '寻物' : '归还')}}信息</text>
+  </view>
+</view>
+
+<!-- 发布按钮 -->
+<view class="fab" bindtap="goToPublish">
+  <text class="fab-icon">+</text>
+</view>

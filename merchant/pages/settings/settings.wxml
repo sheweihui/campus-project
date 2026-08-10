@@ -1,0 +1,63 @@
+<wxs src="../../utils/util.wxs" module="util" />
+
+<view class="page-settings">
+  <!-- 平台信息 -->
+  <view class="card">
+    <view class="card-title">平台信息</view>
+    <view class="info-row">
+      <text class="info-label">版本号</text>
+      <text class="info-value">{{adminInfo.version}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">云环境</text>
+      <text class="info-value mono">{{adminInfo.envId}}</text>
+    </view>
+  </view>
+
+  <!-- 费率设置 -->
+  <view class="card">
+    <view class="card-title">费率配置</view>
+    <view class="info-row">
+      <text class="info-label">平台抽成比例</text>
+      <text class="info-value accent">{{commissionRate}}%</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">最低提现金额</text>
+      <text class="info-value">¥{{minWithdrawAmount}}</text>
+    </view>
+    <view class="rate-note">
+      注：抽成比例和最低提现金额的修改需要在云函数 order/index.js 和 transfer/index.js 中调整。
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="card">
+    <view class="card-title">快捷入口</view>
+    <view class="shortcut-grid">
+      <view class="shortcut-item"
+        wx:for="{{shortcuts}}" wx:key="label"
+        bindtap="goToPage" data-item="{{item}}"
+      >
+        <view class="shortcut-icon">{{item.icon}}</view>
+        <view class="shortcut-label">{{item.label}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作 -->
+  <view class="card">
+    <view class="card-title">其他操作</view>
+    <view class="action-list">
+      <view class="action-item" bindtap="clearCache">
+        <text class="action-label">清除本地缓存</text>
+        <text class="action-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部信息 -->
+  <view class="footer">
+    <text>校园便利圈 · 商家管理端</text>
+    <text>Powered by WeChat CloudBase</text>
+  </view>
+</view>

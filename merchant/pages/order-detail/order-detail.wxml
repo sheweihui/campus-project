@@ -1,0 +1,88 @@
+<wxs src="../../utils/util.wxs" module="util" />
+
+<view class="page-detail" wx:if="{{!loading && order}}">
+  <!-- 金额展示 -->
+  <view class="amount-card">
+    <view class="amount-value">{{util.formatAmount(order.amount)}}</view>
+    <view class="amount-status">
+      <text class="tag {{util.getStatusTagClass(order.paymentStatus)}}">
+        {{util.getPaymentStatusName(order.paymentStatus)}}
+      </text>
+    </view>
+  </view>
+
+  <!-- 基本信息 -->
+  <view class="card">
+    <view class="card-title">基本信息</view>
+    <view class="info-row">
+      <text class="info-label">订单类型</text>
+      <text class="info-value">{{util.getOrderTypeName(order.type)}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">订单编号</text>
+      <text class="info-value mono">{{order._id}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">创建时间</text>
+      <text class="info-value">{{util.formatTime(order.createTime)}}</text>
+    </view>
+    <view class="info-row" wx:if="{{order.payTime}}">
+      <text class="info-label">支付时间</text>
+      <text class="info-value">{{util.formatTime(order.payTime)}}</text>
+    </view>
+    <view class="info-row" wx:if="{{order.confirmTime}}">
+      <text class="info-label">确认时间</text>
+      <text class="info-value">{{util.formatTime(order.confirmTime)}}</text>
+    </view>
+  </view>
+
+  <!-- 交易双方 -->
+  <view class="card">
+    <view class="card-title">交易双方</view>
+    <view class="info-row">
+      <text class="info-label">买家</text>
+      <text class="info-value">{{order.buyerNickName || '匿名用户'}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">卖家</text>
+      <text class="info-value">{{order.sellerNickName || '匿名用户'}}</text>
+    </view>
+  </view>
+
+  <!-- 金额明细 -->
+  <view class="card">
+    <view class="card-title">金额明细</view>
+    <view class="info-row">
+      <text class="info-label">订单金额</text>
+      <text class="info-value amount">{{util.formatAmount(order.amount)}}</text>
+    </view>
+    <view class="info-row" wx:if="{{order.commission}}">
+      <text class="info-label">平台抽成 (15%)</text>
+      <text class="info-value commission">{{util.formatAmount(order.commission)}}</text>
+    </view>
+    <view class="info-row" wx:if="{{order.commission}}">
+      <text class="info-label">卖家实收</text>
+      <text class="info-value seller-amount">{{util.formatAmount(order.amount - order.commission)}}</text>
+    </view>
+  </view>
+
+  <!-- 支付信息 -->
+  <view class="card">
+    <view class="card-title">支付信息</view>
+    <view class="info-row">
+      <text class="info-label">支付状态</text>
+      <text class="tag {{util.getStatusTagClass(order.paymentStatus)}}">
+        {{util.getPaymentStatusName(order.paymentStatus)}}
+      </text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">订单状态</text>
+      <text class="tag tag-default">{{util.getOrderStatusName(order.orderStatus)}}</text>
+    </view>
+  </view>
+</view>
+
+<view class="empty-state" wx:elif="{{!loading}}">
+  <text class="icon">❌</text>
+  <text>订单不存在</text>
+</view>

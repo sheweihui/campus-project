@@ -1,0 +1,33 @@
+<view class="container">
+  <view class="card">
+    <!-- 头像 -->
+    <view class="avatar-section">
+      <view class="avatar-wrapper" bindtap="chooseAvatar">
+        <image wx:if="{{form.avatarUrl}}" src="{{form.avatarUrl}}" mode="aspectFill" />
+        <text wx:else class="avatar-placeholder">{{form.nickName ? form.nickName.charAt(0) : '用'}}</text>
+        <view class="avatar-tip">点击更换头像</view>
+      </view>
+    </view>
+
+    <!-- 昵称 -->
+    <view class="form-item">
+      <text class="form-label">昵称 <text class="required">*</text></text>
+      <input class="form-input" placeholder="请输入昵称" value="{{form.nickName}}" bindinput="onInput" data-field="nickName" />
+    </view>
+
+    <!-- 学号 -->
+    <view class="form-item">
+      <text class="form-label">学号</text>
+      <input class="form-input" placeholder="请输入学号" value="{{form.studentId}}" bindinput="onInput" data-field="studentId" />
+    </view>
+
+    <!-- 手机号 -->
+    <view class="form-item">
+      <text class="form-label">手机号</text>
+      <input class="form-input" type="number" placeholder="请输入手机号" value="{{form.phone}}" bindinput="onInput" data-field="phone" />
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <button class="btn-primary submit-btn" bindtap="submit">保存</button>
+</view>

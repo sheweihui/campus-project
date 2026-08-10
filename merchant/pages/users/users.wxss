@@ -1,0 +1,95 @@
+.page-users {
+  padding-bottom: 40rpx;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  background: #fff;
+  gap: 12rpx;
+}
+.search-input {
+  flex: 1;
+  background: #f3f4f6;
+  border-radius: 10rpx;
+  padding: 14rpx 20rpx;
+  font-size: 26rpx;
+}
+.search-btn {
+  background: #4a6cf7;
+  color: #fff;
+  padding: 14rpx 24rpx;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+}
+
+.summary-bar {
+  padding: 16rpx 24rpx;
+  color: #9ca3af;
+  font-size: 24rpx;
+}
+
+.user-list {
+  padding: 0 24rpx;
+}
+.user-card {
+  margin: 12rpx 0;
+}
+.user-header {
+  margin-bottom: 16rpx;
+}
+.user-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+.user-id {
+  font-size: 24rpx;
+  color: #9ca3af;
+  margin-top: 4rpx;
+}
+.user-balance {
+  text-align: right;
+}
+.balance-amount {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #10b981;
+}
+.balance-label {
+  font-size: 20rpx;
+  color: #9ca3af;
+}
+
+.user-stats {
+  display: flex;
+  padding: 16rpx 0;
+  border-top: 1rpx solid #f9fafb;
+  border-bottom: 1rpx solid #f9fafb;
+  margin-bottom: 12rpx;
+}
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+.stat-value {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+.stat-label {
+  display: block;
+  font-size: 20rpx;
+  color: #9ca3af;
+  margin-top: 4rpx;
+}
+
+.user-footer {
+  padding-top: 8rpx;
+}
+.user-time {
+  font-size: 22rpx;
+  color: #9ca3af;
+}

@@ -1,0 +1,106 @@
+<wxs src="../../utils/util.wxs" module="util" />
+
+<view class="page-orders">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input class="search-input"
+      placeholder="搜索买家/卖家昵称"
+      value="{{keyword}}"
+      bindinput="onSearchInput"
+      bindconfirm="onSearch"
+    />
+    <view class="search-btn" bindtap="onSearch">搜索</view>
+    <view class="filter-btn" bindtap="toggleFilter">
+      <text>筛选</text>
+      <text wx:if="{{typeFilter !== 'all' || statusFilter !== 'all' || dateStart}}">●</text>
+    </view>
+  </view>
+
+  <!-- 类型标签 -->
+  <scroll-view class="tab-scroll" scroll-x>
+    <view class="tabs">
+      <view class="tab-item {{typeFilter === item.key ? 'active' : ''}}"
+        wx:for="{{typeTabs}}" wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="onTypeChange"
+      >{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 状态标签 -->
+  <scroll-view class="tab-scroll" scroll-x>
+    <view class="tabs tabs-status">
+      <view class="tab-item-sm {{statusFilter === item.key ? 'active' : ''}}"
+        wx:for="{{statusTabs}}" wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="onStatusChange"
+      >{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 筛选面板 -->
+  <view class="filter-panel" wx:if="{{showFilterPanel}}">
+    <view class="filter-row">
+      <text class="filter-label">开始日期</text>
+      <picker mode="date" value="{{dateStart}}" bindchange="onDateStartChange">
+        <view class="filter-value">{{dateStart || '选择日期'}}</view>
+      </picker>
+    </view>
+    <view class="filter-row">
+      <text class="filter-label">结束日期</text>
+      <picker mode="date" value="{{dateEnd}}" bindchange="onDateEndChange">
+        <view class="filter-value">{{dateEnd || '选择日期'}}</view>
+      </picker>
+    </view>
+    <view class="filter-actions">
+      <view class="btn-outline btn-sm" bindtap="clearFilters">清除全部</view>
+      <view class="btn-primary btn-sm" bindtap="applyDateFilter">应用筛选</view>
+    </view>
+  </view>
+
+  <!-- 汇总信息 -->
+  <view class="summary-bar">
+    <text>共 {{total}} 条订单</text>
+  </view>
+
+  <!-- 订单列表 -->
+  <view wx:if="{{orders.length === 0 && !loading}}" class="empty-state">
+    <text class="icon">📋</text>
+    <text>暂无订单数据</text>
+  </view>
+
+  <view class="order-list" wx:else>
+    <view class="order-item card"
+      wx:for="{{orders}}" wx:key="_id"
+      bindtap="goToDetail" data-id="{{item._id}}"
+    >
+      <view class="order-header flex-between">
+        <view class="flex">
+          <text class="order-type-tag">{{util.getOrderTypeName(item.type)}}</text>
+          <text class="tag {{util.getStatusTagClass(item.paymentStatus)}}">
+            {{util.getPaymentStatusName(item.paymentStatus)}}
+          </text>
+        </view>
+        <text class="order-amount">{{util.formatAmount(item.amount)}}</text>
+      </view>
+      <view class="order-body">
+        <view class="order-people">
+          <text class="people-label">买家：</text>{{item.buyerNickName || '匿名用户'}}
+        </view>
+        <view class="order-people">
+          <text class="people-label">卖家：</text>{{item.sellerNickName || '匿名用户'}}
+        </view>
+      </view>
+      <view class="order-footer flex-between">
+        <text class="order-time">{{util.formatTime(item.createTime)}}</text>
+        <text wx:if="{{item.commission}}" class="order-commission">
+          抽成 {{util.formatAmount(item.commission)}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{loading}}">加载中...</view>
+  <view class="load-more" wx:elif="{{!hasMore && orders.length > 0}}">— 已加载全部 —</view>
+</view>

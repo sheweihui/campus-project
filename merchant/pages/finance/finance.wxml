@@ -1,0 +1,90 @@
+<wxs src="../../utils/util.wxs" module="util" />
+
+<view class="page-finance" wx:if="{{!loading}}">
+  <!-- 收入总览 -->
+  <view class="revenue-header">
+    <view class="revenue-label">平台总交易额</view>
+    <view class="revenue-value">{{util.formatAmount(overview.totalRevenue)}}</view>
+    <view class="revenue-sub">
+      <text>平台抽成 {{util.formatAmount(overview.totalCommission)}}</text>
+    </view>
+  </view>
+
+  <!-- 财务指标 -->
+  <view class="kpi-grid">
+    <view class="kpi-card">
+      <view class="kpi-label">平台抽成</view>
+      <view class="kpi-value accent">{{util.formatAmount(overview.totalCommission)}}</view>
+    </view>
+    <view class="kpi-card">
+      <view class="kpi-label">用户可用余额</view>
+      <view class="kpi-value">{{util.formatAmount(overview.availableBalance)}}</view>
+    </view>
+    <view class="kpi-card">
+      <view class="kpi-label">已提现总额</view>
+      <view class="kpi-value">{{util.formatAmount(overview.withdrawnTotal)}}</view>
+    </view>
+    <view class="kpi-card">
+      <view class="kpi-label">待处理提现</view>
+      <view class="kpi-value warn">{{util.formatAmount(overview.pendingWithdraw)}}</view>
+    </view>
+  </view>
+
+  <!-- 抽成比例 -->
+  <view class="card">
+    <view class="card-title">平台抽成率</view>
+    <view class="rate-display">
+      <view class="rate-number">{{overview.platformProfitRate}}%</view>
+      <view class="rate-bar-bg">
+        <view class="rate-bar-fill" style="width: {{overview.platformProfitRate > 100 ? 100 : overview.platformProfitRate}}%"></view>
+      </view>
+      <view class="rate-note">每笔交易抽取 15% 作为平台佣金</view>
+    </view>
+  </view>
+
+  <!-- 用户余额排行 -->
+  <view class="card">
+    <view class="card-title flex-between">
+      <text>用户余额排行（前20）</text>
+    </view>
+    <view wx:if="{{userFinanceList.length === 0}}" class="empty-state">
+      <text>暂无数据</text>
+    </view>
+    <view class="finance-list" wx:else>
+      <view class="finance-item" wx:for="{{userFinanceList}}" wx:key="openid">
+        <view class="fi-left">
+          <view class="fi-id">{{item.stuId || '未绑定'}}</view>
+          <view class="fi-openid">{{item.openid ? item.openid.slice(0, 8) + '...' : ''}}</view>
+        </view>
+        <view class="fi-right">
+          <view class="fi-balance">{{util.formatAmount(item.availableAmount)}}</view>
+          <view class="fi-meta">总抽成 {{util.formatAmount(item.totalCommission)}} · 提现 {{util.formatAmount(item.withdrawAmount)}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近提现 -->
+  <view class="card">
+    <view class="card-title flex-between">
+      <text>最近提现记录</text>
+      <text class="card-more" bindtap="goToWithdraws">查看全部 ›</text>
+    </view>
+    <view wx:if="{{recentWithdraws.length === 0}}" class="empty-state">
+      <text>暂无提现记录</text>
+    </view>
+    <view class="withdraw-list" wx:else>
+      <view class="withdraw-item" wx:for="{{recentWithdraws}}" wx:key="partnerTradeNo">
+        <view class="wi-left">
+          <view class="wi-amount">{{util.formatAmount(item.amount)}}</view>
+        </view>
+        <view class="wi-right">
+          <view class="tag {{util.getWithdrawTagClass(item.status)}}">
+            {{util.getWithdrawStatusName(item.status)}}
+          </view>
+          <view class="wi-time">{{util.formatTime(item.createTime)}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

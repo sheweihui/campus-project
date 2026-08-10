@@ -1,0 +1,46 @@
+{
+  "bsonType": "object",
+  "required": ["openid"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": true,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "openid": {
+      "bsonType": "string",
+      "description": "微信openid"
+    },
+    "nickName": {
+      "bsonType": "string",
+      "description": "昵称"
+    },
+    "avatarUrl": {
+      "bsonType": "string",
+      "description": "头像"
+    },
+    "studentId": {
+      "bsonType": "string",
+      "description": "学号"
+    },
+    "phone": {
+      "bsonType": "string",
+      "description": "手机号"
+    },
+    "createTime": {
+      "bsonType": "timestamp",
+      "description": "创建时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+    },
+    "updateTime": {
+      "bsonType": "timestamp",
+      "description": "更新时间"
+    }
+  }
+}

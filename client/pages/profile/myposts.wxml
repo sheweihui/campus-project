@@ -1,0 +1,118 @@
+<view class="container">
+  <!-- 顶部导航 -->
+  <view class="nav-bar">
+    <view class="nav-item {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">全部</view>
+    <view class="nav-item {{activeTab === 'lostfound' ? 'active' : ''}}" bindtap="switchTab" data-tab="lostfound">失物招领</view>
+    <view class="nav-item {{activeTab === 'market' ? 'active' : ''}}" bindtap="switchTab" data-tab="market">二手商品</view>
+    <view class="nav-item {{activeTab === 'help' ? 'active' : ''}}" bindtap="switchTab" data-tab="help">互助信息</view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="content">
+    <!-- 全部 -->
+    <view class="tab-content" wx:if="{{activeTab === 'all'}}">
+      <view class="empty-state" wx:if="{{allPosts.length === 0}}">
+        <text class="empty-text">暂无发布信息</text>
+      </view>
+      <view class="post-list" wx:else>
+        <view class="post-item" wx:for="{{allPosts}}" wx:key="_id" bindtap="goToDetail" data-type="{{item.type}}" data-id="{{item._id}}" data-helpType="{{item.helpType}}">
+          <view class="post-header">
+            <text class="post-type {{item.type}}">{{item.type === 'help' ? (typeMap[item.helpType] || '互助') : typeMap[item.type]}}</text>
+            <text class="post-time">{{item.createTime}}</text>
+          </view>
+          <view class="post-content">
+            <text class="post-title">{{item.title || (item.helpType === 'carpool' ? (item.from + ' → ' + item.to) : '无标题')}}</text>
+            <text class="post-desc" wx:if="{{item.description || item.remark}}">{{item.description || item.remark}}</text>
+          </view>
+          <view class="post-footer">
+            <text class="post-status">{{statusMap[item.type][item.status]}}</text>
+            <view class="post-actions">
+              <view class="action-btn edit" bindtap="editPost" data-type="{{item.type}}" data-id="{{item._id}}">编辑</view>
+              <view class="action-btn delete" bindtap="deletePost" data-type="{{item.type}}" data-id="{{item._id}}">删除</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 失物招领 -->
+    <view class="tab-content" wx:if="{{activeTab === 'lostfound'}}">
+      <view class="empty-state" wx:if="{{lostfoundPosts.length === 0}}">
+        <text class="empty-text">暂无失物招领信息</text>
+      </view>
+      <view class="post-list" wx:else>
+        <view class="post-item" wx:for="{{lostfoundPosts}}" wx:key="_id" bindtap="goToDetail" data-type="lostfound" data-id="{{item._id}}">
+          <view class="post-header">
+            <text class="post-type lostfound">失物招领</text>
+            <text class="post-time">{{item.createTime}}</text>
+          </view>
+          <view class="post-content">
+            <text class="post-title">{{item.title}}</text>
+            <text class="post-desc">{{item.description}}</text>
+          </view>
+          <view class="post-footer">
+            <text class="post-status">{{statusMap.lostfound[item.status]}}</text>
+            <view class="post-actions">
+              <view class="action-btn edit" bindtap="editPost" data-type="lostfound" data-id="{{item._id}}">编辑</view>
+              <view class="action-btn delete" bindtap="deletePost" data-type="lostfound" data-id="{{item._id}}">删除</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 二手商品 -->
+    <view class="tab-content" wx:if="{{activeTab === 'market'}}">
+      <view class="empty-state" wx:if="{{marketPosts.length === 0}}">
+        <text class="empty-text">暂无二手商品信息</text>
+      </view>
+      <view class="post-list" wx:else>
+        <view class="post-item" wx:for="{{marketPosts}}" wx:key="_id" bindtap="goToDetail" data-type="market" data-id="{{item._id}}">
+          <view class="post-header">
+            <text class="post-type market">二手商品</text>
+            <text class="post-time">{{item.createTime}}</text>
+          </view>
+          <view class="post-content">
+            <text class="post-title">{{item.title}}</text>
+            <text class="post-desc">{{item.description}}</text>
+            <text class="post-price">¥{{item.price}}</text>
+          </view>
+          <view class="post-footer">
+            <text class="post-status">{{statusMap.market[item.status]}}</text>
+            <view class="post-actions">
+              <view class="action-btn edit" bindtap="editPost" data-type="market" data-id="{{item._id}}">编辑</view>
+              <view class="action-btn delete" bindtap="deletePost" data-type="market" data-id="{{item._id}}">删除</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 互助信息 -->
+    <view class="tab-content" wx:if="{{activeTab === 'help'}}">
+      <view class="empty-state" wx:if="{{helpPosts.length === 0}}">
+        <text class="empty-text">暂无互助信息</text>
+      </view>
+      <view class="post-list" wx:else>
+        <view class="post-item" wx:for="{{helpPosts}}" wx:key="_id" bindtap="goToDetail" data-type="help" data-helpType="{{item.helpType || 'carpool'}}" data-id="{{item._id}}">
+          <view class="post-header">
+            <text class="post-type help">{{typeMap[item.helpType || 'carpool']}}</text>
+            <text class="post-time">{{item.createTime}}</text>
+          </view>
+          <view class="post-content">
+            <text class="post-title">{{item.title || (item.helpType === 'express' ? item.pickupLocation || '代取快递' : (item.from + ' → ' + item.to))}}</text>
+            <text class="post-desc" wx:if="{{item.description || item.remark}}">{{item.description || item.remark}}</text>
+            <text class="post-reward" wx:if="{{item.reward}}">💰 ¥{{item.reward}}</text>
+          </view>
+          <view class="post-footer">
+            <text class="post-status">{{statusMap.help[item.status]}}</text>
+            <view class="post-actions">
+              <view class="action-btn edit" bindtap="editPost" data-type="{{item.helpType || 'carpool'}}" data-id="{{item._id}}">编辑</view>
+              <view class="action-btn delete" bindtap="deletePost" data-type="{{item.helpType || 'carpool'}}" data-id="{{item._id}}">删除</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

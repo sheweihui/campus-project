@@ -1,0 +1,40 @@
+<view class="container">
+  <view class="chat-header">
+    <view class="header-title">{{otherUserInfo.name || '聊天'}}</view>
+    <view class="header-info">{{otherUserInfo.stuId || ''}}</view>
+  </view>
+
+  <scroll-view 
+    class="chat-content" 
+    scroll-y 
+    scroll-into-view="{{toView}}" 
+    scroll-with-animation
+  >
+    <view 
+      class="message-item {{item.senderId === myStuId ? 'my-message' : 'other-message'}}" 
+      wx:for="{{messages}}" 
+      wx:key="_id"
+      id="msg-{{index}}"
+    >
+      <view class="message-avatar">
+        <text>{{item.senderId === myStuId ? '我' : (otherUserInfo.name || '对方')}}</text>
+      </view>
+      <view class="message-content">
+        <text>{{item.content}}</text>
+      </view>
+      <view class="message-time">{{item.time}}</view>
+    </view>
+  </scroll-view>
+
+  <view class="chat-input-bar">
+    <input 
+      class="chat-input" 
+      placeholder="输入消息..." 
+      value="{{inputText}}" 
+      bindinput="onInput"
+      confirm-type="send"
+      bindconfirm="sendMessage"
+    />
+    <button class="send-btn" bindtap="sendMessage" size="mini">发送</button>
+  </view>
+</view>

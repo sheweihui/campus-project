@@ -1,0 +1,75 @@
+{
+  "bsonType": "object",
+  "required": [],
+  "permission": {
+    "read": "doc._openid == auth.openid || doc.buyerOpenid == auth.openid || doc.sellerOpenid == auth.openid",
+    "write": "doc._openid == auth.openid"
+  },
+  "properties": {
+    "_id": "string",
+    "type": {
+      "bsonType": "string",
+      "description": "订单类型：market/express"
+    },
+    "itemId": {
+      "bsonType": "string",
+      "description": "商品ID或代取需求ID"
+    },
+    "buyerOpenid": {
+      "bsonType": "string",
+      "description": "买家openid"
+    },
+    "sellerOpenid": {
+      "bsonType": "string",
+      "description": "卖家openid"
+    },
+    "buyerNickName": {
+      "bsonType": "string",
+      "description": "买家昵称"
+    },
+    "sellerNickName": {
+      "bsonType": "string",
+      "description": "卖家昵称"
+    },
+    "amount": {
+      "bsonType": "number",
+      "description": "订单金额"
+    },
+    "commission": {
+      "bsonType": "number",
+      "description": "佣金金额"
+    },
+    "paymentMethod": {
+      "bsonType": "string",
+      "description": "支付方式：wechat/alipay"
+    },
+    "paymentStatus": {
+      "bsonType": "string",
+      "description": "支付状态：pending/paid/confirmed"
+    },
+    "orderStatus": {
+      "bsonType": "string",
+      "description": "订单状态：pending/paid/shipping/completed/cancelled"
+    },
+    "createTime": {
+      "bsonType": "date",
+      "description": "创建时间"
+    },
+    "payTime": {
+      "bsonType": "date",
+      "description": "支付时间"
+    },
+    "confirmTime": {
+      "bsonType": "date",
+      "description": "确认时间"
+    },
+    "completeTime": {
+      "bsonType": "date",
+      "description": "完成时间"
+    },
+    "remark": {
+      "bsonType": "string",
+      "description": "备注"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+<view class="picker-overlay" wx:if="{{visible}}" bindtap="handleOverlayClick">
+  <view class="picker-popup" catchtap="onPopupTap">
+    <view class="picker-header">
+      <text class="picker-title">选择时间</text>
+      <text class="picker-close" bindtap="handleClose">✕</text>
+    </view>
+    
+    <view class="picker-body">
+      <view class="picker-tabs">
+        <view class="picker-tab {{currentTab === 'date' ? 'active' : ''}}" bindtap="switchTab('date')">日期</view>
+        <view class="picker-tab {{currentTab === 'time' ? 'active' : ''}}" bindtap="switchTab('time')">时间</view>
+      </view>
+      
+      <scroll-view class="picker-content" scroll-y>
+        <view wx:if="{{currentTab === 'date'}}">
+          <view class="calendar-header">
+            <text class="calendar-prev" bindtap="prevMonth">‹</text>
+            <text class="calendar-title">{{currentYear}}年{{currentMonth}}月</text>
+            <text class="calendar-next" bindtap="nextMonth">›</text>
+          </view>
+          <view class="calendar-weekdays">
+            <text wx:for="{{weekdays}}" wx:key="*this">{{item}}</text>
+          </view>
+          <view class="calendar-days">
+            <view 
+              wx:for="{{calendarDays}}" 
+              wx:key="index" 
+              class="calendar-day {{item.type === 'prev' || item.type === 'next' ? 'other-month' : ''}} {{item.isSelected ? 'selected' : ''}} {{item.isToday ? 'today' : ''}}"
+              bindtap="selectDate"
+              data-date="{{item.date}}"
+            >
+              {{item.day}}
+            </view>
+          </view>
+        </view>
+        
+        <view wx:if="{{currentTab === 'time'}}">
+          <view class="time-list">
+            <view 
+              wx:for="{{timeSlots}}" 
+              wx:key="*this" 
+              class="time-slot {{selectedTime === item ? 'selected' : ''}}"
+              bindtap="selectTime"
+              data-time="{{item}}"
+            >
+              {{item}}
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    
+    <view class="picker-footer">
+      <view class="picker-confirm" bindtap="handleConfirm">确定</view>
+    </view>
+  </view>
+</view>

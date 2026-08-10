@@ -1,0 +1,68 @@
+{
+  "bsonType": "object",
+  "required": ["type", "pickupCode", "recipient", "address", "deadline", "reward", "contact"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": true,
+    "delete": true
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "type": {
+      "bsonType": "string",
+      "description": "类型：express-代取快递",
+      "enum": ["express"]
+    },
+    "pickupCode": {
+      "bsonType": "string",
+      "description": "取件码"
+    },
+    "recipient": {
+      "bsonType": "string",
+      "description": "收件人"
+    },
+    "address": {
+      "bsonType": "string",
+      "description": "收件地址"
+    },
+    "deadline": {
+      "bsonType": "string",
+      "description": "截止时间"
+    },
+    "reward": {
+      "bsonType": "number",
+      "description": "酬金"
+    },
+    "remark": {
+      "bsonType": "string",
+      "description": "备注"
+    },
+    "contact": {
+      "bsonType": "string",
+      "description": "联系方式"
+    },
+    "status": {
+      "bsonType": "string",
+      "description": "状态：pending-待接单，accepted-已接单，completed-已完成",
+      "defaultValue": "pending"
+    },
+    "openid": {
+      "bsonType": "string",
+      "description": "发布者openid"
+    },
+    "createTime": {
+      "bsonType": "timestamp",
+      "description": "创建时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+    },
+    "updateTime": {
+      "bsonType": "timestamp",
+      "description": "更新时间"
+    }
+  }
+}

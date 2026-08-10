@@ -1,0 +1,54 @@
+.page-detail {
+  padding-bottom: 40rpx;
+}
+
+.amount-card {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  padding: 48rpx 32rpx;
+  text-align: center;
+}
+.amount-value {
+  font-size: 56rpx;
+  font-weight: 700;
+  color: #fff;
+}
+.amount-status {
+  margin-top: 16rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f9fafb;
+}
+.info-row:last-child {
+  border-bottom: none;
+}
+.info-label {
+  font-size: 26rpx;
+  color: #6b7280;
+}
+.info-value {
+  font-size: 26rpx;
+  color: #1a1a2e;
+  font-weight: 500;
+}
+.info-value.mono {
+  font-family: monospace;
+  font-size: 20rpx;
+  color: #9ca3af;
+}
+.info-value.amount {
+  font-weight: 700;
+  font-size: 30rpx;
+}
+.info-value.commission {
+  color: #f59e0b;
+  font-weight: 600;
+}
+.info-value.seller-amount {
+  color: #10b981;
+  font-weight: 600;
+}

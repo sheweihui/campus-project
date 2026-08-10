@@ -1,0 +1,47 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">提现记录</view>
+    
+    <view class="filter-bar">
+      <view class="filter-item {{statusFilter === 'all' ? 'active' : ''}}" bindtap="filterStatus" data-status="all">全部</view>
+      <view class="filter-item {{statusFilter === 'pending' ? 'active' : ''}}" bindtap="filterStatus" data-status="pending">审核中</view>
+      <view class="filter-item {{statusFilter === 'processing' ? 'active' : ''}}" bindtap="filterStatus" data-status="processing">处理中</view>
+      <view class="filter-item {{statusFilter === 'completed' ? 'active' : ''}}" bindtap="filterStatus" data-status="completed">已完成</view>
+      <view class="filter-item {{statusFilter === 'failed' ? 'active' : ''}}" bindtap="filterStatus" data-status="failed">失败</view>
+    </view>
+
+    <view class="record-list">
+      <view class="record-item" wx:for="{{records}}" wx:key="_id">
+        <view class="record-main">
+          <view class="record-amount">-¥{{item.amount}}</view>
+          <view class="record-info">
+            <view class="record-status {{item.status}}">{{statusMap[item.status]}}</view>
+            <view class="record-time">{{item.createTime}}</view>
+          </view>
+        </view>
+        <view class="record-detail">
+          <view class="detail-row">
+            <text class="detail-label">收款微信</text>
+            <text class="detail-value">{{item.wechat}}</text>
+          </view>
+          <view class="detail-row">
+            <text class="detail-label">收款姓名</text>
+            <text class="detail-value">{{item.realName}}</text>
+          </view>
+          <view class="detail-row" wx:if="{{item.remark}}">
+            <text class="detail-label">备注</text>
+            <text class="detail-value">{{item.remark}}</text>
+          </view>
+          <view class="detail-row" wx:if="{{item.processTime}}">
+            <text class="detail-label">处理时间</text>
+            <text class="detail-value">{{item.processTime}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{records.length === 0}}">
+      <text class="empty-text">暂无提现记录</text>
+    </view>
+  </view>
+</view>

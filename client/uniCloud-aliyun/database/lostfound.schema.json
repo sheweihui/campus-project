@@ -1,0 +1,64 @@
+{
+  "bsonType": "object",
+  "required": ["type", "title", "description", "contact"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": true,
+    "delete": true
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "type": {
+      "bsonType": "string",
+      "description": "类型：lost-寻物，found-归还",
+      "enum": ["lost", "found"]
+    },
+    "title": {
+      "bsonType": "string",
+      "description": "物品名称"
+    },
+    "description": {
+      "bsonType": "string",
+      "description": "物品描述"
+    },
+    "location": {
+      "bsonType": "string",
+      "description": "丢失/拾获地点"
+    },
+    "time": {
+      "bsonType": "string",
+      "description": "丢失/拾获时间"
+    },
+    "contact": {
+      "bsonType": "string",
+      "description": "联系方式"
+    },
+    "images": {
+      "bsonType": "array",
+      "description": "物品图片"
+    },
+    "status": {
+      "bsonType": "string",
+      "description": "状态：pending-进行中，completed-已完成",
+      "defaultValue": "pending"
+    },
+    "openid": {
+      "bsonType": "string",
+      "description": "发布者openid"
+    },
+    "createTime": {
+      "bsonType": "timestamp",
+      "description": "创建时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+    },
+    "updateTime": {
+      "bsonType": "timestamp",
+      "description": "更新时间"
+    }
+  }
+}

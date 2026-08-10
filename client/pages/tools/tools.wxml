@@ -1,0 +1,17 @@
+<view class="container">
+  <!-- 功能模块 -->
+  <view class="grid">
+    <view class="grid-item" bindtap="goToMap">
+      <view class="grid-icon map">🗺️</view>
+      <text class="grid-text">校园地图</text>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-entry">
+    <view class="quick-item" bindtap="goToMap">
+      <text class="quick-icon">🗺️</text>
+      <text class="quick-text">搜索校园地点</text>
+    </view>
+  </view>
+</view>

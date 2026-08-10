@@ -1,0 +1,137 @@
+.container {
+  padding: 30rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 30rpx;
+  color: #333;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 10rpx;
+  margin-bottom: 30rpx;
+}
+
+.filter-item {
+  flex: 1;
+  text-align: center;
+  padding: 15rpx 25rpx;
+  background: #f8f8f8;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  color: #666;
+  border: 2rpx solid transparent;
+}
+
+.filter-item.active {
+  background: #4CAF50;
+  color: #fff;
+  border-color: #4CAF50;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.record-item {
+  background: #fff;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.record-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.record-amount {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #f44336;
+}
+
+.record-info {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+}
+
+.record-status {
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+}
+
+.record-status.pending {
+  background: #ff9800;
+  color: #fff;
+}
+
+.record-status.processing {
+  background: #2196f3;
+  color: #fff;
+}
+
+.record-status.completed {
+  background: #4CAF50;
+  color: #fff;
+}
+
+.record-status.failed {
+  background: #f44336;
+  color: #fff;
+}
+
+.record-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.record-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  padding-top: 15rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.detail-value {
+  font-size: 26rpx;
+  color: #333;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60rpx 0;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}

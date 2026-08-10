@@ -1,0 +1,143 @@
+const { showLoading, hideLoading, showToast, navigateTo } = require('../../utils/util.js')
+
+Page({
+  data: {
+    settings: {
+      messageNotify: true,
+      showPhone: false
+    },
+    feedbackTypes: ['功能建议', 'Bug反馈', '使用问题', '其他'],
+    feedbackTypeIndex: 0,
+    feedback: {
+      type: '',
+      content: '',
+      contact: ''
+    }
+  },
+
+  onLoad() {
+    this.loadSettings()
+  },
+
+  loadSettings() {
+    const settings = wx.getStorageSync('settings')
+    if (settings) {
+      this.setData({
+        settings
+      })
+    }
+  },
+
+  onSettingChange(e) {
+    const field = e.currentTarget.dataset.field
+    const value = e.detail.value
+    this.setData({
+      [`settings.${field}`]: value
+    })
+    
+    const settings = this.data.settings
+    wx.setStorageSync('settings', settings)
+  },
+
+  onTypeChange(e) {
+    const index = e.detail.value
+    this.setData({
+      feedbackTypeIndex: index,
+      'feedback.type': this.data.feedbackTypes[index]
+    })
+  },
+
+  onFeedbackInput(e) {
+    const field = e.currentTarget.dataset.field
+    const value = e.detail.value
+    this.setData({
+      [`feedback.${field}`]: value
+    })
+  },
+
+  async submitFeedback() {
+    const { type, content, contact } = this.data.feedback
+
+    if (!content.trim()) {
+      showToast('请输入反馈内容')
+      return
+    }
+
+    showLoading('提交中...')
+
+    try {
+      const db = wx.cloud.database()
+      const userInfo = wx.getStorageSync('userInfo')
+      const openid = wx.getStorageSync('openid')
+
+      await db.collection('feedback').add({
+        data: {
+          type,
+          content,
+          contact,
+          openid,
+          createTime: db.serverDate()
+        }
+      })
+
+      showToast('提交成功', 'success')
+      this.setData({
+        feedback: {
+          type: '',
+          content: '',
+          contact: ''
+        }
+      })
+    } catch (error) {
+      console.error('提交反馈失败:', error)
+      showToast('提交失败')
+    } finally {
+      hideLoading()
+    }
+  },
+
+  clearCache() {
+    wx.showModal({
+      title: '提示',
+      content: '确定要清除缓存吗？',
+      success: (res) => {
+        if (res.confirm) {
+          try {
+            wx.clearStorageSync()
+            showToast('清除成功', 'success')
+          } catch (error) {
+            showToast('清除失败')
+          }
+        }
+      }
+    })
+  },
+
+  showAbout() {
+    wx.showModal({
+      title: '关于校园便利圈',
+      content: '版本：1.0.0\n\n校园便利圈是一款为大学生打造的便民服务小程序，提供失物招领、二手集市、校园互助等功能。',
+      showCancel: false
+    })
+  },
+
+  logout() {
+    wx.showModal({
+      title: '提示',
+      content: '确定要退出登录吗？',
+      confirmColor: '#f44336',
+      success: (res) => {
+        if (res.confirm) {
+          try {
+            wx.clearStorageSync()
+            wx.reLaunch({
+              url: '/pages/login/login'
+            })
+          } catch (error) {
+            showToast('退出失败')
+          }
+        }
+      }
+    })
+  }
+})

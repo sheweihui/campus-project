@@ -1,0 +1,78 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">账号设置</view>
+    
+    <!-- 通知设置 -->
+    <view class="setting-item">
+      <view class="setting-label">消息通知</view>
+      <switch checked="{{settings.messageNotify}}" bindchange="onSettingChange" data-field="messageNotify" />
+    </view>
+    
+    <!-- 隐私设置 -->
+    <view class="setting-item">
+      <view class="setting-label">公开我的手机号</view>
+      <switch checked="{{settings.showPhone}}" bindchange="onSettingChange" data-field="showPhone" />
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">意见反馈</view>
+    
+    <!-- 反馈类型 -->
+    <view class="form-item">
+      <text class="form-label">反馈类型</text>
+      <picker bindchange="onTypeChange" value="{{feedbackTypeIndex}}" range="{{feedbackTypes}}">
+        <view class="picker">
+          {{feedbackTypes[feedbackTypeIndex]}}
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 反馈内容 -->
+    <view class="form-item">
+      <text class="form-label">反馈内容 <text class="required">*</text></text>
+      <textarea class="form-textarea" placeholder="请详细描述您遇到的问题或建议" value="{{feedback.content}}" bindinput="onFeedbackInput" data-field="content" />
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="form-item">
+      <text class="form-label">联系方式</text>
+      <input class="form-input" placeholder="请输入手机号或邮箱" value="{{feedback.contact}}" bindinput="onFeedbackInput" data-field="contact" />
+    </view>
+
+    <!-- 提交按钮 -->
+    <button class="btn-primary" bindtap="submitFeedback">提交反馈</button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">其他</view>
+    
+    <!-- 清除缓存 -->
+    <view class="setting-item" bindtap="clearCache">
+      <view class="setting-info">
+        <view class="setting-label">清除缓存</view>
+        <view class="setting-desc">清除本地缓存数据</view>
+      </view>
+      <text class="setting-arrow">></text>
+    </view>
+
+    <!-- 关于我们 -->
+    <view class="setting-item" bindtap="showAbout">
+      <view class="setting-info">
+        <view class="setting-label">关于我们</view>
+        <view class="setting-desc">版本信息和联系方式</view>
+      </view>
+      <text class="setting-arrow">></text>
+    </view>
+
+    <!-- 退出登录 -->
+    <view class="setting-item logout" bindtap="logout">
+      <view class="setting-info">
+        <view class="setting-label">退出登录</view>
+        <view class="setting-desc">退出当前账号</view>
+      </view>
+      <text class="setting-arrow">></text>
+    </view>
+  </view>
+</view>
