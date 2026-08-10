@@ -4,7 +4,7 @@ Page({
   data: {
     form: {
       nickName: '',
-      studentId: '',
+      stuId: '',
       phone: '',
       avatarUrl: ''
     }
@@ -15,7 +15,7 @@ Page({
     this.setData({
       form: {
         nickName: userInfo.nickName || '',
-        studentId: userInfo.studentId || '',
+        stuId: userInfo.stuId || '',
         phone: userInfo.phone || '',
         avatarUrl: userInfo.avatarUrl || ''
       }
@@ -81,7 +81,9 @@ Page({
       })
 
       if (result.code === 0) {
-        wx.setStorageSync('userInfo', this.data.form)
+        // 合并保存，保留姓名等原有字段，避免学号/姓名丢失
+        const userInfo = wx.getStorageSync('userInfo') || {}
+        wx.setStorageSync('userInfo', { ...userInfo, ...this.data.form })
         showToast('保存成功', 'success')
         setTimeout(() => {
           navigateBack()

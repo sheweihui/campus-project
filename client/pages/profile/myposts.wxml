@@ -27,8 +27,8 @@
           <view class="post-footer">
             <text class="post-status">{{statusMap[item.type][item.status]}}</text>
             <view class="post-actions">
-              <view class="action-btn edit" bindtap="editPost" data-type="{{item.type}}" data-id="{{item._id}}">编辑</view>
-              <view class="action-btn delete" bindtap="deletePost" data-type="{{item.type}}" data-id="{{item._id}}">删除</view>
+              <view class="action-btn edit" bindtap="editPost" data-type="{{item.helpType || item.type}}" data-id="{{item._id}}">编辑</view>
+              <view class="action-btn delete" bindtap="deletePost" data-type="{{item.helpType || item.type}}" data-id="{{item._id}}">删除</view>
             </view>
           </view>
         </view>

@@ -176,8 +176,14 @@ Page({
     // 标记消息为已读
     if (message && !message.isRead) {
       try {
-        await wx.cloud.database().collection('messages').doc(id).update({
-          data: { isRead: true }
+        const userInfo = wx.getStorageSync('userInfo')
+        const stuId = userInfo?.stuId || wx.getStorageSync('stuId')
+        await wx.cloud.callFunction({
+          name: 'messages',
+          data: {
+            action: 'markRead',
+            data: { stuId, messageId: id }
+          }
         })
 
         const messageList = this.data.messageList.map(item => {

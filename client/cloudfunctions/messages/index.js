@@ -14,6 +14,8 @@ exports.main = async (event, context) => {
     switch (action) {
       case 'markAllRead':
         return await markAllRead(data, myStuId)
+      case 'markRead':
+        return await markRead(data, myStuId)
       case 'getUnreadCount':
         return await getUnreadCount(data, myStuId)
       case 'list':
@@ -70,6 +72,33 @@ async function markAllRead(data, myStuId) {
   }
 
   return { code: 0, msg: '标记成功', data: { count: total } }
+}
+
+async function markRead(data, myStuId) {
+  const { stuId, messageId } = data
+  if (!checkAccess(stuId, myStuId)) {
+    return { code: -1, msg: '无权限操作' }
+  }
+  if (!messageId) {
+    return { code: -1, msg: '参数不完整' }
+  }
+
+  try {
+    const msg = await db.collection('messages').doc(messageId).get()
+    if (!msg.data) {
+      return { code: -1, msg: '消息不存在' }
+    }
+    // 只能标记发给自己的消息
+    if (msg.data.toStuId !== stuId) {
+      return { code: -1, msg: '无权限操作' }
+    }
+    await db.collection('messages').doc(messageId).update({
+      data: { isRead: true }
+    })
+    return { code: 0, msg: '已读' }
+  } catch (error) {
+    return { code: -1, msg: error.message }
+  }
 }
 
 async function getUnreadCount(data, myStuId) {

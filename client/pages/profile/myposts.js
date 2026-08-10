@@ -196,7 +196,7 @@ Page({
       url = `/pages/lostfound/publish?id=${id}`
     } else if (type === 'market') {
       url = `/pages/market/publish?id=${id}`
-    } else if (['carpool', 'express', 'partner'].includes(type)) {
+    } else if (['carpool', 'express', 'partner', 'other'].includes(type)) {
       url = `/pages/help/publish?type=${type}&id=${id}`
     }
     
@@ -264,7 +264,7 @@ Page({
           },
           timeout: 10000 // 设置超时时间
         })
-      } else if (['carpool', 'express', 'partner'].includes(type)) {
+      } else if (['carpool', 'express', 'partner', 'other'].includes(type)) {
         result = await wx.cloud.callFunction({
           name: 'help',
           data: {
