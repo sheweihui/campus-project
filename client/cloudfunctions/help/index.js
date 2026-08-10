@@ -38,6 +38,11 @@ exports.main = async (event, context) => {
 async function addHelp(data, openid) {
   const collection = getCollectionByType(data.type)
 
+  // 发布必须完成学号登录（拦截游客）
+  if (!(await requireStudent(openid))) {
+    return { code: -1, msg: '请先完成学号登录后再发布' }
+  }
+
   // 服务端金额校验：酬金必须是合法正数
   if (data.type === 'express' || data.type === 'other') {
     const reward = Number(data.reward)
@@ -275,6 +280,16 @@ async function getStuIdByOpenid(openid) {
     return res.data.length > 0 ? (res.data[0].stuId || '') : ''
   } catch (e) {
     return ''
+  }
+}
+
+// 校验调用者是否已绑定学号
+async function requireStudent(openid) {
+  try {
+    const res = await db.collection('student').where({ openid }).get()
+    return res.data.length > 0 && !!res.data[0].stuId
+  } catch (e) {
+    return false
   }
 }
 

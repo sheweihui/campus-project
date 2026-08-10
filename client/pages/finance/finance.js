@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, showToast, navigateTo } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateTo, requireLogin } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -43,6 +43,8 @@ Page({
   },
 
   goToWithdraw() {
+    if (!requireLogin()) return
+
     if (!this.data.finance || this.data.finance.availableAmount < 1) {
       showToast('可提现金额不足')
       return
@@ -52,6 +54,7 @@ Page({
   },
 
   goToRecords() {
+    if (!requireLogin()) return
     navigateTo('/pages/finance/records')
   }
 })

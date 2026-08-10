@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, navigateTo } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, requireLogin } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -76,6 +76,7 @@ Page({
   },
 
   goToPublish() {
+    if (!requireLogin()) return
     navigateTo('/pages/help/publish?type=express')
   }
 })

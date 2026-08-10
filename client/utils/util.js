@@ -56,6 +56,27 @@ const navigateBack = (delta = 1) => {
   wx.navigateBack({ delta })
 }
 
+// 是否为游客模式
+const isGuest = () => !!wx.getStorageSync('isGuest')
+
+// 需要学号登录的功能入口：游客弹窗引导去登录，返回 false 表示已拦截
+const requireLogin = () => {
+  if (!isGuest()) return true
+  wx.showModal({
+    title: '需要登录',
+    content: '该功能需要学号登录后才能使用，是否前往登录？',
+    confirmText: '去登录',
+    cancelText: '暂不',
+    success: (res) => {
+      if (res.confirm) {
+        wx.removeStorageSync('isGuest')
+        wx.navigateTo({ url: '/pages/login/login' })
+      }
+    }
+  })
+  return false
+}
+
 const getOpenid = async () => {
   const { result } = await wx.cloud.callFunction({
     name: 'user',
@@ -91,6 +112,8 @@ module.exports = {
   redirectTo,
   switchTab,
   navigateBack,
+  isGuest,
+  requireLogin,
   getOpenid,
   uploadImage,
   uploadImages

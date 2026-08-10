@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, showToast, navigateTo, navigateBack } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateTo, navigateBack, requireLogin } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -74,6 +74,8 @@ Page({
   },
 
   async submitWithdraw() {
+    if (!requireLogin()) return
+
     if (!this.canSubmit) {
       showToast('请填写完整信息')
       return

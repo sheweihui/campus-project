@@ -38,6 +38,11 @@ exports.main = async (event, context) => {
 async function addMarket(data, openid) {
   const { _id, id, ...restData } = data
 
+  // 发布必须完成学号登录（拦截游客）
+  if (!(await requireStudent(openid))) {
+    return { code: -1, msg: '请先完成学号登录后再发布' }
+  }
+
   // 服务端价格校验：必须为合法正数
   const price = Number(restData.price)
   if (!Number.isFinite(price) || price <= 0) {
@@ -158,4 +163,14 @@ async function searchMarket({ keyword, page = 1, pageSize = 10 }) {
     .get()
   
   return { code: 0, data: result.data }
+}
+
+// 校验调用者是否已绑定学号
+async function requireStudent(openid) {
+  try {
+    const res = await db.collection('student').where({ openid }).get()
+    return res.data.length > 0 && !!res.data[0].stuId
+  } catch (e) {
+    return false
+  }
 }

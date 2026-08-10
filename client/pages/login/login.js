@@ -14,10 +14,38 @@ Page({
   checkAutoLogin() {
     const stuId = wx.getStorageSync('stuId')
     const userInfo = wx.getStorageSync('userInfo')
+    const isGuest = wx.getStorageSync('isGuest')
     
-    if (stuId && userInfo) {
+    if ((stuId && userInfo) || isGuest) {
       wx.switchTab({ url: '/pages/index/index' })
     }
+  },
+
+  guestLogin() {
+    if (this.data.loading) return
+    this.setData({ loading: true })
+
+    // 游客同样尝试获取 openid（用于浏览与支付身份），失败也不阻塞浏览
+    wx.cloud.callFunction({
+      name: 'user',
+      data: { action: 'login', data: {} },
+      success: (res) => {
+        if (res.result && res.result.code === 0 && res.result.data && res.result.data.openid) {
+          wx.setStorageSync('openid', res.result.data.openid)
+        }
+      },
+      fail: (err) => {
+        console.error('游客获取openid失败:', err)
+      },
+      complete: () => {
+        wx.setStorageSync('isGuest', true)
+        wx.setStorageSync('userInfo', { name: '游客', isGuest: true })
+        wx.removeStorageSync('stuId')
+        this.setData({ loading: false })
+        wx.showToast({ title: '游客登录成功', icon: 'success' })
+        setTimeout(() => wx.switchTab({ url: '/pages/index/index' }), 800)
+      }
+    })
   },
 
   onLogin(e) {
@@ -76,6 +104,7 @@ Page({
       success: (res) => {
         const result = res.result
         if (result.code === 0) {
+          wx.removeStorageSync('isGuest')
           wx.setStorageSync('stuId', stuId.trim())
           wx.setStorageSync('userInfo', {
             name: name.trim(),

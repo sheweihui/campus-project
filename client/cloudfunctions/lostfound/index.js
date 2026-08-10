@@ -34,6 +34,11 @@ exports.main = async (event, context) => {
 }
 
 async function addLostFound(data, openid) {
+  // 发布必须完成学号登录（拦截游客）
+  if (!(await requireStudent(openid))) {
+    return { code: -1, msg: '请先完成学号登录后再发布' }
+  }
+
   const result = await db.collection('lostfound').add({
     data: {
       ...data,
@@ -118,4 +123,14 @@ async function updateStatus({ id, status }, openid) {
     }
   })
   return { code: 0, msg: '状态更新成功' }
+}
+
+// 校验调用者是否已绑定学号
+async function requireStudent(openid) {
+  try {
+    const res = await db.collection('student').where({ openid }).get()
+    return res.data.length > 0 && !!res.data[0].stuId
+  } catch (e) {
+    return false
+  }
 }

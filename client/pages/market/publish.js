@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, showToast, navigateBack, uploadImage } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateBack, uploadImage, requireLogin } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -149,6 +149,8 @@ Page({
   },
 
   async submit() {
+    if (!requireLogin()) return
+
     const { id, title, price, category, condition, description, contact } = this.data.form
     
     if (!title.trim()) {

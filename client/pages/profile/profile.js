@@ -1,8 +1,9 @@
-const { showLoading, hideLoading, navigateTo } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, isGuest, requireLogin } = require('../../utils/util.js')
 
 Page({
   data: {
     userInfo: {},
+    isGuest: false,
     stats: {
       lostfound: 0,
       market: 0,
@@ -17,6 +18,7 @@ Page({
   },
 
   async onShow() {
+    this.setData({ isGuest: isGuest() })
     await this.loadUserInfo()
     await this.loadStats()
     await this.checkUnreadMessages()
@@ -73,7 +75,7 @@ Page({
   async loadUserInfo() {
     const userInfo = wx.getStorageSync('userInfo')
     this.setData({
-      userInfo: userInfo || {}
+      userInfo: userInfo || { name: '游客' }
     })
   },
 
@@ -99,6 +101,7 @@ Page({
   },
 
   editAvatar() {
+    if (!requireLogin()) return
     wx.chooseImage({
       count: 1,
       sizeType: ['compressed'],
@@ -154,10 +157,12 @@ Page({
   },
 
   goToEdit() {
+    if (!requireLogin()) return
     navigateTo('/pages/profile/edit')
   },
 
   goToMyPosts(e) {
+    if (!requireLogin()) return
     const type = e.currentTarget.dataset.type
     if (type === 'lostfound') {
       navigateTo('/pages/lostfound/mylist')
@@ -170,15 +175,24 @@ Page({
   },
 
   goToFinance() {
+    if (!requireLogin()) return
     navigateTo('/pages/finance/finance')
   },
 
   goToMyPostsCenter() {
+    if (!requireLogin()) return
     navigateTo('/pages/profile/myposts')
   },
 
   goToMessages() {
+    if (!requireLogin()) return
     navigateTo('/pages/profile/messages')
+  },
+
+  goLogin() {
+    // 退出游客模式，前往学号登录
+    wx.removeStorageSync('isGuest')
+    navigateTo('/pages/login/login')
   },
 
   goToSettings() {

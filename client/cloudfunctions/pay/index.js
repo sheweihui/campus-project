@@ -85,6 +85,11 @@ async function unifiedOrder(data, openid) {
   const outTradeNo = `${Date.now()}_${openid.slice(-8)}_${Math.random().toString(36).slice(2, 8)}`
 
   try {
+    // 支付必须完成学号登录（拦截游客）
+    if (!(await requireStudent(openid))) {
+      return { code: -1, msg: '请先完成学号登录后再支付' }
+    }
+
     // 下单前校验商品状态和金额，防止重复售卖/金额篡改
     const check = await validateItem(itemType, itemId, amount, openid)
     if (!check.ok) {
@@ -147,6 +152,16 @@ async function unifiedOrder(data, openid) {
       })
     } catch (e) { /* 忽略 */ }
     return { code: -1, msg: error.message }
+  }
+}
+
+// 校验调用者是否已绑定学号
+async function requireStudent(openid) {
+  try {
+    const res = await db.collection('student').where({ openid }).get()
+    return res.data.length > 0 && !!res.data[0].stuId
+  } catch (e) {
+    return false
   }
 }
 

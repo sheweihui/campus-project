@@ -1,4 +1,10 @@
 <view class="container">
+  <!-- 游客模式提示 -->
+  <view class="guest-banner" wx:if="{{isGuest}}">
+    <text class="guest-banner-text">游客模式，仅可浏览</text>
+    <view class="guest-login-btn" bindtap="goLogin">去登录</view>
+  </view>
+
   <!-- 用户信息卡片 -->
   <view class="user-card">
     <view class="user-avatar" bindtap="editAvatar">

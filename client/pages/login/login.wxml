@@ -72,5 +72,20 @@
       <text class="tip-text">首次登录将自动初始化信息</text>
       <text class="tip-text">首次登录可自定义密码</text>
     </view>
+
+    <!-- 分割线 -->
+    <view class="divider">
+      <view class="divider-line"></view>
+      <text class="divider-text">或</text>
+      <view class="divider-line"></view>
+    </view>
+
+    <!-- 游客登录 -->
+    <button
+      class="guest-btn"
+      bindtap="guestLogin"
+      loading="{{loading}}"
+      disabled="{{loading}}"
+    >游客登录（仅浏览）</button>
   </view>
 </view>

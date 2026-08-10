@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, navigateTo } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, requireLogin } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -122,6 +122,7 @@ Page({
 
   goToPage(e) {
     const page = e.currentTarget.dataset.page
+    if (page === 'publish' && !requireLogin()) return
     navigateTo(`/pages/help/${page}`)
   },
 

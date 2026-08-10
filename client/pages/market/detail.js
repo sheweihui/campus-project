@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, showToast, navigateTo, navigateBack } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateTo, navigateBack, requireLogin } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -90,6 +90,8 @@ Page({
   },
 
   startChat() {
+    if (!requireLogin()) return
+
     const { detail, isOwner } = this.data
     
     if (isOwner) {
@@ -109,6 +111,8 @@ Page({
   },
 
   async updateStatus() {
+    if (!requireLogin()) return
+
     const { confirm } = await wx.showModal({
       title: '提示',
       content: '确定要标记为已售出吗？'
@@ -145,6 +149,8 @@ Page({
   },
 
   async updateStatusOff() {
+    if (!requireLogin()) return
+
     const { confirm } = await wx.showModal({
       title: '提示',
       content: '确定要下架该商品吗？'
@@ -181,10 +187,13 @@ Page({
   },
 
   editItem() {
+    if (!requireLogin()) return
     navigateTo(`/pages/market/publish?id=${this.data.detail._id}`)
   },
 
   async buyNow() {
+    if (!requireLogin()) return
+
     const { detail } = this.data
     
     const { confirm } = await wx.showModal({
@@ -260,6 +269,8 @@ Page({
   },
 
   async deleteItem() {
+    if (!requireLogin()) return
+
     const { confirm } = await wx.showModal({
       title: '提示',
       content: '确定要删除该商品吗？',

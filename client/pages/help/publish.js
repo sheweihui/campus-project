@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, showToast, navigateBack } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateBack, requireLogin } = require('../../utils/util.js')
 const TEMPLATES = require('../../config/templateIds.js')
 
 Page({
@@ -278,6 +278,8 @@ Page({
   },
 
   async submit() {
+    if (!requireLogin()) return
+
     const { type, form } = this.data
     let isValid = true
     let errorMsg = ''

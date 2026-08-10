@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, showToast, navigateTo, navigateBack } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateTo, navigateBack, requireLogin } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -68,6 +68,8 @@ Page({
   },
 
   startChat() {
+    if (!requireLogin()) return
+
     const { detail, isOwner } = this.data
     
     if (isOwner) {
@@ -87,6 +89,8 @@ Page({
   },
 
   async updateStatus() {
+    if (!requireLogin()) return
+
     if (this.data.detail.status === 'completed') return
 
     const { confirm } = await wx.showModal({
@@ -125,10 +129,13 @@ Page({
   },
 
   editItem() {
+    if (!requireLogin()) return
     navigateTo(`/pages/lostfound/publish?id=${this.data.detail._id}&type=${this.data.detail.type}`)
   },
 
   async deleteItem() {
+    if (!requireLogin()) return
+
     const { confirm } = await wx.showModal({
       title: '提示',
       content: '确定要删除这条信息吗？',

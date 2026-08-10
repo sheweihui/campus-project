@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, showToast, navigateTo, navigateBack } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateTo, navigateBack, requireLogin } = require('../../utils/util.js')
 const TEMPLATES = require('../../config/templateIds.js')
 
 Page({
@@ -102,6 +102,8 @@ Page({
   },
 
   startChat() {
+    if (!requireLogin()) return
+
     const { detail, isOwner } = this.data
     const currentStuId = wx.getStorageSync('stuId')
     
@@ -135,6 +137,8 @@ Page({
   },
 
   async updateStatus() {
+    if (!requireLogin()) return
+
     const { detail, type } = this.data
     
     if (detail.status === 'completed') return
@@ -179,10 +183,13 @@ Page({
   },
 
   editItem() {
+    if (!requireLogin()) return
     navigateTo(`/pages/help/publish?type=${this.data.type}`)
   },
 
   async acceptExpress() {
+    if (!requireLogin()) return
+
     const { detail } = this.data
     
     if (!detail) {
@@ -251,6 +258,8 @@ Page({
   },
 
   async payNow() {
+    if (!requireLogin()) return
+
     const { detail } = this.data
     
     const { confirm } = await wx.showModal({
@@ -327,6 +336,8 @@ Page({
   },
 
   async deleteItem() {
+    if (!requireLogin()) return
+
     const { confirm } = await wx.showModal({
       title: '提示',
       content: '确定要删除这条信息吗？',
