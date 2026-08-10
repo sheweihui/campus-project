@@ -103,7 +103,12 @@ Page({
       if (res.result.code === 0 && res.result.data) {
         const config = res.result.data
         if (config.bannerList && config.bannerList.length > 0) {
-          let validBanners = config.bannerList.filter(url => url && url.trim())
+          // 兼容两种存储格式：字符串 URL（banner 管理页）或对象 {image, link}（homeConfig 管理页）
+          let validBanners = config.bannerList.map(item => {
+            if (typeof item === 'string') return item
+            if (item && (item.image || item.url)) return item.image || item.url
+            return null
+          }).filter(Boolean)
           validBanners = await this.getCloudFileUrls(validBanners)
           this.setData({ bannerList: validBanners })
         }

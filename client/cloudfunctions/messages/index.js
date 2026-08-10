@@ -48,21 +48,28 @@ async function markAllRead(data, myStuId) {
     return { code: -1, msg: '无权限操作' }
   }
 
-  // 获取所有未读消息
-  const messages = await db.collection('messages')
-    .where({ toStuId: stuId, isRead: false })
-    .get()
-  
-  // 批量更新
-  const updatePromises = messages.data.map(msg => 
-    db.collection('messages').doc(msg._id).update({
-      data: { isRead: true }
-    })
-  )
-  
-  await Promise.all(updatePromises)
-  
-  return { code: 0, msg: '标记成功', data: { count: messages.data.length } }
+  // 分批取完所有未读消息（单次 get 上限 100 条）
+  let total = 0
+  while (true) {
+    const messages = await db.collection('messages')
+      .where({ toStuId: stuId, isRead: false })
+      .skip(total)
+      .limit(100)
+      .get()
+
+    if (messages.data.length === 0) break
+
+    await Promise.all(messages.data.map(msg =>
+      db.collection('messages').doc(msg._id).update({
+        data: { isRead: true }
+      })
+    ))
+
+    total += messages.data.length
+    if (messages.data.length < 100) break
+  }
+
+  return { code: 0, msg: '标记成功', data: { count: total } }
 }
 
 async function getUnreadCount(data, myStuId) {

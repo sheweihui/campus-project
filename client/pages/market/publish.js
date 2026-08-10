@@ -2,6 +2,7 @@ const { showLoading, hideLoading, showToast, navigateBack, uploadImage, requireL
 
 Page({
   data: {
+    id: '',
     form: {
       title: '',
       price: '',
@@ -42,6 +43,7 @@ Page({
 
   onLoad(options) {
     if (options.id) {
+      this.setData({ id: options.id })
       this.loadPostData(options.id)
     } else {
       // 初始化默认值
@@ -151,7 +153,7 @@ Page({
   async submit() {
     if (!requireLogin()) return
 
-    const { id, title, price, category, condition, description, contact } = this.data.form
+    const { title, price, originalPrice, category, condition, description, contact, images } = this.data.form
     
     if (!title.trim()) {
       showToast('请输入商品名称')
@@ -187,26 +189,37 @@ Page({
 
     try {
       const stuId = wx.getStorageSync('stuId') || ''
+      const payload = {
+        title: title.trim(),
+        price: parseFloat(price),
+        originalPrice: originalPrice ? parseFloat(originalPrice) : null,
+        category,
+        condition,
+        description: description.trim(),
+        contact: contact.trim(),
+        images: images || []
+      }
+      if (this.data.id) {
+        payload.id = this.data.id
+      }
       const { result } = await wx.cloud.callFunction({
         name: 'market',
         data: {
-          action: id ? 'update' : 'add',
+          action: this.data.id ? 'update' : 'add',
           data: {
-            ...this.data.form,
-            stuId,
-            price: parseFloat(price),
-            originalPrice: this.data.form.originalPrice ? parseFloat(this.data.form.originalPrice) : null
+            ...payload,
+            stuId
           }
         }
       })
 
       if (result.code === 0) {
-        showToast(id ? '修改成功' : '发布成功', 'success')
+        showToast(this.data.id ? '修改成功' : '发布成功', 'success')
         setTimeout(() => {
           navigateBack()
         }, 1500)
       } else {
-        showToast(result.msg || (id ? '修改失败' : '发布失败'))
+        showToast(result.msg || (this.data.id ? '修改失败' : '发布失败'))
       }
     } catch (error) {
       console.error('提交失败:', error)

@@ -121,9 +121,12 @@ async function doTransfer(data, openid) {
     console.error('企业转账失败:', error)
     // 先核实微信侧真实状态：避免“转账其实成功但返回报错”导致退款造成双重到账
     let transferred = false
+    let transferStatus = ''
     try {
       const q = await cloud.cloudPay.queryTransfer({ partnerTradeNo })
-      transferred = !!(q && (q.status === 'SUCCESS' || q.resultCode === 'SUCCESS'))
+      transferStatus = (q && q.status) || ''
+      // 只有微信侧明确返回 SUCCESS 才算转出成功；PROCESSING 不算
+      transferred = transferStatus === 'SUCCESS'
     } catch (e) {
       console.error('查询转账状态失败:', e.message || e)
     }
@@ -133,9 +136,13 @@ async function doTransfer(data, openid) {
       return { code: 0, data: {}, msg: '提现成功' }
     }
 
-    // 确认未转出：标记 failed 并退回余额
-    await refundAndMarkFailed(finance._id, partnerTradeNo, finalAmount, error.message)
-    return { code: -1, msg: error.message }
+    // 明确失败才退回余额；处理中/查询失败时保留记录，等待用户稍后重试确认
+    if (transferStatus === 'FAILED' || transferStatus === 'FAIL') {
+      await refundAndMarkFailed(finance._id, partnerTradeNo, finalAmount, error.message)
+      return { code: -1, msg: error.message }
+    }
+
+    return { code: -1, msg: '转账结果确认中，请稍后重试' }
   }
 }
 
@@ -143,12 +150,12 @@ async function doTransfer(data, openid) {
 async function finalizeProcessing(financeId, partnerTradeNo) {
   try {
     const q = await cloud.cloudPay.queryTransfer({ partnerTradeNo })
-    const status = q && (q.status || q.resultCode)
+    const status = (q && q.status) || ''
     if (status === 'SUCCESS') {
       await markCompleted(financeId, partnerTradeNo, q)
       return 'completed'
     }
-    if (status === 'FAIL' || status === 'FAILED' || q.resultCode === 'FAIL') {
+    if (status === 'FAIL' || status === 'FAILED') {
       // 读取记录金额，将占用的余额退回
       const res = await db.collection('finance').doc(financeId).get()
       const record = (res.data && res.data.withdrawRecords || []).find(r => r.partnerTradeNo === partnerTradeNo)

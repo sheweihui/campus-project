@@ -85,10 +85,15 @@ exports.main = async (event, context) => {
 
     // 预查财务记录（事务内只能按 doc 操作，因此先查出 _id）
     let financeDoc = null
+    let sellerStuId = ''
     if (sellerOpenid) {
       const financeRes = await db.collection('finance').where({ openid: sellerOpenid }).get()
       if (financeRes.data.length > 0) {
         financeDoc = financeRes.data[0]
+      }
+      const sRes = await db.collection('student').where({ openid: sellerOpenid }).get()
+      if (sRes.data.length > 0) {
+        sellerStuId = sRes.data[0].stuId || ''
       }
     }
 
@@ -148,6 +153,7 @@ exports.main = async (event, context) => {
 
       // 卖家入账（同一事务内原子完成）
       if (sellerOpenid) {
+        const newFinanceId = `fin_${sellerOpenid}`
         if (financeDoc) {
           const tFinance = await transaction.collection('finance').doc(financeDoc._id).get()
           const f = tFinance.data
@@ -159,19 +165,36 @@ exports.main = async (event, context) => {
             }
           })
         } else {
-          const newFinanceId = `fin_${sellerOpenid}`
-          await transaction.collection('finance').doc(newFinanceId).set({
-            data: {
-              openid: sellerOpenid,
-              stuId: '',
-              totalCommission: commission,
-              availableAmount: sellerAmount,
-              withdrawAmount: 0,
-              withdrawRecords: [],
-              createTime: db.serverDate(),
-              updateTime: db.serverDate()
-            }
-          })
+          // 固定 ID 文档：事务内先读，存在则更新（并发首单时另一事务可能已创建），不存在则创建
+          let tFinance = null
+          try {
+            tFinance = await transaction.collection('finance').doc(newFinanceId).get()
+          } catch (e) {
+            tFinance = null
+          }
+          if (tFinance && tFinance.data) {
+            const f = tFinance.data
+            await transaction.collection('finance').doc(newFinanceId).update({
+              data: {
+                totalCommission: (f.totalCommission || 0) + commission,
+                availableAmount: (f.availableAmount || 0) + sellerAmount,
+                updateTime: db.serverDate()
+              }
+            })
+          } else {
+            await transaction.collection('finance').doc(newFinanceId).set({
+              data: {
+                openid: sellerOpenid,
+                stuId: sellerStuId,
+                totalCommission: commission,
+                availableAmount: sellerAmount,
+                withdrawAmount: 0,
+                withdrawRecords: [],
+                createTime: db.serverDate(),
+                updateTime: db.serverDate()
+              }
+            })
+          }
         }
       }
 

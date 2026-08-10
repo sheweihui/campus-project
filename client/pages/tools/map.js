@@ -1,9 +1,11 @@
+const { showToast } = require('../../utils/util.js')
+
 Page({
   data: {
     keyword: '',
     currentCategory: 'all',
     locationList: [],
-    mapImageUrl: 'tabbar/地图.png',
+    mapImageUrl: '/tabbar/地图.jpg',
     allLocations: [
       { name: '教学楼(J)', address: '东区二期', icon: '🏫', category: 'teaching' },
       { name: '艺术楼(Y)', address: '东区二期', icon: '🎨', category: 'teaching' },
@@ -42,9 +44,18 @@ Page({
   },
 
   previewMap() {
-    wx.previewImage({
-      urls: [this.data.mapImageUrl],
-      current: this.data.mapImageUrl
+    // 代码包内图片不能直接预览，先转成临时路径
+    wx.getImageInfo({
+      src: this.data.mapImageUrl,
+      success: (res) => {
+        wx.previewImage({
+          urls: [res.path],
+          current: res.path
+        })
+      },
+      fail: () => {
+        showToast('预览失败')
+      }
     })
   },
 

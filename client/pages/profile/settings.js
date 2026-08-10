@@ -66,28 +66,26 @@ Page({
     showLoading('提交中...')
 
     try {
-      const db = wx.cloud.database()
-      const userInfo = wx.getStorageSync('userInfo')
-      const openid = wx.getStorageSync('openid')
-
-      await db.collection('feedback').add({
+      const { result } = await wx.cloud.callFunction({
+        name: 'feedback',
         data: {
-          type,
-          content,
-          contact,
-          openid,
-          createTime: db.serverDate()
+          action: 'add',
+          data: { type, content, contact }
         }
       })
 
-      showToast('提交成功', 'success')
-      this.setData({
-        feedback: {
-          type: '',
-          content: '',
-          contact: ''
-        }
-      })
+      if (result.code === 0) {
+        showToast('提交成功', 'success')
+        this.setData({
+          feedback: {
+            type: '',
+            content: '',
+            contact: ''
+          }
+        })
+      } else {
+        showToast(result.msg || '提交失败')
+      }
     } catch (error) {
       console.error('提交反馈失败:', error)
       showToast('提交失败')

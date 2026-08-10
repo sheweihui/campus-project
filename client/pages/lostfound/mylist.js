@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, navigateTo } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, requireLogin } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -55,6 +55,7 @@ Page({
         data: {
           action: 'myList',
           data: {
+            type: this.data.currentTab === 'all' ? '' : this.data.currentTab,
             page: this.data.page,
             pageSize: this.data.pageSize
           }
@@ -62,14 +63,7 @@ Page({
       })
 
       if (result.code === 0) {
-        let list = result.data
-        
-        // 根据标签筛选
-        if (this.data.currentTab !== 'all') {
-          list = list.filter(item => item.type === this.data.currentTab)
-        }
-        
-        const newList = isLoadMore ? [...this.data.list, ...list] : list
+        const newList = isLoadMore ? [...this.data.list, ...result.data] : result.data
         this.setData({
           list: newList,
           hasMore: result.data.length === this.data.pageSize
@@ -89,6 +83,7 @@ Page({
   },
 
   goToPublish() {
+    if (!requireLogin()) return
     navigateTo('/pages/lostfound/publish')
   }
 })

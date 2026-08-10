@@ -157,10 +157,7 @@ async function getBuyerList(data, myStuId) {
   }
 
   // 获取所有与该商品相关的消息
-  const messages = await db.collection('chats')
-    .where({ relatedId })
-    .orderBy('createTime', 'desc')
-    .get()
+  const messages = await getAll(db.collection('chats').where({ relatedId }).orderBy('createTime', 'desc'))
 
   // 提取所有买家（发送者不是卖家的人）
   const buyerMap = {}
@@ -184,6 +181,20 @@ async function getBuyerList(data, myStuId) {
   }
 
   return { code: 0, data: buyerList }
+}
+
+// 分批拉取全部数据，绕开单次 100 条上限
+async function getAll(query) {
+  const MAX = 100
+  const list = []
+  let skip = 0
+  while (true) {
+    const res = await query.skip(skip).limit(MAX).get()
+    list.push(...res.data)
+    if (res.data.length < MAX) break
+    skip += MAX
+  }
+  return { data: list }
 }
 
 function formatTime(time) {

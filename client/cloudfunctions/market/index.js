@@ -120,10 +120,14 @@ async function deleteMarket({ id }, openid) {
   return { code: 0, msg: '删除成功' }
 }
 
-async function getMyList(openid, { stuId, page = 1, pageSize = 10 }) {
+async function getMyList(openid, { status, page = 1, pageSize = 10 }) {
   // 只允许查询自己的发布，忽略客户端传入的 stuId
+  const where = { openid }
+  if (status && status !== 'all') {
+    where.status = status
+  }
   const result = await db.collection('market')
-    .where({ openid })
+    .where(where)
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)
     .limit(pageSize)

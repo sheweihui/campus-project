@@ -20,8 +20,6 @@
     "pages/chat/chat",
     "pages/chat/buyerList",
     "pages/tools/tools",
-    "pages/tools/classroom",
-    "pages/tools/calendar",
     "pages/tools/map",
     "pages/finance/finance",
     "pages/finance/withdraw",

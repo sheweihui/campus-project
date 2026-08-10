@@ -2,6 +2,7 @@ const { showLoading, hideLoading, showToast, navigateBack, uploadImage, requireL
 
 Page({
   data: {
+    id: '',
     form: {
       type: 'lost',
       title: '',
@@ -19,6 +20,10 @@ Page({
   },
 
   onLoad(options) {
+    if (options.id) {
+      this.setData({ id: options.id })
+    }
+
     if (options.type) {
       this.setData({
         'form.type': options.type
@@ -123,7 +128,7 @@ Page({
   async submit() {
     if (!requireLogin()) return
 
-    const { id, type, title, description, contact } = this.data.form
+    const { type, title, description, contact } = this.data.form
     
     if (!title.trim()) {
       showToast('请输入物品名称')
@@ -147,24 +152,37 @@ Page({
     showLoading('提交中...')
 
     try {
+      // 清理只读/服务端字段，避免编辑时写脏数据
+      const {
+        _id,
+        openid,
+        stuId: formStuId,
+        status,
+        createTime,
+        updateTime,
+        ...cleanForm
+      } = this.data.form
+
+      const payload = { ...cleanForm, stuId }
+      if (this.data.id) {
+        payload.id = this.data.id
+      }
+
       const { result } = await wx.cloud.callFunction({
         name: 'lostfound',
         data: {
-          action: id ? 'update' : 'add',
-          data: {
-            ...this.data.form,
-            stuId  // 添加学号字段
-          }
+          action: this.data.id ? 'update' : 'add',
+          data: payload
         }
       })
 
       if (result.code === 0) {
-        showToast(id ? '修改成功' : '发布成功', 'success')
+        showToast(this.data.id ? '修改成功' : '发布成功', 'success')
         setTimeout(() => {
           navigateBack()
         }, 1500)
       } else {
-        showToast(result.msg || (id ? '修改失败' : '发布失败'))
+        showToast(result.msg || (this.data.id ? '修改失败' : '发布失败'))
       }
     } catch (error) {
       console.error('提交失败:', error)

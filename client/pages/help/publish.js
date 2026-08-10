@@ -3,6 +3,7 @@ const TEMPLATES = require('../../config/templateIds.js')
 
 Page({
   data: {
+    id: '',
     type: '',
     form: {},
     showDateTimePicker: false,
@@ -19,6 +20,7 @@ Page({
   onLoad(options) {
     const type = options.type || 'carpool'
     this.setData({
+      id: options.id || '',
       type,
       form: this.getEmptyForm(type)
     })
@@ -368,28 +370,52 @@ Page({
     showLoading('提交中...')
 
     try {
-      const data = { ...form, type }
+      // 清理只读/服务端字段，避免编辑时写脏数据
+      const {
+        _id,
+        openid,
+        stuId: formStuId,
+        status,
+        createTime,
+        updateTime,
+        acceptorOpenid,
+        acceptorStuId,
+        acceptTime,
+        payTime,
+        payOrderNo,
+        payClaimTime,
+        ...cleanForm
+      } = form
+
+      const data = { ...cleanForm, type }
       data.stuId = wx.getStorageSync('stuId') || ''
-      
+
       if (type === 'express' || type === 'other') {
         data.reward = parseFloat(data.reward)
-        data.status = 'pending'
+        // 新增时初始化为待接单；编辑时保留服务端状态
+        if (!this.data.id) {
+          data.status = 'pending'
+        }
       } else {
         data.people = parseInt(data.people)
+      }
+
+      if (this.data.id) {
+        data.id = this.data.id
       }
 
       const { result } = await wx.cloud.callFunction({
         name: 'help',
         data: {
-          action: data.id ? 'update' : 'add',
+          action: this.data.id ? 'update' : 'add',
           data
         }
       })
 
       if (result.code === 0) {
-        showToast(data.id ? '修改成功' : '发布成功', 'success')
+        showToast(this.data.id ? '修改成功' : '发布成功', 'success')
         
-        if ((data.type === 'express' || data.type === 'other') && !data.id) {
+        if ((data.type === 'express' || data.type === 'other') && !this.data.id) {
           this.requestSubscribeMessage()
         }
         
@@ -397,7 +423,7 @@ Page({
           navigateBack()
         }, 1500)
       } else {
-        showToast(result.msg || (data.id ? '修改失败' : '发布失败'))
+        showToast(result.msg || (this.data.id ? '修改失败' : '发布失败'))
       }
     } catch (error) {
       console.error('提交失败:', error)

@@ -184,7 +184,7 @@ Page({
 
   editItem() {
     if (!requireLogin()) return
-    navigateTo(`/pages/help/publish?type=${this.data.type}`)
+    navigateTo(`/pages/help/publish?type=${this.data.type}&id=${this.data.detail._id}`)
   },
 
   async acceptExpress() {

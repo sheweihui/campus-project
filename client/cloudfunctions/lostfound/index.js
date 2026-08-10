@@ -97,10 +97,14 @@ async function deleteLostFound({ id }, openid) {
   return { code: 0, msg: '删除成功' }
 }
 
-async function getMyList(openid, { stuId, page = 1, pageSize = 10 }) {
+async function getMyList(openid, { type, page = 1, pageSize = 10 }) {
   // 只允许查询自己的发布，忽略客户端传入的 stuId
+  const where = { openid }
+  if (type && type !== 'all') {
+    where.type = type
+  }
   const result = await db.collection('lostfound')
-    .where({ openid })
+    .where(where)
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)
     .limit(pageSize)
