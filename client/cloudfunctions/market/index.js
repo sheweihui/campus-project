@@ -46,9 +46,8 @@ async function addMarket(data, openid) {
   const { _id, id, stuId: clientStuId, ...restData } = data
 
   // 服务端价格校验：必须为合法正数
-  const price = Number(restData.price)
-  if (!Number.isFinite(price) || price <= 0) {
-    return { code: -1, msg: '价格必须是大于 0 的金额' }
+  if (!isValidAmount(restData.price)) {
+    return { code: -1, msg: '价格必须是大于 0 且最多两位小数的金额' }
   }
 
   const result = await db.collection('market').add({
@@ -104,6 +103,21 @@ async function updateMarket(data, openid) {
 
   // 学号由服务端维护，不允许通过编辑修改
   delete updateData.stuId
+  // 只读字段不允许通过编辑修改
+  ;['openid', 'status', 'viewCount', 'createTime', 'updateTime', 'payTime', 'payOrderNo', 'payClaimTime'].forEach(k => {
+    delete updateData[k]
+  })
+
+  // 价格校验：必须为合法正数且最多两位小数
+  if (updateData.price !== undefined) {
+    if (!isValidAmount(updateData.price)) {
+      return { code: -1, msg: '价格必须是大于 0 且最多两位小数的金额' }
+    }
+    // 交易中/已售出禁止改价，避免实付与展示不一致
+    if (item.data.status === 'paying' || item.data.status === 'sold') {
+      return { code: -1, msg: '商品交易中或已售出，不能修改价格' }
+    }
+  }
 
   await db.collection('market').doc(id).update({
     data: {
@@ -146,6 +160,11 @@ async function updateStatus({ id, status }, openid) {
   
   if (item.data.openid !== openid) {
     return { code: -1, msg: '无权限修改' }
+  }
+
+  // 支付进行中的商品不允许修改状态
+  if (item.data.status === 'paying') {
+    return { code: -1, msg: '商品交易中，请等待支付完成' }
   }
 
   await db.collection('market').doc(id).update({
@@ -192,4 +211,11 @@ async function getStuIdByOpenid(openid) {
   } catch (e) {
     return ''
   }
+}
+
+// 金额校验：合法正数且最多两位小数
+function isValidAmount(value) {
+  const num = Number(value)
+  if (!Number.isFinite(num) || num <= 0) return false
+  return Math.abs(num * 100 - Math.round(num * 100)) <= 0.001
 }

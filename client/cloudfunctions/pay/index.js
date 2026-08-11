@@ -27,6 +27,12 @@ async function validateItem(itemType, itemId, amount, openid) {
     return { ok: false, msg: '无效的商品类型' }
   }
 
+  // 金额必须是合法正数，杜绝 NaN/字符串绕过
+  const numericAmount = Number(amount)
+  if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+    return { ok: false, msg: '支付金额不合法' }
+  }
+
   const itemRes = await db.collection(collection).doc(itemId).get()
   if (!itemRes.data) {
     return { ok: false, msg: itemType === 'market' ? '商品不存在' : '需求不存在' }
@@ -37,7 +43,11 @@ async function validateItem(itemType, itemId, amount, openid) {
     if (item.status !== 'onSale' && item.status !== 'paying') {
       return { ok: false, msg: '商品已售出或已下架' }
     }
-    if (Math.abs((item.price || 0) - amount) > 0.001) {
+    const itemPrice = Number(item.price)
+    if (!Number.isFinite(itemPrice) || itemPrice <= 0) {
+      return { ok: false, msg: '商品价格异常，无法支付' }
+    }
+    if (Math.abs(itemPrice - numericAmount) > 0.001) {
       return { ok: false, msg: '支付金额与商品价格不一致' }
     }
     if (item.openid === openid) {
@@ -48,7 +58,11 @@ async function validateItem(itemType, itemId, amount, openid) {
     if (item.status !== 'accepted' && item.status !== 'paying') {
       return { ok: false, msg: '该需求尚未接单，无法支付' }
     }
-    if (Math.abs((item.reward || 0) - amount) > 0.001) {
+    const itemReward = Number(item.reward)
+    if (!Number.isFinite(itemReward) || itemReward <= 0) {
+      return { ok: false, msg: '酬金异常，无法支付' }
+    }
+    if (Math.abs(itemReward - numericAmount) > 0.001) {
       return { ok: false, msg: '支付金额与酬金不一致' }
     }
     if (item.openid === openid) {

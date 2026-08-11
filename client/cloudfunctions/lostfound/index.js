@@ -83,6 +83,10 @@ async function updateLostFound(data, openid) {
 
   // 学号由服务端维护，不允许通过编辑修改
   delete updateData.stuId
+  // 只读字段不允许通过编辑修改
+  ;['openid', 'status', 'createTime', 'updateTime'].forEach(k => {
+    delete updateData[k]
+  })
 
   await db.collection('lostfound').doc(id).update({
     data: {

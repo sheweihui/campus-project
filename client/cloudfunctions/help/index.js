@@ -46,9 +46,8 @@ async function addHelp(data, openid) {
 
   // 服务端金额校验：酬金必须是合法正数
   if (data.type === 'express' || data.type === 'other') {
-    const reward = Number(data.reward)
-    if (!Number.isFinite(reward) || reward <= 0) {
-      return { code: -1, msg: '酬金必须是大于 0 的金额' }
+    if (!isValidAmount(data.reward)) {
+      return { code: -1, msg: '酬金必须是大于 0 且最多两位小数的金额' }
     }
   }
 
@@ -109,6 +108,21 @@ async function updateHelp(data, openid) {
 
   // 学号由服务端维护，不允许通过编辑修改
   delete updateData.stuId
+  // 只读字段不允许通过编辑修改
+  ;['openid', 'status', 'createTime', 'updateTime', 'acceptorOpenid', 'acceptorStuId', 'acceptTime', 'payTime', 'payOrderNo', 'payClaimTime'].forEach(k => {
+    delete updateData[k]
+  })
+
+  // 酬金校验：必须为合法正数且最多两位小数；已被接单/支付后锁定
+  if (updateData.reward !== undefined) {
+    if (!isValidAmount(updateData.reward)) {
+      return { code: -1, msg: '酬金必须是大于 0 且最多两位小数的金额' }
+    }
+    const cur = item.data.status
+    if (cur === 'accepted' || cur === 'paying' || cur === 'paid' || cur === 'completed') {
+      return { code: -1, msg: '该需求已被接单或已支付，酬金不能修改' }
+    }
+  }
 
   await db.collection(collection).doc(id).update({
     data: {
@@ -298,6 +312,13 @@ async function requireStudent(openid) {
   } catch (e) {
     return false
   }
+}
+
+// 金额校验：合法正数且最多两位小数
+function isValidAmount(value) {
+  const num = Number(value)
+  if (!Number.isFinite(num) || num <= 0) return false
+  return Math.abs(num * 100 - Math.round(num * 100)) <= 0.001
 }
 
 async function sendMessage(messageData) {
