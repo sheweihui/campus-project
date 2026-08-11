@@ -36,12 +36,14 @@ exports.main = async (event, context) => {
 }
 
 async function addMarket(data, openid) {
-  const { _id, id, ...restData } = data
-
   // 发布必须完成学号登录（拦截游客）
-  if (!(await requireStudent(openid))) {
+  const stuId = await getStuIdByOpenid(openid)
+  if (!stuId) {
     return { code: -1, msg: '请先完成学号登录后再发布' }
   }
+
+  // 学号由服务端解析，忽略客户端传入的 stuId，防止冒用他人学号
+  const { _id, id, stuId: clientStuId, ...restData } = data
 
   // 服务端价格校验：必须为合法正数
   const price = Number(restData.price)
@@ -99,6 +101,9 @@ async function updateMarket(data, openid) {
   if (item.data.openid !== openid) {
     return { code: -1, msg: '无权限修改' }
   }
+
+  // 学号由服务端维护，不允许通过编辑修改
+  delete updateData.stuId
 
   await db.collection('market').doc(id).update({
     data: {
@@ -176,5 +181,15 @@ async function requireStudent(openid) {
     return res.data.length > 0 && !!res.data[0].stuId
   } catch (e) {
     return false
+  }
+}
+
+// 通过 openid 查询绑定的学号
+async function getStuIdByOpenid(openid) {
+  try {
+    const res = await db.collection('student').where({ openid }).get()
+    return res.data.length > 0 ? (res.data[0].stuId || '') : ''
+  } catch (e) {
+    return ''
   }
 }

@@ -36,12 +36,13 @@ exports.main = async (event, context) => {
 }
 
 async function addHelp(data, openid) {
-  const collection = getCollectionByType(data.type)
-
   // 发布必须完成学号登录（拦截游客）
-  if (!(await requireStudent(openid))) {
+  const stuId = await getStuIdByOpenid(openid)
+  if (!stuId) {
     return { code: -1, msg: '请先完成学号登录后再发布' }
   }
+
+  const collection = getCollectionByType(data.type)
 
   // 服务端金额校验：酬金必须是合法正数
   if (data.type === 'express' || data.type === 'other') {
@@ -51,11 +52,14 @@ async function addHelp(data, openid) {
     }
   }
 
+  // 学号由服务端解析，忽略客户端传入的 stuId，防止冒用他人学号
+  const { stuId: clientStuId, ...cleanData } = data
+
   const result = await db.collection(collection).add({
     data: {
-      ...data,
+      ...cleanData,
       openid,
-      stuId: data.stuId || '',
+      stuId,
       status: data.type === 'express' || data.type === 'other' ? 'pending' : 'active',
       createTime: db.serverDate(),
       updateTime: db.serverDate()
@@ -102,6 +106,9 @@ async function updateHelp(data, openid) {
   if (item.data.openid !== openid) {
     return { code: -1, msg: '无权限修改' }
   }
+
+  // 学号由服务端维护，不允许通过编辑修改
+  delete updateData.stuId
 
   await db.collection(collection).doc(id).update({
     data: {
