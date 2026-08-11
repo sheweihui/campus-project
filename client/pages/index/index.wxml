@@ -23,7 +23,7 @@
     <image src="/tabbar/我的.png" mode="" style="width: 100%;height: 100%;"/>
     </swiper-item>
     <swiper-item>
-    <image src="/tabbar/首页.png" mode="" style="width: 100%;height: 100%;"/>
+    <image src="/tabbar/主页.png" mode="" style="width: 100%;height: 100%;"/>
     </swiper-item>
 </swiper>
 
