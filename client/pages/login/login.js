@@ -27,7 +27,11 @@ Page({
 
     const errMsg = e.detail && e.detail.errMsg
     if (errMsg && errMsg.indexOf('ok') === -1) {
-      wx.showToast({ title: '已取消授权', icon: 'none' })
+      if (errMsg.indexOf('frequently') > -1) {
+        wx.showToast({ title: '操作太频繁，请稍后再试', icon: 'none' })
+      } else if (errMsg.indexOf('fail') === -1) {
+        wx.showToast({ title: '已取消授权', icon: 'none' })
+      }
       return
     }
 
