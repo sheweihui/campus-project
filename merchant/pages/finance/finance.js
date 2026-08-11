@@ -36,7 +36,11 @@ Page({
         this.setData({
           overview: d.overview,
           period: d.period,
-          userFinanceList: (d.userFinanceDetails || []).slice(0, 20),
+          // 按可用余额从高到低排序，展示真正的“余额排行”
+          userFinanceList: (d.userFinanceDetails || [])
+            .slice()
+            .sort((a, b) => (b.availableAmount || 0) - (a.availableAmount || 0))
+            .slice(0, 20),
           recentWithdraws: (d.recentWithdraws || []).slice(0, 10),
           financeTotal: (d.userFinanceDetails || []).length,
           hasMoreFinance: (d.userFinanceDetails || []).length > 20,

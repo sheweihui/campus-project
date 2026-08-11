@@ -7,6 +7,7 @@
     <view class="revenue-value">{{util.formatAmount(overview.totalRevenue)}}</view>
     <view class="revenue-sub">
       <text>平台抽成 {{util.formatAmount(overview.totalCommission)}}</text>
+      <text class="revenue-period">本期交易 {{util.formatAmount(period.revenue)}} · 抽成 {{util.formatAmount(period.commission)}} · {{period.orderCount}} 单</text>
     </view>
   </view>
 

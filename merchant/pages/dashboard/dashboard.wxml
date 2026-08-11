@@ -17,7 +17,7 @@
     <view class="kpi-card kpi-orders" bindtap="goToOrders">
       <view class="kpi-label">总订单数</view>
       <view class="kpi-value">{{kpis.totalOrders}}</view>
-      <view class="kpi-sub">今日 +{{kpis.todayOrders}}</view>
+      <view class="kpi-sub">今日 +{{kpis.todayOrders}} · 已完成 {{kpis.completedOrders}}</view>
     </view>
     <view class="kpi-card kpi-users" bindtap="goToUsers">
       <view class="kpi-label">用户总数</view>
@@ -26,8 +26,8 @@
     </view>
     <view class="kpi-card kpi-withdraw" bindtap="goToWithdraws">
       <view class="kpi-label">待处理提现</view>
-      <view class="kpi-value">{{kpis.pendingWithdraws}}</view>
-      <view class="kpi-sub">笔待审核</view>
+      <view class="kpi-value">{{util.formatAmount(kpis.pendingWithdrawAmount)}}</view>
+      <view class="kpi-sub">{{kpis.pendingWithdraws}} 笔待审核</view>
     </view>
   </view>
 

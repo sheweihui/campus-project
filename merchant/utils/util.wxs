@@ -1,7 +1,23 @@
 // WXS 模板辅助函数
 function formatAmount(amount) {
-  if (amount === null || amount === undefined) return '¥0.00'
-  return '¥' + Number(amount).toFixed(2)
+  if (amount === null || amount === undefined || amount === '') return '¥0.00'
+  var num = Number(amount)
+  if (isNaN(num)) return '¥0.00'
+  var fixed = num.toFixed(2)
+  var neg = fixed.charAt(0) === '-'
+  if (neg) fixed = fixed.slice(1)
+  var parts = fixed.split('.')
+  var intPart = parts[0]
+  var out = ''
+  var count = 0
+  for (var i = intPart.length - 1; i >= 0; i--) {
+    out = intPart.charAt(i) + out
+    count++
+    if (count % 3 === 0 && i > 0) {
+      out = ',' + out
+    }
+  }
+  return (neg ? '-¥' : '¥') + out + '.' + parts[1]
 }
 
 function formatDate(date) {

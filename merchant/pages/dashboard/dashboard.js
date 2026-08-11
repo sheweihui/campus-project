@@ -9,7 +9,10 @@ Page({
       totalOrders: 0,
       userCount: 0,
       todayOrders: 0,
-      pendingWithdraws: 0
+      pendingWithdraws: 0,
+      pendingWithdrawAmount: 0,
+      completedOrders: 0,
+      cancelledOrders: 0
     },
     // 分类数据
     categories: [],
@@ -63,7 +66,10 @@ Page({
             totalOrders: d.totalOrders || 0,
             userCount: d.userCount || 0,
             todayOrders: d.todayOrders || 0,
-            pendingWithdraws: d.pendingWithdraws || 0
+            pendingWithdraws: d.pendingWithdraws || 0,
+            pendingWithdrawAmount: d.pendingWithdrawAmount || 0,
+            completedOrders: d.completedOrders || 0,
+            cancelledOrders: d.cancelledOrders || 0
           },
           categories: [
             { key: 'market', name: '二手市场', icon: '🛒', count: cats.market?.count || 0, amount: cats.market?.amount || 0 },

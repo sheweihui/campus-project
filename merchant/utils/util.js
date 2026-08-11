@@ -19,8 +19,15 @@ function formatDate(date) {
 }
 
 function formatAmount(amount) {
-  if (amount === null || amount === undefined) return '¥0.00'
-  return '¥' + Number(amount).toFixed(2)
+  if (amount === null || amount === undefined || amount === '') return '¥0.00'
+  const num = Number(amount)
+  if (!Number.isFinite(num)) return '¥0.00'
+  const fixed = num.toFixed(2)
+  const neg = fixed.charAt(0) === '-'
+  const intPart = neg ? fixed.slice(1).split('.')[0] : fixed.split('.')[0]
+  const decimal = fixed.split('.')[1]
+  const formatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return (neg ? '-¥' : '¥') + formatted + '.' + decimal
 }
 
 /**

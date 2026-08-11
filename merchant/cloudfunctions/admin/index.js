@@ -124,6 +124,7 @@ async function getDashboard(data) {
     userCount,
     todayOrders,
     pendingWithdraws,
+    pendingWithdrawAmount,
     payments
   ] = await Promise.all([
     getOrderStats(dateFilter),
@@ -131,6 +132,7 @@ async function getDashboard(data) {
     getTotalUserCount(),
     getTodayOrderCount(),
     getPendingWithdrawCount(),
+    getPendingWithdrawAmount(),
     getPaymentStats(dateFilter)
   ])
 
@@ -146,6 +148,7 @@ async function getDashboard(data) {
       userCount: userCount || 0,                                // 总用户数
       todayOrders: todayOrders || 0,                            // 今日订单
       pendingWithdraws: pendingWithdraws || 0,                  // 待处理提现
+      pendingWithdrawAmount: pendingWithdrawAmount || 0,         // 待处理提现金额
 
       // 分类统计
       categoryBreakdown: orderStats.categoryBreakdown || {},
@@ -428,6 +431,21 @@ async function getOrderDetail(data) {
     return { code: 0, data: order.data }
   } catch (e) {
     return { code: -1, msg: e.message }
+  }
+}
+
+async function getPendingWithdrawAmount() {
+  try {
+    const financeList = await getAll(db.collection('finance'))
+    let total = 0
+    financeList.forEach(f => {
+      (f.withdrawRecords || []).forEach(r => {
+        if (r.status === 'pending') total += r.amount || 0
+      })
+    })
+    return Math.round(total * 100) / 100
+  } catch (e) {
+    return 0
   }
 }
 
