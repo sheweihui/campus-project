@@ -24,29 +24,41 @@
   flex-wrap: wrap;
   padding: 0 20rpx;
   margin-top: -24rpx;
+  box-sizing: border-box;
 }
 .kpi-card {
-  width: calc(50% - 28rpx);
-  margin: 8rpx;
+  box-sizing: border-box;
+  width: calc(50% - 20rpx);
+  margin: 8rpx 10rpx;
   padding: 24rpx;
   border-radius: 16rpx;
   background: #fff;
   box-shadow: 0 2rpx 16rpx rgba(0,0,0,0.06);
+  min-width: 0;
 }
 .kpi-label {
   font-size: 24rpx;
   color: #8a8a9a;
   margin-bottom: 8rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .kpi-value {
   font-size: 40rpx;
   font-weight: 700;
   color: #1a1a2e;
   margin-bottom: 6rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .kpi-sub {
   font-size: 22rpx;
   color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .kpi-revenue { border-left: 6rpx solid #4a6cf7; }
