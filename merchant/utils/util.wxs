@@ -37,7 +37,9 @@ function getPaymentStatusName(status) {
   return status || '-'
 }
 
-function getOrderStatusName(status) {
+function getOrderStatusName(status, paymentStatus) {
+  // 兼容历史数据：已支付/已确认的订单一律视为已完成
+  if (paymentStatus === 'paid' || paymentStatus === 'confirmed') return '已完成'
   if (status === 'pending') return '进行中'
   if (status === 'completed') return '已完成'
   if (status === 'cancelled') return '已取消'

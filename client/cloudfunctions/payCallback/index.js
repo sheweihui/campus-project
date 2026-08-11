@@ -143,8 +143,8 @@ exports.main = async (event, context) => {
           commission,
           sellerAmount,
           paymentStatus: 'paid',
-          // 市场订单付款即视为完成；帮助订单由 updateStatus 标记完成
-          orderStatus: itemType === 'market' ? 'completed' : 'pending',
+          // 支付成功即视为订单完成（卖家在支付回调时已入账）
+          orderStatus: 'completed',
           outTradeNo,
           createTime: db.serverDate(),
           payTime: db.serverDate()

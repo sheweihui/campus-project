@@ -77,7 +77,7 @@
     </view>
     <view class="info-row">
       <text class="info-label">订单状态</text>
-      <text class="tag tag-default">{{util.getOrderStatusName(order.orderStatus)}}</text>
+      <text class="tag tag-default">{{util.getOrderStatusName(order.orderStatus, order.paymentStatus)}}</text>
     </view>
   </view>
 </view>

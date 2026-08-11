@@ -182,10 +182,13 @@ async function getOrderStats(dateFilter) {
 
     orders.forEach(order => {
       // 状态统计
-      switch (order.orderStatus) {
-        case 'completed': stats.completed++; break
-        case 'cancelled': stats.cancelled++; break
-        default: stats.pending++
+      const isPaid = order.paymentStatus === 'paid' || order.paymentStatus === 'confirmed'
+      if (isPaid || order.orderStatus === 'completed') {
+        stats.completed++
+      } else if (order.orderStatus === 'cancelled') {
+        stats.cancelled++
+      } else {
+        stats.pending++
       }
 
       switch (order.paymentStatus) {
