@@ -3,6 +3,7 @@
     "pages/dashboard/dashboard",
     "pages/orders/orders",
     "pages/order-detail/order-detail",
+    "pages/orders/order-edit",
     "pages/finance/finance",
     "pages/withdraws/withdraws",
     "pages/users/users",

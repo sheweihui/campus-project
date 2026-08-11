@@ -80,6 +80,12 @@
       <text class="tag tag-default">{{util.getOrderStatusName(order.orderStatus, order.paymentStatus)}}</text>
     </view>
   </view>
+
+  <!-- 操作按钮 -->
+  <view class="detail-actions">
+    <view class="action-btn edit" bindtap="editOrder">编辑</view>
+    <view class="action-btn delete" bindtap="deleteOrder">删除</view>
+  </view>
 </view>
 
 <view class="empty-state" wx:elif="{{!loading}}">

@@ -66,6 +66,12 @@ exports.main = async (event, context) => {
         return await getOrders(data)
       case 'getOrderDetail':
         return await getOrderDetail(data)
+      case 'createOrder':
+        return await createOrder(data)
+      case 'updateOrder':
+        return await updateOrder(data)
+      case 'deleteOrder':
+        return await deleteOrder(data)
       case 'getFinanceOverview':
         return await getFinanceOverview(data)
       case 'getWithdrawList':
@@ -421,6 +427,130 @@ async function getOrderDetail(data) {
     }
     return { code: 0, data: order.data }
   } catch (e) {
+    return { code: -1, msg: e.message }
+  }
+}
+
+// ============ 订单管理（增删改） ============
+
+const ORDER_TYPES = ['market', 'lostfound', 'help', 'carpool', 'express', 'partner', 'other']
+const PAYMENT_STATUSES = ['pending', 'paid', 'confirmed']
+const ORDER_STATUSES = ['pending', 'completed', 'cancelled']
+
+// 金额校验：合法正数且最多两位小数
+function isValidAmount(value) {
+  const num = Number(value)
+  if (!Number.isFinite(num) || num <= 0) return false
+  return Math.abs(num * 100 - Math.round(num * 100)) <= 0.001
+}
+
+async function createOrder(data) {
+  const { type, amount, buyerNickName, sellerNickName, paymentStatus = 'paid', orderStatus, remark } = data || {}
+
+  if (!ORDER_TYPES.includes(type)) {
+    return { code: -1, msg: '无效的订单类型' }
+  }
+  if (!isValidAmount(amount)) {
+    return { code: -1, msg: '订单金额必须是大于 0 且最多两位小数的金额' }
+  }
+  if (!PAYMENT_STATUSES.includes(paymentStatus)) {
+    return { code: -1, msg: '无效的支付状态' }
+  }
+
+  // 已支付订单统一视为已完成，与支付回调口径一致
+  const isPaid = paymentStatus === 'paid' || paymentStatus === 'confirmed'
+  const finalOrderStatus = isPaid
+    ? 'completed'
+    : (ORDER_STATUSES.includes(orderStatus) ? orderStatus : 'pending')
+
+  const result = await db.collection('orders').add({
+    data: {
+      type,
+      itemId: '',
+      buyerOpenid: '',
+      sellerOpenid: '',
+      buyerNickName: buyerNickName || '',
+      sellerNickName: sellerNickName || '',
+      amount: Number(amount),
+      commission: 0,
+      sellerAmount: 0,
+      paymentStatus,
+      orderStatus: finalOrderStatus,
+      outTradeNo: `MANUAL_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+      remark: remark || '',
+      createTime: db.serverDate(),
+      payTime: isPaid ? db.serverDate() : null
+    }
+  })
+
+  return { code: 0, msg: '订单创建成功', data: result._id }
+}
+
+async function updateOrder(data) {
+  const { orderId, type, amount, buyerNickName, sellerNickName, paymentStatus, orderStatus, remark } = data || {}
+  if (!orderId) {
+    return { code: -1, msg: '缺少订单ID' }
+  }
+
+  let order
+  try {
+    order = await db.collection('orders').doc(orderId).get()
+    if (!order.data) {
+      return { code: -1, msg: '订单不存在' }
+    }
+  } catch (e) {
+    return { code: -1, msg: '订单不存在' }
+  }
+
+  const clean = {}
+  if (type !== undefined) {
+    if (!ORDER_TYPES.includes(type)) return { code: -1, msg: '无效的订单类型' }
+    clean.type = type
+  }
+  if (amount !== undefined) {
+    if (!isValidAmount(amount)) return { code: -1, msg: '订单金额必须是大于 0 且最多两位小数的金额' }
+    clean.amount = Number(amount)
+  }
+  if (buyerNickName !== undefined) clean.buyerNickName = buyerNickName
+  if (sellerNickName !== undefined) clean.sellerNickName = sellerNickName
+  if (paymentStatus !== undefined) {
+    if (!PAYMENT_STATUSES.includes(paymentStatus)) return { code: -1, msg: '无效的支付状态' }
+    clean.paymentStatus = paymentStatus
+    if (paymentStatus === 'paid' || paymentStatus === 'confirmed') {
+      clean.orderStatus = 'completed'
+      clean.payTime = db.serverDate()
+    }
+  }
+  if (orderStatus !== undefined) {
+    if (!ORDER_STATUSES.includes(orderStatus)) return { code: -1, msg: '无效的订单状态' }
+    const currentPayment = paymentStatus !== undefined ? paymentStatus : order.data.paymentStatus
+    if ((currentPayment === 'paid' || currentPayment === 'confirmed') && orderStatus !== 'completed') {
+      return { code: -1, msg: '已支付订单状态只能是已完成' }
+    }
+    clean.orderStatus = orderStatus
+  }
+  if (remark !== undefined) clean.remark = remark
+  clean.updateTime = db.serverDate()
+
+  await db.collection('orders').doc(orderId).update({ data: clean })
+  return { code: 0, msg: '订单更新成功' }
+}
+
+async function deleteOrder(data) {
+  const { orderId } = data || {}
+  if (!orderId) {
+    return { code: -1, msg: '缺少订单ID' }
+  }
+
+  try {
+    const order = await db.collection('orders').doc(orderId).get()
+    if (!order.data) {
+      return { code: -1, msg: '订单不存在' }
+    }
+    await db.collection('orders').doc(orderId).remove()
+    return { code: 0, msg: '订单已删除' }
+  } catch (e) {
+    console.error('删除订单失败:', e)
     return { code: -1, msg: e.message }
   }
 }

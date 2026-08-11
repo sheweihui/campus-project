@@ -1,0 +1,50 @@
+<view class="page-edit">
+  <view class="card">
+    <view class="form-item">
+      <text class="form-label">订单类型</text>
+      <picker mode="selector" range="{{typeOptions}}" range-key="label" value="{{typeIndex}}" bindchange="onTypeChange">
+        <view class="picker-value">{{typeOptions[typeIndex].label}} ›</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">订单金额</text>
+      <input class="form-input" type="digit" placeholder="请输入订单金额" value="{{form.amount}}" bindinput="onInput" data-field="amount" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">买家昵称</text>
+      <input class="form-input" placeholder="请输入买家昵称（可为空）" value="{{form.buyerNickName}}" bindinput="onInput" data-field="buyerNickName" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">卖家昵称</text>
+      <input class="form-input" placeholder="请输入卖家昵称（可为空）" value="{{form.sellerNickName}}" bindinput="onInput" data-field="sellerNickName" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">支付状态</text>
+      <picker mode="selector" range="{{paymentOptions}}" range-key="label" value="{{paymentIndex}}" bindchange="onPaymentChange">
+        <view class="picker-value">{{paymentOptions[paymentIndex].label}} ›</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">订单状态</text>
+      <picker mode="selector" range="{{orderStatusOptions}}" range-key="label" value="{{orderStatusIndex}}" disabled="{{paymentOptions[paymentIndex].key !== 'pending'}}" bindchange="onStatusChange">
+        <view class="picker-value {{paymentOptions[paymentIndex].key !== 'pending' ? 'disabled' : ''}}">
+          {{orderStatusOptions[orderStatusIndex].label}} ›
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">备注</text>
+      <input class="form-input" placeholder="备注（可为空）" value="{{form.remark}}" bindinput="onInput" data-field="remark" />
+    </view>
+  </view>
+
+  <view class="submit-bar">
+    <button class="submit-btn" bindtap="submit">{{isEdit ? '保存修改' : '创建订单'}}</button>
+  </view>
+</view>

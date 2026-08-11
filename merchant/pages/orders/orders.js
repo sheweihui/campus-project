@@ -180,5 +180,10 @@ Page({
   goToDetail(e) {
     const id = e.currentTarget.dataset.id
     wx.navigateTo({ url: '/pages/order-detail/order-detail?id=' + id })
+  },
+
+  // 新增订单（手工录入，如线下交易）
+  goToCreate() {
+    wx.navigateTo({ url: '/pages/orders/order-edit' })
   }
 })

@@ -24,6 +24,14 @@
   border-radius: 10rpx;
   font-size: 26rpx;
 }
+.add-btn {
+  background: #10b981;
+  color: #fff;
+  padding: 14rpx 20rpx;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+}
 .filter-btn {
   display: flex;
   align-items: center;

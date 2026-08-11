@@ -52,3 +52,31 @@
   color: #10b981;
   font-weight: 600;
 }
+
+/* 操作按钮 */
+.detail-actions {
+  display: flex;
+  gap: 20rpx;
+  padding: 24rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+}
+
+.action-btn {
+  flex: 1;
+  height: 84rpx;
+  line-height: 84rpx;
+  text-align: center;
+  border-radius: 42rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.action-btn.edit {
+  background: #4a6cf7;
+  color: #fff;
+}
+
+.action-btn.delete {
+  background: #fee2e2;
+  color: #ef4444;
+}
