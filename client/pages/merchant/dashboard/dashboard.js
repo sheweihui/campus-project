@@ -115,7 +115,7 @@ Page({
   // 跳转到订单页
   goToOrders(e) {
     const type = e.currentTarget.dataset.type || ''
-    wx.switchTab({ url: '/pages/orders/orders' })
+    wx.navigateTo({ url: '/pages/merchant/orders/orders' })
     if (type) {
       wx.setStorageSync('orderFilter', type)
     }
@@ -123,16 +123,21 @@ Page({
 
   // 跳转到财务页
   goToFinance() {
-    wx.switchTab({ url: '/pages/finance/finance' })
+    wx.navigateTo({ url: '/pages/merchant/finance/finance' })
   },
 
   // 跳转到用户页
   goToUsers() {
-    wx.navigateTo({ url: '/pages/users/users' })
+    wx.navigateTo({ url: '/pages/merchant/users/users' })
   },
 
   // 跳转到提现管理
   goToWithdraws() {
-    wx.navigateTo({ url: '/pages/withdraws/withdraws' })
+    wx.navigateTo({ url: '/pages/merchant/withdraws/withdraws' })
+  },
+
+  // 返回用户端
+  goBackUser() {
+    wx.navigateBack()
   }
 })

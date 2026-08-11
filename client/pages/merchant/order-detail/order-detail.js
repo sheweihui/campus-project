@@ -45,7 +45,7 @@ Page({
   editOrder() {
     const id = this.data.order && this.data.order._id
     if (!id) return
-    wx.navigateTo({ url: '/pages/orders/order-edit?id=' + id })
+    wx.navigateTo({ url: '/pages/merchant/orders/order-edit?id=' + id })
   },
 
   // 删除订单

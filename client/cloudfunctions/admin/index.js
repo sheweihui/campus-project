@@ -60,6 +60,8 @@ exports.main = async (event, context) => {
     }
 
     switch (action) {
+      case 'checkAdmin':
+        return { code: 0, isAdmin: true }
       case 'getDashboard':
         return await getDashboard(data)
       case 'getOrders':

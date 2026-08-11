@@ -48,6 +48,11 @@
         <text class="function-text">我的发布</text>
         <text class="function-arrow">></text>
       </view>
+      <view class="function-item" bindtap="goToMerchant" wx:if="{{isAdmin}}">
+        <text class="function-icon">🏪</text>
+        <text class="function-text">商家端管理</text>
+        <text class="function-arrow">></text>
+      </view>
       <view class="function-item" bindtap="goToFinance">
         <text class="function-icon">💰</text>
         <text class="function-text">我的财务</text>

@@ -5,6 +5,7 @@
   <view class="header">
     <view class="header-title">校园便利圈 · 商家端</view>
     <view class="header-date">{{util.formatDate('')}}</view>
+    <view class="back-user" bindtap="goBackUser">← 返回用户端</view>
   </view>
 
   <!-- KPI 指标卡片 -->

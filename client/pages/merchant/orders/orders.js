@@ -179,11 +179,11 @@ Page({
   // 查看订单详情
   goToDetail(e) {
     const id = e.currentTarget.dataset.id
-    wx.navigateTo({ url: '/pages/order-detail/order-detail?id=' + id })
+    wx.navigateTo({ url: '/pages/merchant/order-detail/order-detail?id=' + id })
   },
 
   // 新增订单（手工录入，如线下交易）
   goToCreate() {
-    wx.navigateTo({ url: '/pages/orders/order-edit' })
+    wx.navigateTo({ url: '/pages/merchant/orders/order-edit' })
   }
 })

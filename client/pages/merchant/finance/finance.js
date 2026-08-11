@@ -58,6 +58,6 @@ Page({
 
   // 跳转到提现管理
   goToWithdraws() {
-    wx.navigateTo({ url: '/pages/withdraws/withdraws' })
+    wx.navigateTo({ url: '/pages/merchant/withdraws/withdraws' })
   }
 })

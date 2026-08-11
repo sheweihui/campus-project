@@ -30,7 +30,15 @@
     "pages/profile/settings",
     "pages/profile/myposts",
     "pages/admin/homeConfig",
-    "pages/admin/banner"
+    "pages/admin/banner",
+    "pages/merchant/dashboard/dashboard",
+    "pages/merchant/orders/orders",
+    "pages/merchant/order-detail/order-detail",
+    "pages/merchant/orders/order-edit",
+    "pages/merchant/finance/finance",
+    "pages/merchant/withdraws/withdraws",
+    "pages/merchant/users/users",
+    "pages/merchant/settings/settings"
   ],
   "window": {
     "backgroundTextStyle": "light",

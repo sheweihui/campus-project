@@ -14,21 +14,17 @@ Page({
 
     // 快捷入口
     shortcuts: [
-      { icon: '📋', label: '订单管理', url: '/pages/orders/orders', type: 'tab' },
-      { icon: '💰', label: '提现管理', url: '/pages/withdraws/withdraws', type: 'page' },
-      { icon: '👥', label: '用户管理', url: '/pages/users/users', type: 'page' },
-      { icon: '💳', label: '财务总览', url: '/pages/finance/finance', type: 'tab' }
+      { icon: '📋', label: '订单管理', url: '/pages/merchant/orders/orders' },
+      { icon: '💰', label: '提现管理', url: '/pages/merchant/withdraws/withdraws' },
+      { icon: '👥', label: '用户管理', url: '/pages/merchant/users/users' },
+      { icon: '💳', label: '财务总览', url: '/pages/merchant/finance/finance' }
     ]
   },
 
   // 快捷入口跳转
   goToPage(e) {
     const item = e.currentTarget.dataset.item
-    if (item.type === 'tab') {
-      wx.switchTab({ url: item.url })
-    } else {
-      wx.navigateTo({ url: item.url })
-    }
+    wx.navigateTo({ url: item.url })
   },
 
   // 清除缓存
