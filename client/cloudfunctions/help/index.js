@@ -233,6 +233,11 @@ async function acceptExpress(data, openid) {
       return { code: -1, msg: type === 'express' ? '代取需求不存在' : '互助需求不存在' }
     }
 
+    if (tItem.data.status === 'paid' || tItem.data.status === 'completed') {
+      await transaction.rollback()
+      return { code: -1, msg: '该需求已结束，无法接单' }
+    }
+
     if (tItem.data.status !== 'pending') {
       await transaction.rollback()
       return { code: -1, msg: '该需求已被接单' }

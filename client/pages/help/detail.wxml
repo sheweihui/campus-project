@@ -182,7 +182,7 @@
 
 <!-- 接单者操作栏（快递/其他互助） -->
 <view class="bottom-bar" wx:if="{{isAcceptor && (detail.type === 'express' || detail.type === 'other')}}">
-  <view class="bar-btn primary {{detail.status === 'accepted' ? 'disabled' : ''}}" bindtap="acceptExpress">接单</view>
+  <view class="bar-btn primary" wx:if="{{detail.status === 'pending'}}" bindtap="acceptExpress">接单</view>
   <view class="bar-btn" bindtap="startChat">聊天</view>
   <view class="bar-btn" bindtap="copyContact">复制联系方式</view>
 </view>
