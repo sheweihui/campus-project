@@ -4,7 +4,6 @@ Page({
   data: {
     userInfo: {},
     isGuest: false,
-    isAdmin: false,
     stats: {
       lostfound: 0,
       market: 0,
@@ -20,7 +19,6 @@ Page({
 
   async onShow() {
     this.setData({ isGuest: isGuest() })
-    this.checkAdmin()
     await this.loadUserInfo()
     await this.loadStats()
     await this.checkUnreadMessages()
@@ -78,24 +76,6 @@ Page({
     this.setData({
       userInfo: userInfo || { name: '游客' }
     })
-  },
-
-  // 检查是否商家端管理员（有权限才显示商家端入口）
-  async checkAdmin() {
-    try {
-      const { result } = await wx.cloud.callFunction({
-        name: 'admin',
-        data: { action: 'checkAdmin' }
-      })
-      this.setData({ isAdmin: !!(result && result.code === 0) })
-    } catch (error) {
-      this.setData({ isAdmin: false })
-    }
-  },
-
-  // 切换商家端
-  goToMerchant() {
-    navigateTo('/pages/merchant/dashboard/dashboard')
   },
 
   async loadStats() {

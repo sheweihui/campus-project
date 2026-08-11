@@ -2,6 +2,7 @@ const { showLoading, hideLoading, showToast, navigateTo } = require('../../utils
 
 Page({
   data: {
+    isAdmin: false,
     settings: {
       messageNotify: true,
       showPhone: false
@@ -17,6 +18,25 @@ Page({
 
   onLoad() {
     this.loadSettings()
+    this.checkAdmin()
+  },
+
+  // 检查是否商家端管理员
+  async checkAdmin() {
+    try {
+      const { result } = await wx.cloud.callFunction({
+        name: 'admin',
+        data: { action: 'checkAdmin' }
+      })
+      this.setData({ isAdmin: !!(result && result.code === 0) })
+    } catch (error) {
+      this.setData({ isAdmin: false })
+    }
+  },
+
+  // 切换商家端
+  goToMerchant() {
+    wx.navigateTo({ url: '/pages/merchant/dashboard/dashboard' })
   },
 
   loadSettings() {
