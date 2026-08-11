@@ -45,12 +45,12 @@ Page({
 
       if (result.code === 0) {
         const detail = result.data
-        const currentStuId = wx.getStorageSync('stuId') || ''
+        const currentOpenid = wx.getStorageSync('openid') || ''
         
-        console.log('当前用户学号:', currentStuId)
-        console.log('卖家学号:', detail.stuId)
+        console.log('当前用户openid:', currentOpenid)
+        console.log('卖家openid:', detail.openid)
 
-        const isOwner = detail.stuId === currentStuId
+        const isOwner = detail.openid === currentOpenid
         const isVisitor = !isOwner
 
         this.setData({
@@ -99,14 +99,14 @@ Page({
       navigateTo(`/pages/chat/buyerList?relatedId=${detail._id}`)
     } else {
       // 买家：跳转到聊天页面
-      const otherStuId = detail.stuId
+      const otherOpenid = detail.openid
       
-      if (!otherStuId) {
+      if (!otherOpenid) {
         showToast('卖家信息不存在')
         return
       }
 
-      navigateTo(`/pages/chat/chat?otherStuId=${otherStuId}&relatedId=${detail._id}&relatedType=market`)
+      navigateTo(`/pages/chat/chat?otherOpenid=${otherOpenid}&relatedId=${detail._id}&relatedType=market`)
     }
   },
 

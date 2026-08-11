@@ -5,13 +5,13 @@
   </view>
 
   <scroll-view class="buyer-list" scroll-y>
-    <view class="buyer-item" wx:for="{{buyerList}}" wx:key="stuId" bindtap="startChat" data-stuId="{{item.stuId}}">
+    <view class="buyer-item" wx:for="{{buyerList}}" wx:key="openid" bindtap="startChat" data-openid="{{item.openid}}">
       <view class="buyer-avatar">
-        <text>{{item.name || item.stuId}}</text>
+        <text>{{item.nickName || '用'}}</text>
       </view>
       <view class="buyer-info">
-        <view class="buyer-name">{{item.name || item.stuId}}</view>
-        <view class="buyer-stuId">学号：{{item.stuId}}</view>
+        <view class="buyer-name">{{item.nickName || '用户'}}</view>
+        <view class="buyer-stuId">手机：{{item.phoneMask || '未绑定'}}</view>
         <view class="buyer-lastMsg" wx:if="{{item.lastMsg}}">最后消息：{{item.lastMsg}}</view>
       </view>
       <view class="buyer-time">{{item.lastTime}}</view>

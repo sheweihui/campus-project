@@ -5,7 +5,7 @@ Page({
     buyerList: [],
     relatedId: '',
     relatedType: '',
-    myStuId: '',
+    myOpenid: '',
     pageTitle: '联系过该商品的买家',
     pageSubtitle: '买家',
     emptyText: '暂无买家联系',
@@ -13,13 +13,13 @@ Page({
   },
 
   onLoad(options) {
-    const { relatedId, relatedType, sellerStuId } = options
-    const myStuId = wx.getStorageSync('stuId')
+    const { relatedId, relatedType } = options
+    const myOpenid = wx.getStorageSync('openid')
     
     this.setData({
       relatedId,
       relatedType,
-      myStuId
+      myOpenid
     })
 
     this.setPageTitle(relatedType)
@@ -67,7 +67,7 @@ Page({
           action: 'getBuyerList',
           data: {
             relatedId: this.data.relatedId,
-            sellerStuId: this.data.myStuId
+            sellerOpenid: this.data.myOpenid
           }
         }
       })
@@ -84,9 +84,9 @@ Page({
   },
 
   startChat(e) {
-    const stuId = e.currentTarget.dataset.stuid
-    if (!stuId) return
+    const openid = e.currentTarget.dataset.openid
+    if (!openid) return
 
-    navigateTo(`/pages/chat/chat?otherStuId=${stuId}&relatedId=${this.data.relatedId}&relatedType=${this.data.relatedType}`)
+    navigateTo(`/pages/chat/chat?otherOpenid=${openid}&relatedId=${this.data.relatedId}&relatedType=${this.data.relatedType}`)
   }
 })

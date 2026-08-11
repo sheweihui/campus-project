@@ -1,7 +1,7 @@
 <view class="container">
   <view class="chat-header">
-    <view class="header-title">{{otherUserInfo.name || '聊天'}}</view>
-    <view class="header-info">{{otherUserInfo.stuId || ''}}</view>
+    <view class="header-title">{{otherUserInfo.nickName || '聊天'}}</view>
+    <view class="header-info">{{otherUserInfo.phoneMask || ''}}</view>
   </view>
 
   <scroll-view 
@@ -17,7 +17,7 @@
       id="msg-{{index}}"
     >
       <view class="message-avatar">
-        <text>{{item.senderId === myStuId ? '我' : (otherUserInfo.name || '对方')}}</text>
+        <text>{{item.senderId === myOpenid ? '我' : (otherUserInfo.nickName || '对方')}}</text>
       </view>
       <view class="message-content">
         <text>{{item.content}}</text>

@@ -99,9 +99,9 @@ async function unifiedOrder(data, openid) {
   const outTradeNo = `${Date.now()}_${openid.slice(-8)}_${Math.random().toString(36).slice(2, 8)}`
 
   try {
-    // 支付必须完成学号登录（拦截游客）
-    if (!(await requireStudent(openid))) {
-      return { code: -1, msg: '请先完成学号登录后再支付' }
+    // 支付必须完成微信登录并绑定手机号（拦截游客）
+    if (!(await requirePhone(openid))) {
+      return { code: -1, msg: '请先完成微信登录并绑定手机号后再支付' }
     }
 
     // 下单前校验商品状态和金额，防止重复售卖/金额篡改
@@ -169,11 +169,11 @@ async function unifiedOrder(data, openid) {
   }
 }
 
-// 校验调用者是否已绑定学号
-async function requireStudent(openid) {
+// 校验调用者是否已绑定手机号
+async function requirePhone(openid) {
   try {
-    const res = await db.collection('student').where({ openid }).get()
-    return res.data.length > 0 && !!res.data[0].stuId
+    const res = await db.collection('users').where({ openid }).get()
+    return res.data.length > 0 && !!res.data[0].phone
   } catch (e) {
     return false
   }

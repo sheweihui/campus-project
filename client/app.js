@@ -33,16 +33,14 @@ App({
 
   checkUnreadMessages: async function() {
     try {
-      const userInfo = wx.getStorageSync('userInfo')
-      const stuId = userInfo?.stuId || wx.getStorageSync('stuId')
-      
-      if (!stuId) return
+      const openid = wx.getStorageSync('openid')
+      if (!openid) return
       
       const res = await wx.cloud.callFunction({
         name: 'messages',
         data: {
           action: 'getUnreadCount',
-          data: { stuId }
+          data: { openid }
         }
       })
       
@@ -64,23 +62,22 @@ App({
 
   forceLogin: async function() {
     try {
-      // 1. 检查本地存储中是否有学号登录信息
-      const stuId = wx.getStorageSync('stuId')
+      // 1. 检查本地存储中是否有登录信息（微信手机号登录）
       const userInfo = wx.getStorageSync('userInfo')
       const openid = wx.getStorageSync('openid')
       
-      // 2. 如果有学号和用户信息，说明已登录过，直接使用
-      if (stuId && userInfo) {
+      // 2. 已通过微信手机号登录，直接使用本地信息
+      if (userInfo && !userInfo.isGuest && userInfo.phone) {
         this.globalData.userInfo = userInfo
-        this.globalData.stuId = stuId
+        this.globalData.stuId = ''
         if (openid) {
           this.globalData.openid = openid
         }
-        console.log('自动登录成功，使用本地存储的学号:', stuId)
+        console.log('自动登录成功（微信手机号）')
         return
       }
 
-      // 3. 获取微信登录凭证（用于获取 openid）
+      // 3. 游客或未绑定手机号：获取微信 openid
       const loginResult = await wx.login()
       if (!loginResult || !loginResult.code) {
         throw new Error('获取登录凭证失败')
@@ -108,11 +105,6 @@ App({
         wx.setStorageSync('openid', newOpenid)
         this.globalData.openid = newOpenid
         console.log('获取 openid 成功:', newOpenid)
-      }
-      
-      // 如果没有学号登录信息，不做处理，等待用户去登录页面登录
-      if (!stuId) {
-        console.log('未检测到学号登录信息，需前往登录页面')
       }
       
     } catch (error) {
@@ -144,6 +136,6 @@ App({
   globalData: {
     userInfo: null,
     openid: null,
-    stuId: null
+    stuId: ''
   }
 })

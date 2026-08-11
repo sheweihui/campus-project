@@ -827,14 +827,19 @@ async function getUserList(data) {
   const { page = 1, pageSize = 20, keyword } = data || {}
 
   try {
-    // 从 student 表和 users 表联合获取（分批，避免 100 条上限）
-    const [students, users, financeList] = await Promise.all([
-      getAll(db.collection('student')).catch(() => []),
+    // 以 users 表为主（微信登录 + 手机号），student 仅作学号补充
+    const [users, students, financeList] = await Promise.all([
       getAll(db.collection('users')).catch(() => []),
+      getAll(db.collection('student')).catch(() => []),
       getAll(db.collection('finance')).catch(() => [])
     ])
 
     // 合并用户信息
+    const studentMap = {}
+    students.forEach(s => {
+      if (s.openid) studentMap[s.openid] = s.stuId || ''
+    })
+
     const financeMap = {}
     financeList.forEach(f => {
       financeMap[f.openid || f.stuId] = {
@@ -845,34 +850,22 @@ async function getUserList(data) {
       }
     })
 
-    let allUsers = students.map(s => ({
-      stuId: s.stuId || '',
-      openid: s.openid || '',
-      avatarUrl: s.avatarUrl || '',
-      nickName: s.nickName || '',
-      createTime: s.createTime || '',
-      ...(financeMap[s.openid || s.stuId] || {})
+    const allUsers = users.map(u => ({
+      openid: u.openid || '',
+      stuId: studentMap[u.openid] || u.stuId || '',
+      phone: u.phone || '',
+      avatarUrl: u.avatarUrl || '',
+      nickName: u.nickName || '',
+      createTime: u.createTime || '',
+      ...(financeMap[u.openid || u.stuId] || {})
     }))
-
-    // 添加只在 users 表中有记录的用户
-    users.forEach(u => {
-      if (!allUsers.find(a => a.openid === u.openid)) {
-        allUsers.push({
-          stuId: u.stuId || '',
-          openid: u.openid || '',
-          avatarUrl: u.avatarUrl || '',
-          nickName: u.nickName || '',
-          createTime: u.createTime || '',
-          ...(financeMap[u.openid || u.stuId] || {})
-        })
-      }
-    })
 
     // 关键词过滤
     if (keyword) {
       const kw = keyword.toLowerCase()
       allUsers = allUsers.filter(u =>
         (u.stuId && u.stuId.includes(kw)) ||
+        (u.phone && u.phone.includes(kw)) ||
         (u.nickName && u.nickName.toLowerCase().includes(kw))
       )
     }

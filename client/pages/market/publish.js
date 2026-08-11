@@ -188,7 +188,6 @@ Page({
     showLoading('提交中...')
 
     try {
-      const stuId = wx.getStorageSync('stuId') || ''
       const payload = {
         title: title.trim(),
         price: parseFloat(price),
@@ -207,8 +206,7 @@ Page({
         data: {
           action: this.data.id ? 'update' : 'add',
           data: {
-            ...payload,
-            stuId
+            ...payload
           }
         }
       })

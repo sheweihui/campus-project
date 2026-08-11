@@ -8,18 +8,15 @@ exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
 
   try {
-    // 通过 openid 解析调用者的学号，用于身份校验
-    const myStuId = await getStuIdByOpenid(OPENID)
-
     switch (action) {
       case 'markAllRead':
-        return await markAllRead(data, myStuId)
+        return await markAllRead(data, OPENID)
       case 'markRead':
-        return await markRead(data, myStuId)
+        return await markRead(data, OPENID)
       case 'getUnreadCount':
-        return await getUnreadCount(data, myStuId)
+        return await getUnreadCount(data, OPENID)
       case 'list':
-        return await listMessages(data, myStuId)
+        return await listMessages(data, OPENID)
       default:
         return { code: -1, msg: '未知操作' }
     }
@@ -28,25 +25,14 @@ exports.main = async (event, context) => {
   }
 }
 
-// 通过 openid 查学号
-async function getStuIdByOpenid(openid) {
-  if (!openid) return ''
-  try {
-    const res = await db.collection('student').where({ openid }).get()
-    return res.data.length > 0 ? (res.data[0].stuId || '') : ''
-  } catch (e) {
-    return ''
-  }
+// 校验 openid 是否为调用者本人，防止越权读写他人消息
+function checkAccess(paramOpenid, myOpenid) {
+  return Boolean(myOpenid) && paramOpenid === myOpenid
 }
 
-// 校验 stuId 是否为调用者本人，防止越权读写他人消息
-function checkAccess(paramStuId, myStuId) {
-  return Boolean(myStuId) && paramStuId === myStuId
-}
-
-async function markAllRead(data, myStuId) {
-  const { stuId } = data
-  if (!checkAccess(stuId, myStuId)) {
+async function markAllRead(data, myOpenid) {
+  const { openid } = data
+  if (!checkAccess(openid, myOpenid)) {
     return { code: -1, msg: '无权限操作' }
   }
 
@@ -54,7 +40,7 @@ async function markAllRead(data, myStuId) {
   let total = 0
   while (true) {
     const messages = await db.collection('messages')
-      .where({ toStuId: stuId, isRead: false })
+      .where({ toOpenid: openid, isRead: false })
       .skip(total)
       .limit(100)
       .get()
@@ -74,9 +60,9 @@ async function markAllRead(data, myStuId) {
   return { code: 0, msg: '标记成功', data: { count: total } }
 }
 
-async function markRead(data, myStuId) {
-  const { stuId, messageId } = data
-  if (!checkAccess(stuId, myStuId)) {
+async function markRead(data, myOpenid) {
+  const { openid, messageId } = data
+  if (!checkAccess(openid, myOpenid)) {
     return { code: -1, msg: '无权限操作' }
   }
   if (!messageId) {
@@ -89,7 +75,7 @@ async function markRead(data, myStuId) {
       return { code: -1, msg: '消息不存在' }
     }
     // 只能标记发给自己的消息
-    if (msg.data.toStuId !== stuId) {
+    if (msg.data.toOpenid !== openid) {
       return { code: -1, msg: '无权限操作' }
     }
     await db.collection('messages').doc(messageId).update({
@@ -101,45 +87,39 @@ async function markRead(data, myStuId) {
   }
 }
 
-async function getUnreadCount(data, myStuId) {
-  const { stuId } = data
-  if (!checkAccess(stuId, myStuId)) {
+async function getUnreadCount(data, myOpenid) {
+  const { openid } = data
+  if (!checkAccess(openid, myOpenid)) {
     return { code: -1, msg: '无权限操作' }
   }
 
   const result = await db.collection('messages')
-    .where({ toStuId: stuId, isRead: false })
+    .where({ toOpenid: openid, isRead: false })
     .count()
-  
+
   return { code: 0, data: { count: result.total } }
 }
 
-async function listMessages(data, myStuId) {
-  const { stuId, tab, page = 1, pageSize = 10 } = data
-  if (!checkAccess(stuId, myStuId)) {
+async function listMessages(data, myOpenid) {
+  const { openid, tab, page = 1, pageSize = 10 } = data
+  if (!checkAccess(openid, myOpenid)) {
     return { code: -1, msg: '无权限操作' }
   }
 
-  console.log('listMessages:', { stuId, tab, page, pageSize })
-  
-  const where = { toStuId: stuId }
-  
+  const where = { toOpenid: openid }
+
   if (tab === 'unread') {
     where.isRead = false
   } else if (tab === 'read') {
     where.isRead = true
   }
 
-  console.log('查询条件:', where)
-  
   const result = await db.collection('messages')
     .where(where)
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .get()
-  
-  console.log('查询结果:', result.data.length, '条')
-  
+
   return { code: 0, data: { list: result.data } }
 }

@@ -42,14 +42,14 @@ Page({
   
   async checkUnreadMessages() {
     try {
-      const userInfo = wx.getStorageSync('userInfo')
-      if (!userInfo || !userInfo.stuId) return
+      const openid = wx.getStorageSync('openid')
+      if (!openid) return
       
       const res = await wx.cloud.callFunction({
         name: 'messages',
         data: {
           action: 'getUnreadCount',
-          data: { stuId: userInfo.stuId }
+          data: { openid }
         }
       })
       

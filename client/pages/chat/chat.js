@@ -5,8 +5,8 @@ Page({
     messages: [],
     inputText: '',
     toView: '',
-    myStuId: '',
-    otherStuId: '',
+    myOpenid: '',
+    otherOpenid: '',
     otherUserInfo: {},
     relatedId: '',
     relatedType: '',
@@ -14,10 +14,10 @@ Page({
   },
 
   onLoad(options) {
-    const { otherStuId, relatedId, relatedType } = options
-    const myStuId = wx.getStorageSync('stuId')
+    const { otherOpenid, relatedId, relatedType } = options
+    const myOpenid = wx.getStorageSync('openid')
     
-    if (isGuest() || !myStuId) {
+    if (isGuest() || !myOpenid) {
       showToast('请先登录后再聊天')
       setTimeout(() => {
         wx.navigateBack()
@@ -25,7 +25,7 @@ Page({
       return
     }
 
-    if (!otherStuId) {
+    if (!otherOpenid) {
       showToast('对方信息不存在')
       setTimeout(() => {
         wx.navigateBack()
@@ -34,8 +34,8 @@ Page({
     }
     
     this.setData({
-      myStuId,
-      otherStuId,
+      myOpenid,
+      otherOpenid,
       relatedId,
       relatedType
     })
@@ -52,10 +52,10 @@ Page({
   async loadOtherUserInfo() {
     try {
       const res = await wx.cloud.callFunction({
-        name: 'student',
+        name: 'user',
         data: {
-          action: 'getInfo',
-          data: { stuId: this.data.otherStuId }
+          action: 'getPublicInfo',
+          data: { targetOpenid: this.data.otherOpenid }
         }
       })
       
@@ -65,8 +65,8 @@ Page({
         // 如果获取不到用户信息，使用学号作为显示名
         this.setData({ 
           otherUserInfo: { 
-            name: this.data.otherStuId,
-            stuId: this.data.otherStuId
+            nickName: '用户',
+            openid: this.data.otherOpenid
           } 
         })
       }
@@ -75,8 +75,8 @@ Page({
       // 如果获取失败，使用学号作为显示名
       this.setData({ 
         otherUserInfo: { 
-          name: this.data.otherStuId,
-          stuId: this.data.otherStuId
+          nickName: '用户',
+          openid: this.data.otherOpenid
         } 
       })
     }
@@ -89,8 +89,8 @@ Page({
         data: {
           action: 'list',
           data: {
-            myStuId: this.data.myStuId,
-            otherStuId: this.data.otherStuId,
+            myOpenid: this.data.myOpenid,
+            otherOpenid: this.data.otherOpenid,
             relatedId: this.data.relatedId
           }
         }
@@ -130,8 +130,8 @@ Page({
         data: {
           action: 'send',
           data: {
-            senderId: this.data.myStuId,
-            receiverId: this.data.otherStuId,
+            senderId: this.data.myOpenid,
+            receiverId: this.data.otherOpenid,
             content,
             relatedId: this.data.relatedId,
             relatedType: this.data.relatedType

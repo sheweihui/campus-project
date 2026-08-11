@@ -388,7 +388,6 @@ Page({
       } = form
 
       const data = { ...cleanForm, type }
-      data.stuId = wx.getStorageSync('stuId') || ''
 
       if (type === 'express' || type === 'other') {
         data.reward = parseFloat(data.reward)

@@ -25,13 +25,11 @@ Page({
   async loadRecords() {
     showLoading()
     try {
-      const stuId = wx.getStorageSync('stuId')
       const { result } = await wx.cloud.callFunction({
         name: 'user',
         data: {
           action: 'getWithdrawRecords',
           data: {
-            stuId,
             status: this.data.statusFilter === 'all' ? '' : this.data.statusFilter
           }
         }

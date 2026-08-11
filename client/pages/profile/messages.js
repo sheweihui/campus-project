@@ -50,16 +50,15 @@ Page({
 
   async loadUnreadCount() {
     try {
-      const userInfo = wx.getStorageSync('userInfo')
-      const stuId = userInfo?.stuId || wx.getStorageSync('stuId')
+      const openid = wx.getStorageSync('openid')
       
-      if (!stuId) return
+      if (!openid) return
       
       const res = await wx.cloud.callFunction({
         name: 'messages',
         data: {
           action: 'getUnreadCount',
-          data: { stuId }
+          data: { openid }
         }
       })
       
@@ -78,10 +77,9 @@ Page({
     showLoading()
 
     try {
-      const userInfo = wx.getStorageSync('userInfo')
-      const stuId = userInfo?.stuId || wx.getStorageSync('stuId')
+      const openid = wx.getStorageSync('openid')
       
-      if (!stuId) {
+      if (!openid) {
         this.setData({ messageList: [], hasMore: false })
         return
       }
@@ -92,7 +90,7 @@ Page({
         data: {
           action: 'list',
           data: {
-            stuId,
+            openid,
             tab: this.data.currentTab,
             page: this.data.page,
             pageSize: this.data.pageSize
@@ -143,17 +141,16 @@ Page({
 
   async markAllAsRead() {
     try {
-      const userInfo = wx.getStorageSync('userInfo')
-      const stuId = userInfo?.stuId || wx.getStorageSync('stuId')
+      const openid = wx.getStorageSync('openid')
       
-      if (!stuId) return
+      if (!openid) return
       
       // 使用云函数批量标记已读
       const res = await wx.cloud.callFunction({
         name: 'messages',
         data: {
           action: 'markAllRead',
-          data: { stuId }
+          data: { openid }
         }
       })
       
@@ -176,13 +173,12 @@ Page({
     // 标记消息为已读
     if (message && !message.isRead) {
       try {
-        const userInfo = wx.getStorageSync('userInfo')
-        const stuId = userInfo?.stuId || wx.getStorageSync('stuId')
+        const openid = wx.getStorageSync('openid')
         await wx.cloud.callFunction({
           name: 'messages',
           data: {
             action: 'markRead',
-            data: { stuId, messageId: id }
+            data: { openid, messageId: id }
           }
         })
 
@@ -242,17 +238,16 @@ Page({
 
   async updateUnreadCount() {
     try {
-      const userInfo = wx.getStorageSync('userInfo')
-      const stuId = userInfo?.stuId || wx.getStorageSync('stuId')
+      const openid = wx.getStorageSync('openid')
       
-      if (!stuId) return
+      if (!openid) return
       
       // 使用云函数获取未读计数
       const res = await wx.cloud.callFunction({
         name: 'messages',
         data: {
           action: 'getUnreadCount',
-          data: { stuId }
+          data: { openid }
         }
       })
       

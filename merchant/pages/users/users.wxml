@@ -4,7 +4,7 @@
   <!-- 搜索 -->
   <view class="search-bar">
     <input class="search-input"
-      placeholder="搜索学号或昵称"
+      placeholder="搜索手机号/昵称"
       value="{{keyword}}"
       bindinput="onSearchInput"
       bindconfirm="onSearch"
@@ -27,8 +27,8 @@
     <view class="user-card card" wx:for="{{users}}" wx:key="openid">
       <view class="user-header flex-between">
         <view class="user-info">
-          <view class="user-name">{{item.nickName || item.stuId || '未命名'}}</view>
-          <view class="user-id">{{item.stuId || '未绑定学号'}}</view>
+          <view class="user-name">{{item.nickName || '未命名'}}</view>
+          <view class="user-id">{{item.phone || '未绑定手机号'}}</view>
         </view>
         <view class="user-balance">
           <view class="balance-amount">{{util.formatAmount(item.availableAmount || 0)}}</view>

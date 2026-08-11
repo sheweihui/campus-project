@@ -13,9 +13,9 @@
       <view class="avatar-edit-icon">+</view>
     </view>
     <view class="user-info">
-      <view class="user-name">{{userInfo.name || '未设置姓名'}}</view>
-      <view class="user-id" wx:if="{{userInfo.stuId}}">学号：{{userInfo.stuId}}</view>
+      <view class="user-name">{{userInfo.nickName || userInfo.name || '未设置姓名'}}</view>
       <view class="user-phone" wx:if="{{userInfo.phone}}">手机：{{userInfo.phone}}</view>
+      <view class="user-id" wx:if="{{userInfo.isGuest}}">游客模式</view>
     </view>
     <view class="edit-btn" bindtap="goToSettings">设置</view>
   </view>

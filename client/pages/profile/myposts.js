@@ -70,12 +70,11 @@ Page({
 
   async loadLostfoundPosts() {
     try {
-      const stuId = wx.getStorageSync('stuId')
       const { result } = await wx.cloud.callFunction({
         name: 'lostfound',
         data: {
           action: 'myList',
-          data: { stuId, page: 1, pageSize: 50 }
+          data: { page: 1, pageSize: 50 }
         }
       })
 
@@ -94,12 +93,11 @@ Page({
 
   async loadMarketPosts() {
     try {
-      const stuId = wx.getStorageSync('stuId')
       const { result } = await wx.cloud.callFunction({
         name: 'market',
         data: {
           action: 'myList',
-          data: { stuId, page: 1, pageSize: 50 }
+          data: { page: 1, pageSize: 50 }
         }
       })
 
@@ -118,7 +116,6 @@ Page({
 
   async loadHelpPosts() {
     try {
-      const stuId = wx.getStorageSync('stuId')
       const types = ['carpool', 'express', 'partner', 'other']
       const helpPosts = []
 
@@ -126,8 +123,8 @@ Page({
         const { result } = await wx.cloud.callFunction({
           name: 'help',
           data: {
-            action: 'myList',
-            data: { type, stuId, page: 1, pageSize: 50 }
+          action: 'myList',
+          data: { type, page: 1, pageSize: 50 }
           }
         })
 

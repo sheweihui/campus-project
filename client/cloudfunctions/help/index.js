@@ -36,10 +36,10 @@ exports.main = async (event, context) => {
 }
 
 async function addHelp(data, openid) {
-  // 发布必须完成学号登录（拦截游客）
-  const stuId = await getStuIdByOpenid(openid)
-  if (!stuId) {
-    return { code: -1, msg: '请先完成学号登录后再发布' }
+  // 发布必须完成微信登录并绑定手机号（拦截游客）
+  const phone = await getPhoneByOpenid(openid)
+  if (!phone) {
+    return { code: -1, msg: '请先完成微信登录并绑定手机号后再发布' }
   }
 
   const collection = getCollectionByType(data.type)
@@ -58,7 +58,8 @@ async function addHelp(data, openid) {
     data: {
       ...cleanData,
       openid,
-      stuId,
+      phone,
+      stuId: '',
       status: data.type === 'express' || data.type === 'other' ? 'pending' : 'active',
       createTime: db.serverDate(),
       updateTime: db.serverDate()
@@ -215,11 +216,10 @@ function getCollectionByType(type) {
 async function acceptExpress(data, openid) {
   const { id, type = 'express' } = data
 
-  // 接单者学号由服务端根据 openid 解析，防止冒充他人接单
-  const stuId = await getStuIdByOpenid(openid)
-
-  if (!stuId) {
-    return { code: -1, msg: '请先登录' }
+  // 必须绑定手机号（拦截游客）
+  const phone = await getPhoneByOpenid(openid)
+  if (!phone) {
+    return { code: -1, msg: '请先完成微信登录并绑定手机号' }
   }
 
   const collection = getCollectionByType(type)
@@ -247,7 +247,7 @@ async function acceptExpress(data, openid) {
       data: {
         status: 'accepted',
         acceptorOpenid: openid,
-        acceptorStuId: stuId,
+        acceptorStuId: phone,
         acceptTime: db.serverDate(),
         updateTime: db.serverDate()
       }
@@ -263,11 +263,11 @@ async function acceptExpress(data, openid) {
   const item = await db.collection(collection).doc(id).get()
 
   // 获取接单者信息
-  const acceptorInfo = await db.collection('student').where({ stuId }).field({ nickName: true }).get()
+  const acceptorInfo = await db.collection('users').where({ openid }).get()
   const acceptorNickName = acceptorInfo.data[0]?.nickName || '接单用户'
 
   // 获取发布者信息
-  const publisherInfo = await db.collection('student').where({ stuId: item.data.stuId }).field({ nickName: true }).get()
+  const publisherInfo = await db.collection('users').where({ openid: item.data.openid }).get()
   const publisherNickName = publisherInfo.data[0]?.nickName || '用户'
 
   // 给发布者发送消息通知
@@ -298,24 +298,14 @@ async function acceptExpress(data, openid) {
   return { code: 0, msg: '接单成功' }
 }
 
-// 通过 openid 查学号
-async function getStuIdByOpenid(openid) {
+// 通过 openid 查询绑定的手机号
+async function getPhoneByOpenid(openid) {
   if (!openid) return ''
   try {
-    const res = await db.collection('student').where({ openid }).get()
-    return res.data.length > 0 ? (res.data[0].stuId || '') : ''
+    const res = await db.collection('users').where({ openid }).get()
+    return res.data.length > 0 ? (res.data[0].phone || '') : ''
   } catch (e) {
     return ''
-  }
-}
-
-// 校验调用者是否已绑定学号
-async function requireStudent(openid) {
-  try {
-    const res = await db.collection('student').where({ openid }).get()
-    return res.data.length > 0 && !!res.data[0].stuId
-  } catch (e) {
-    return false
   }
 }
 
@@ -328,19 +318,10 @@ function isValidAmount(value) {
 
 async function sendMessage(messageData) {
   try {
-    let toStuId = messageData.toStuId || ''
-    
-    if (!toStuId && messageData.toOpenid) {
-      const userRes = await db.collection('student').where({ openid: messageData.toOpenid }).get()
-      if (userRes.data.length > 0) {
-        toStuId = userRes.data[0].stuId || ''
-      }
-    }
-    
     await db.collection('messages').add({
       data: {
         ...messageData,
-        toStuId,
+        toOpenid: messageData.toOpenid || '',
         isRead: false,
         createTime: db.serverDate()
       }

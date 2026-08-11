@@ -269,32 +269,24 @@ function getCollectionByType(type) {
 async function getNickName(openid) {
   if (!openid) return ''
   try {
-    const res = await db.collection('student').where({ openid }).field({ name: true, nickName: true }).get()
-    if (res.data.length > 0) {
-      return res.data[0].nickName || res.data[0].name || ''
+    const userRes = await db.collection('users').where({ openid }).get()
+    if (userRes.data.length > 0) {
+      const u = userRes.data[0]
+      if (u.nickName) return u.nickName
+      if (u.phone) return `用户${u.phone.slice(-4)}`
     }
-    const userRes = await db.collection('users').where({ openid }).field({ nickName: true }).get()
-    return userRes.data.length > 0 ? (userRes.data[0].nickName || '') : ''
   } catch (e) {
     return ''
   }
+  return ''
 }
 
 async function sendMessage(messageData) {
   try {
-    let toStuId = messageData.toStuId || ''
-
-    if (!toStuId && messageData.toOpenid) {
-      const userRes = await db.collection('student').where({ openid: messageData.toOpenid }).get()
-      if (userRes.data.length > 0) {
-        toStuId = userRes.data[0].stuId || ''
-      }
-    }
-
     await db.collection('messages').add({
       data: {
         ...messageData,
-        toStuId,
+        toOpenid: messageData.toOpenid || '',
         isRead: false,
         createTime: db.serverDate()
       }

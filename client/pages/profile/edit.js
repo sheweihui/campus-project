@@ -4,7 +4,6 @@ Page({
   data: {
     form: {
       nickName: '',
-      stuId: '',
       phone: '',
       avatarUrl: ''
     }
@@ -14,8 +13,7 @@ Page({
     const userInfo = wx.getStorageSync('userInfo')
     this.setData({
       form: {
-        nickName: userInfo.nickName || '',
-        stuId: userInfo.stuId || '',
+        nickName: userInfo.nickName || userInfo.name || '',
         phone: userInfo.phone || '',
         avatarUrl: userInfo.avatarUrl || ''
       }

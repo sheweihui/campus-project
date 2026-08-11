@@ -145,10 +145,6 @@ Page({
       return
     }
 
-    // 获取当前登录用户学号
-    const userInfo = wx.getStorageSync('userInfo')
-    const stuId = userInfo ? userInfo.stuId : ''
-
     showLoading('提交中...')
 
     try {
@@ -163,7 +159,7 @@ Page({
         ...cleanForm
       } = this.data.form
 
-      const payload = { ...cleanForm, stuId }
+      const payload = { ...cleanForm }
       if (this.data.id) {
         payload.id = this.data.id
       }

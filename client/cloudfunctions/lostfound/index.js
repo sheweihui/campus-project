@@ -34,20 +34,21 @@ exports.main = async (event, context) => {
 }
 
 async function addLostFound(data, openid) {
-  // 发布必须完成学号登录（拦截游客）
-  const stuId = await getStuIdByOpenid(openid)
-  if (!stuId) {
-    return { code: -1, msg: '请先完成学号登录后再发布' }
+  // 发布必须完成微信登录并绑定手机号（拦截游客）
+  const phone = await getPhoneByOpenid(openid)
+  if (!phone) {
+    return { code: -1, msg: '请先完成微信登录并绑定手机号后再发布' }
   }
 
-  // 学号由服务端解析，忽略客户端传入的 stuId，防止冒用他人学号
+  // 忽略客户端传入的 stuId
   const { stuId: clientStuId, ...cleanData } = data
 
   const result = await db.collection('lostfound').add({
     data: {
       ...cleanData,
       openid,
-      stuId,
+      phone,
+      stuId: '',
       status: 'pending',
       createTime: db.serverDate(),
       updateTime: db.serverDate()
@@ -140,21 +141,12 @@ async function updateStatus({ id, status }, openid) {
   return { code: 0, msg: '状态更新成功' }
 }
 
-// 校验调用者是否已绑定学号
-async function requireStudent(openid) {
+// 通过 openid 查询绑定的手机号
+async function getPhoneByOpenid(openid) {
+  if (!openid) return ''
   try {
-    const res = await db.collection('student').where({ openid }).get()
-    return res.data.length > 0 && !!res.data[0].stuId
-  } catch (e) {
-    return false
-  }
-}
-
-// 通过 openid 查询绑定的学号
-async function getStuIdByOpenid(openid) {
-  try {
-    const res = await db.collection('student').where({ openid }).get()
-    return res.data.length > 0 ? (res.data[0].stuId || '') : ''
+    const res = await db.collection('users').where({ openid }).get()
+    return res.data.length > 0 ? (res.data[0].phone || '') : ''
   } catch (e) {
     return ''
   }

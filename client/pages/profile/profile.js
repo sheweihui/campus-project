@@ -26,10 +26,9 @@ Page({
 
   async checkUnreadMessages() {
     try {
-      const userInfo = wx.getStorageSync('userInfo')
-      const stuId = userInfo?.stuId || wx.getStorageSync('stuId')
+      const openid = wx.getStorageSync('openid')
       
-      if (!stuId) {
+      if (!openid) {
         console.log('没有用户信息，跳过检查')
         wx.removeTabBarBadge({ index: 2 })
         this.setData({ 'stats.unreadMessages': 0 })
@@ -40,7 +39,7 @@ Page({
         name: 'messages',
         data: {
           action: 'getUnreadCount',
-          data: { stuId }
+          data: { openid }
         }
       })
       
@@ -81,12 +80,11 @@ Page({
 
   async loadStats() {
     try {
-      const stuId = wx.getStorageSync('stuId')
       const { result } = await wx.cloud.callFunction({
         name: 'user',
         data: {
           action: 'getStats',
-          data: { stuId }
+          data: {}
         }
       })
 
@@ -135,17 +133,6 @@ Page({
           data: { avatarUrl: fileID }
         }
       })
-
-      const stuId = userInfo.stuId || wx.getStorageSync('stuId')
-      if (stuId) {
-        await wx.cloud.callFunction({
-          name: 'user',
-          data: {
-            action: 'updateStudent',
-            data: { stuId, avatarUrl: fileID }
-          }
-        })
-      }
 
       hideLoading()
       wx.showToast({ title: '上传成功', icon: 'success' })

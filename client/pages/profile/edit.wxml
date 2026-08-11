@@ -15,12 +15,6 @@
       <input class="form-input" placeholder="请输入昵称" value="{{form.nickName}}" bindinput="onInput" data-field="nickName" />
     </view>
 
-    <!-- 学号 -->
-    <view class="form-item">
-      <text class="form-label">学号</text>
-      <input class="form-input" placeholder="请输入学号" value="{{form.studentId}}" bindinput="onInput" data-field="studentId" />
-    </view>
-
     <!-- 手机号 -->
     <view class="form-item">
       <text class="form-label">手机号</text>

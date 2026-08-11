@@ -1,0 +1,11 @@
+{
+  "name": "queryMarket",
+  "version": "1.0.0",
+  "description": "临时查询云函数：查找高数相关商品",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  },
+  "author": "",
+  "license": "ISC"
+}

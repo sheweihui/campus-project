@@ -22,12 +22,11 @@ Page({
   async loadFinance() {
     showLoading()
     try {
-      const stuId = wx.getStorageSync('stuId')
       const { result } = await wx.cloud.callFunction({
         name: 'user',
         data: {
           action: 'getFinance',
-          data: { stuId }
+          data: {}
         }
       })
 

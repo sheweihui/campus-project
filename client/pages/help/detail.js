@@ -60,14 +60,14 @@ Page({
           }
         }
         
-        const currentStuId = wx.getStorageSync('stuId') || ''
+        const currentOpenid = wx.getStorageSync('openid') || ''
         
-        console.log('当前用户学号:', currentStuId)
-        console.log('发布者学号:', detail.stuId)
-        console.log('接单者学号:', detail.acceptorStuId)
+        console.log('当前用户openid:', currentOpenid)
+        console.log('发布者openid:', detail.openid)
+        console.log('接单者openid:', detail.acceptorOpenid)
 
-        const isOwner = detail.stuId === currentStuId
-        const isAcceptor = detail.acceptorStuId === currentStuId
+        const isOwner = detail.openid === currentOpenid
+        const isAcceptor = detail.acceptorOpenid === currentOpenid
         const isVisitor = !isOwner && !isAcceptor
 
         console.log('身份判断 - isOwner:', isOwner, 'isAcceptor:', isAcceptor, 'isVisitor:', isVisitor)
@@ -105,35 +105,33 @@ Page({
     if (!requireLogin()) return
 
     const { detail, isOwner } = this.data
-    const currentStuId = wx.getStorageSync('stuId')
-    
     // 获取对方学号
-    let otherStuId = ''
+    let otherOpenid = ''
     
     if (isOwner) {
       // 发布者：拼车和找搭子显示联系过的人列表
       if (detail.type === 'carpool' || detail.type === 'partner') {
-        navigateTo(`/pages/chat/buyerList?relatedId=${detail._id}&relatedType=help-${detail.type}&sellerStuId=${detail.stuId}`)
+        navigateTo(`/pages/chat/buyerList?relatedId=${detail._id}&relatedType=help-${detail.type}`)
         return
       }
       // 代取快递/其他互助：如果有接单者，发给接单者
-      if (detail.acceptorStuId) {
-        otherStuId = detail.acceptorStuId
+      if (detail.acceptorOpenid) {
+        otherOpenid = detail.acceptorOpenid
       } else {
         showToast('还没有接单者')
         return
       }
     } else {
       // 浏览者：发给发布者
-      if (detail.stuId) {
-        otherStuId = detail.stuId
+      if (detail.openid) {
+        otherOpenid = detail.openid
       } else {
         showToast('发布者信息不存在')
         return
       }
     }
 
-    navigateTo(`/pages/chat/chat?otherStuId=${otherStuId}&relatedId=${detail._id}&relatedType=help-${detail.type}`)
+    navigateTo(`/pages/chat/chat?otherOpenid=${otherOpenid}&relatedId=${detail._id}&relatedType=help-${detail.type}`)
   },
 
   async updateStatus() {
@@ -213,14 +211,13 @@ Page({
 
     showLoading('接单中...')
     try {
-      const currentStuId = wx.getStorageSync('stuId')
+      const currentOpenid = wx.getStorageSync('openid')
       const cloudResult = await wx.cloud.callFunction({
         name: 'help',
         data: {
           action: 'accept',
           data: {
             id: detail._id,
-            stuId: currentStuId,
             type: detail.type
           }
         },
@@ -236,10 +233,9 @@ Page({
 
       if (result.code === 0) {
         showToast('接单成功')
-        const currentStuId = wx.getStorageSync('stuId')
         this.setData({
           'detail.status': 'accepted',
-          'detail.acceptorStuId': currentStuId,
+          'detail.acceptorOpenid': currentOpenid,
           isAcceptor: true,
           isVisitor: false
         })
