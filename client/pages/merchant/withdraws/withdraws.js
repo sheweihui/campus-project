@@ -1,4 +1,4 @@
-﻿const { formatAmount, formatTime, showToast, showLoading, hideLoading } = require('../../../utils/util.js')
+﻿const { formatAmount, formatTime, showToast, showLoading, hideLoading } = require('/utils/util.js')
 
 Page({
   data: {

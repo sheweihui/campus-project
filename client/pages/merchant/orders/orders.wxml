@@ -1,4 +1,4 @@
-﻿<wxs src="../../../utils/util.wxs" module="util" />
+﻿<wxs src="/utils/util.wxs" module="util" />
 
 <view class="page-orders">
   <!-- 搜索栏 -->
