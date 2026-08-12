@@ -150,16 +150,19 @@
   width: calc(50% - 12rpx);
   display: flex;
   align-items: center;
-  background: #fff;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.42) 100%);
+  -webkit-backdrop-filter: blur(24rpx);
+  backdrop-filter: blur(24rpx);
+  border: 1rpx solid rgba(255, 255, 255, 0.85);
   border-radius: 16rpx;
   padding: 28rpx 24rpx;
   margin-bottom: 20rpx;
-  border: 1rpx solid #f0f1f3;
+  box-shadow: 0 6rpx 20rpx rgba(90, 120, 200, 0.08);
   box-sizing: border-box;
 }
 
 .func-card-active {
-  background: #f8f8f8;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.6) 100%);
 }
 
 .func-icon {
