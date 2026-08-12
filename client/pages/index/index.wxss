@@ -271,9 +271,20 @@
   position: relative;
   height: 280rpx;
   border-radius: 24rpx;
-  overflow: hidden;
+  overflow: visible;
   border: 1rpx solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8rpx 28rpx rgba(11, 16, 38, 0.18);
+}
+
+/* 白天内容单独裁切，避免白云跑出卡片 */
+.sky-clip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  border-radius: 24rpx;
 }
 
 .sky-card.night {
@@ -370,6 +381,7 @@
 
 .meteor {
   position: absolute;
+  z-index: 999;
   width: 6rpx;
   height: 6rpx;
   border-radius: 50%;

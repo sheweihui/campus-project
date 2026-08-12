@@ -22,11 +22,13 @@
         <view class="sky-text">✨ 欢迎来到校园便利圈</view>
       </block>
       <block wx:else>
-        <view class="sun"></view>
-        <view class="cloud c1"></view>
-        <view class="cloud c2"></view>
-        <view class="cloud c3"></view>
-        <view class="sky-text day-text">☀️ 欢迎来到校园便利圈</view>
+        <view class="sky-clip">
+          <view class="sun"></view>
+          <view class="cloud c1"></view>
+          <view class="cloud c2"></view>
+          <view class="cloud c3"></view>
+          <view class="sky-text day-text">☀️ 欢迎来到校园便利圈</view>
+        </view>
       </block>
     </view>
   </view>
