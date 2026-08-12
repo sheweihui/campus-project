@@ -6,8 +6,6 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const db = cloud.database()
 const https = require('https')
-const fs = require('fs')
-const path = require('path')
 
 const API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
 const MODEL = 'glm-4.6v-flash'
@@ -15,11 +13,6 @@ const MODEL = 'glm-4.6v-flash'
 // 读取 API Key：优先环境变量 ZHIPU_API_KEY，其次 config 集合 vision 文档 { apiKey: 'xxx' }
 async function getApiKey() {
   if (process.env.ZHIPU_API_KEY) return process.env.ZHIPU_API_KEY
-  // 本地 .apikey 文件（已被 .gitignore 忽略，不会提交到仓库；部署时会随云函数上传）
-  try {
-    const local = fs.readFileSync(path.join(__dirname, '.apikey'), 'utf8').trim()
-    if (local) return local
-  } catch (e) { /* 文件不存在则继续 */ }
   try {
     const doc = await db.collection('config').doc('vision').get()
     return (doc.data && doc.data.apiKey) || ''
