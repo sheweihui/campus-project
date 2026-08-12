@@ -62,13 +62,20 @@
     </view>
   </view>
 
-  <!-- 最新失物招领 -->
-  <view wx:if="{{lostfoundList.length > 0}}">
+  <!-- 内容切换导航 -->
+  <view class="comic-tabs">
+    <view class="comic-tab {{activeTab === 'lostfound' ? 'active' : ''}}" data-tab="lostfound" bindtap="switchTab">失物招领</view>
+    <view class="comic-tab {{activeTab === 'market' ? 'active' : ''}}" data-tab="market" bindtap="switchTab">二手商品</view>
+    <view class="comic-tab {{activeTab === 'help' ? 'active' : ''}}" data-tab="help" bindtap="switchTab">互助信息</view>
+  </view>
+
+  <!-- 失物招领 -->
+  <view wx:if="{{activeTab === 'lostfound'}}">
     <view class="section-header">
       <text class="section-title">最新失物招领</text>
       <text class="more" bindtap="navigateTo" data-page="lostfound">查看更多 ></text>
     </view>
-    <view class="mission-list">
+    <view class="mission-list" wx:if="{{lostfoundList.length > 0}}">
       <view class="mission-item" wx:for="{{lostfoundList}}" wx:key="_id" bindtap="goToDetail" data-type="lostfound" data-id="{{item._id}}" hover-class="mission-item-active">
         <view class="mission-thumb">
           <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" mode="aspectFill" />
@@ -81,15 +88,16 @@
         <view class="mission-action">></view>
       </view>
     </view>
+    <view class="empty-state" wx:else><text class="empty-text">暂无失物信息</text></view>
   </view>
 
-  <!-- 最新二手商品 -->
-  <view wx:if="{{marketList.length > 0}}">
+  <!-- 二手商品 -->
+  <view wx:if="{{activeTab === 'market'}}">
     <view class="section-header">
       <text class="section-title">最新二手商品</text>
       <text class="more" bindtap="navigateTo" data-page="market">查看更多 ></text>
     </view>
-    <view class="mission-list">
+    <view class="mission-list" wx:if="{{marketList.length > 0}}">
       <view class="mission-item" wx:for="{{marketList}}" wx:key="_id" bindtap="goToDetail" data-type="market" data-id="{{item._id}}" hover-class="mission-item-active">
         <view class="mission-thumb">
           <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" mode="aspectFill" />
@@ -102,15 +110,16 @@
         <view class="mission-action">></view>
       </view>
     </view>
+    <view class="empty-state" wx:else><text class="empty-text">暂无二手商品</text></view>
   </view>
 
-  <!-- 最新互助信息 -->
-  <view wx:if="{{helpList.length > 0}}">
+  <!-- 互助信息 -->
+  <view wx:if="{{activeTab === 'help'}}">
     <view class="section-header">
       <text class="section-title">最新互助信息</text>
       <text class="more" bindtap="navigateTo" data-page="help">查看更多 ></text>
     </view>
-    <view class="mission-list">
+    <view class="mission-list" wx:if="{{helpList.length > 0}}">
       <view class="mission-item" wx:for="{{helpList}}" wx:key="_id" bindtap="goToDetail" data-type="{{item.type}}" data-id="{{item._id}}" hover-class="mission-item-active">
         <view class="mission-thumb">{{helpIconMap[item.type]}}</view>
         <view class="mission-body">
@@ -120,10 +129,6 @@
         <view class="mission-action">></view>
       </view>
     </view>
-  </view>
-
-  <!-- 空状态 -->
-  <view class="empty-state" wx:if="{{lostfoundList.length === 0 && marketList.length === 0 && helpList.length === 0}}">
-    <text class="empty-text">暂无数据，快去发布吧！</text>
+    <view class="empty-state" wx:else><text class="empty-text">暂无互助信息</text></view>
   </view>
 </view>

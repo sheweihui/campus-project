@@ -465,6 +465,35 @@
   text-shadow: 0 1rpx 4rpx rgba(255, 255, 255, 0.6);
 }
 
+/* 内容切换导航（漫画风分段按钮） */
+.comic-tabs {
+  display: flex;
+  background: #ffffff;
+  border: 3rpx solid #1a1a1a;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 4rpx 4rpx 0 rgba(26, 26, 26, 0.12);
+  margin-bottom: 24rpx;
+}
+
+.comic-tab {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 0;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #666666;
+}
+
+.comic-tab + .comic-tab {
+  border-left: 2rpx solid #1a1a1a;
+}
+
+.comic-tab.active {
+  background: #ffe66d;
+  color: #1a1a1a;
+}
+
 .list {
   margin-top: 10rpx;
 }

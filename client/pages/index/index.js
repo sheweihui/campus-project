@@ -5,6 +5,7 @@ Page({
     lostfoundList: [],
     marketList: [],
     helpList: [],
+    activeTab: 'market',
     isNight: true,
     conditionMap: {
       'new': '全新',
@@ -44,6 +45,14 @@ Page({
   computeSky() {
     const hour = new Date().getHours()
     this.setData({ isNight: !(hour >= 6 && hour < 18) })
+  },
+
+  // 切换首页内容 tab
+  switchTab(e) {
+    const tab = e.currentTarget.dataset.tab
+    if (tab !== this.data.activeTab) {
+      this.setData({ activeTab: tab })
+    }
   },
   
   async checkUnreadMessages() {
