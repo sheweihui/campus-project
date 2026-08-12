@@ -1,15 +1,113 @@
 .container {
+  position: relative;
   min-height: 100vh;
-  background: transparent;
+  background: linear-gradient(180deg, #0b1026 0%, #1b2a5e 100%);
   padding: 40rpx;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: hidden;
 }
 
-/* Logo区域样式 */
+/* 炫彩流星背景 */
+.meteor-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.7;
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+
+.s1 { top: 12%; left: 8%; animation-delay: 0s; }
+.s2 { top: 22%; left: 30%; animation-delay: 0.5s; }
+.s3 { top: 10%; left: 55%; animation-delay: 1s; }
+.s4 { top: 28%; left: 78%; animation-delay: 0.2s; }
+.s5 { top: 40%; left: 18%; animation-delay: 1.4s; }
+.s6 { top: 55%; left: 62%; animation-delay: 0.8s; }
+.s7 { top: 68%; left: 38%; animation-delay: 1.8s; }
+.s8 { top: 78%; left: 85%; animation-delay: 0.4s; }
+.s9 { top: 85%; left: 12%; animation-delay: 1.2s; }
+.s10 { top: 48%; left: 90%; animation-delay: 2s; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.9; }
+}
+
+.meteor {
+  position: absolute;
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  box-shadow: 0 0 14rpx rgba(255, 255, 255, 0.85);
+  animation: meteor-fall 3.4s linear infinite;
+}
+
+.meteor::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 260rpx;
+  height: 3rpx;
+  transform-origin: left center;
+  transform: rotate(-38deg);
+}
+
+.m1 { top: 8%; left: 20%; animation-duration: 2.8s; animation-delay: 0s; }
+.m2 { top: 20%; left: 60%; animation-duration: 3.6s; animation-delay: 1.2s; }
+.m3 { top: 35%; left: 38%; animation-duration: 3.1s; animation-delay: 2.3s; }
+.m4 { top: 12%; left: 82%; animation-duration: 3.9s; animation-delay: 0.7s; }
+.m5 { top: 48%; left: 70%; animation-duration: 3.4s; animation-delay: 1.9s; }
+.m6 { top: 28%; left: 8%; animation-duration: 2.5s; animation-delay: 2.8s; }
+.m7 { top: 60%; left: 30%; animation-duration: 4.1s; animation-delay: 0.4s; }
+.m8 { top: 70%; left: 75%; animation-duration: 3.2s; animation-delay: 1.6s; }
+
+.m1::after { background: linear-gradient(90deg, rgba(255, 107, 157, 0.95) 0%, rgba(255, 107, 157, 0) 100%); }
+.m2::after { background: linear-gradient(90deg, rgba(122, 162, 255, 0.95) 0%, rgba(122, 162, 255, 0) 100%); }
+.m3::after { background: linear-gradient(90deg, rgba(157, 123, 255, 0.95) 0%, rgba(157, 123, 255, 0) 100%); }
+.m4::after { background: linear-gradient(90deg, rgba(95, 242, 194, 0.95) 0%, rgba(95, 242, 194, 0) 100%); }
+.m5::after { background: linear-gradient(90deg, rgba(255, 209, 102, 0.95) 0%, rgba(255, 209, 102, 0) 100%); }
+.m6::after { background: linear-gradient(90deg, rgba(110, 231, 255, 0.95) 0%, rgba(110, 231, 255, 0) 100%); }
+.m7::after { background: linear-gradient(90deg, rgba(255, 145, 200, 0.95) 0%, rgba(255, 145, 200, 0) 100%); }
+.m8::after { background: linear-gradient(90deg, rgba(130, 255, 170, 0.95) 0%, rgba(130, 255, 170, 0) 100%); }
+
+@keyframes meteor-fall {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  4% { opacity: 1; }
+  22% { opacity: 1; }
+  45% {
+    opacity: 0;
+    transform: translate3d(-280rpx, 340rpx, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-280rpx, 340rpx, 0);
+  }
+}
+
+/* Logo区域 */
 .logo-section {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20,15 +118,17 @@
 .logo {
   width: 180rpx;
   height: 180rpx;
-  background: #ffffff;
-  border-radius: 32rpx;
+  background: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(24rpx);
+  backdrop-filter: blur(24rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: 40rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 90rpx;
   margin-bottom: 40rpx;
-  border: 1rpx solid #f0f1f3;
-  box-shadow: none;
+  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.25);
 }
 
 .app-name {
@@ -36,7 +136,7 @@
   font-weight: bold;
   color: #fff;
   margin-bottom: 20rpx;
-  text-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+  text-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.35);
 }
 
 .subtitle {
@@ -44,304 +144,70 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* 表单区域样式 */
+/* 磨砂玻璃登录卡片 */
 .form-section {
-  background: #fff;
-  border-radius: 24rpx;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(40rpx);
+  backdrop-filter: blur(40rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.28);
+  border-radius: 32rpx;
   padding: 60rpx 48rpx;
-  border: 1rpx solid #f0f1f3;
-  min-height: 720rpx;
+  box-shadow: 0 24rpx 64rpx rgba(0, 0, 0, 0.35);
+  min-height: 640rpx;
 }
 
-/* 输入框组样式 */
-.input-group {
-  margin-bottom: 52rpx;
-}
-
-.input-label {
-  font-size: 32rpx;
-  color: #2d2d2d;
-  font-weight: 600;
-  margin-bottom: 20rpx;
-  display: block;
-}
-
-.input-field {
-  width: 100%;
-  height: 100rpx;
-  background: #f8f9fa;
-  border-radius: 20rpx;
-  padding: 0 32rpx;
-  font-size: 32rpx;
-  box-sizing: border-box;
-  border: 2rpx solid transparent;
-  transition: all 0.3s;
-}
-
-.input-field:focus {
-  border-color: #333333;
-  background: #fff;
-}
-
-/* 登录按钮样式 */
-.login-btn {
-  width: 100%;
-  height: 100rpx;
-  background: #333333;
-  color: #fff;
-  font-size: 34rpx;
-  font-weight: bold;
-  border-radius: 50rpx;
-  margin-top: 30rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.login-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
-}
-
-.login-btn[loading] {
-  opacity: 0.8;
-}
-
-/* 微信一键登录 */
 .wx-login {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.wx-btn {
-  width: 100%;
-  height: 100rpx;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 45%), rgba(51, 51, 51, 0.7);
-  -webkit-backdrop-filter: blur(24rpx);
-  backdrop-filter: blur(24rpx);
-  border: 1rpx solid rgba(255, 255, 255, 0.18);
-  color: #fff;
-  font-size: 34rpx;
-  font-weight: bold;
-  border-radius: 16rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
-  transition: transform 0.2s;
-  border: none;
-}
-
-.wx-btn:active {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 45%), rgba(0, 0, 0, 0.82);
-}
-
-.wx-btn:active {
-  transform: scale(0.98);
-}
-
 .wx-tips {
   font-size: 24rpx;
-  color: #999;
+  color: rgba(255, 255, 255, 0.75);
   margin-top: 20rpx;
   text-align: center;
 }
 
-/* 游客登录按钮样式 */
-.guest-btn {
-  width: 100%;
-  height: 90rpx;
-  background: #fff;
-  color: #666666;
-  font-size: 32rpx;
-  font-weight: 600;
-  border-radius: 16rpx;
-  margin-top: 10rpx;
-  border: 2rpx solid #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s;
-  background: rgba(255, 255, 255, 0.96);
-}
-
-.guest-btn:active {
-  transform: scale(0.98);
-}
-
-/* 提示信息样式 */
-.tips {
-  margin-top: 50rpx;
-  text-align: center;
-}
-
-.tip-text {
-  font-size: 26rpx;
-  color: #999;
-  line-height: 1.6;
-}
-
-/* 分割线样式 */
 .divider {
   display: flex;
   align-items: center;
-  margin: 40rpx 0;
+  margin: 44rpx 0 32rpx;
 }
 
 .divider-line {
   flex: 1;
   height: 2rpx;
-  background: #e0e0e0;
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .divider-text {
   padding: 0 30rpx;
   font-size: 24rpx;
-  color: #999;
+  color: rgba(255, 255, 255, 0.75);
 }
 
-/* ===== Step 2: 完善资料 ===== */
-
-/* 头像选择区 */
-.profile-avatar-section {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 48rpx;
-}
-
-.profile-avatar-btn {
-  width: 180rpx;
-  height: 180rpx;
-  border-radius: 50%;
-  padding: 0;
-  border: 6rpx solid #e8e8e8;
-  overflow: hidden;
-  background: transparent;
-  line-height: 1;
-}
-
-.profile-avatar-btn::after {
-  border: none;
-}
-
-.profile-avatar-img {
+/* 按钮：玻璃质感覆盖 */
+.form-section .weui-btn {
   width: 100%;
-  height: 100%;
-  border-radius: 50%;
+  margin-top: 8rpx;
 }
 
-.profile-avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: #f5f7fa;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.profile-avatar-icon {
-  font-size: 48rpx;
-  margin-bottom: 8rpx;
-}
-
-.profile-avatar-tip {
-  font-size: 20rpx;
-  color: #999;
-}
-
-/* 输入框组 */
-.profile-input-group {
-  margin-bottom: 36rpx;
-}
-
-.profile-input-label {
-  font-size: 30rpx;
-  color: #333;
-  font-weight: 600;
-  margin-bottom: 16rpx;
-}
-
-.profile-input {
-  width: 100%;
-  height: 90rpx;
-  background: #f8f9fa;
-  border-radius: 16rpx;
-  padding: 0 28rpx;
-  font-size: 30rpx;
-  box-sizing: border-box;
-  border: 2rpx solid transparent;
-}
-
-.profile-input:focus {
-  border-color: #333333;
-  background: #fff;
-}
-
-/* 手机号只读展示 */
-.profile-phone-display {
-  width: 100%;
-  height: 90rpx;
-  background: #f0f0f0;
-  border-radius: 16rpx;
-  padding: 0 28rpx;
-  font-size: 30rpx;
-  color: #666;
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
-}
-
-/* 提交按钮 */
-.profile-submit-btn {
-  width: 100%;
-  height: 100rpx;
-  background: #333333;
+.form-section .weui-btn_primary {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 45%), rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(24rpx);
+  backdrop-filter: blur(24rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.35);
   color: #fff;
-  font-size: 34rpx;
-  font-weight: bold;
-  border-radius: 50rpx;
-  margin-top: 40rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8rpx 24rpx rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.25);
 }
 
-.profile-submit-btn:active {
-  transform: scale(0.98);
-}
-
-.profile-submit-btn[disabled] {
-  opacity: 0.7;
-}
-
-/* 跳过 */
-.profile-skip {
-  text-align: center;
-  margin-top: 32rpx;
-  font-size: 26rpx;
-  color: #999;
-  padding: 20rpx;
-}
-
-/* 返回上一步 */
-.back-section {
-  text-align: center;
-  margin-top: 30rpx;
-}
-
-.back-btn {
-  font-size: 28rpx;
-  color: rgba(255, 255, 255, 0.8);
-  padding: 16rpx 32rpx;
-}
-
-.required {
-  color: #e74c3c;
-  margin-left: 4rpx;
+.form-section .weui-btn_default {
+  background: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(24rpx);
+  backdrop-filter: blur(24rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  color: #fff;
 }
