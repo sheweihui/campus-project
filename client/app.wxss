@@ -1,4 +1,4 @@
-@import "styles/weui.wxss";
+@import "utils/weui.wxss";
 
 /* 全局样式 */
 page {
