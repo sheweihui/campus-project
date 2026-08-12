@@ -1,10 +1,4 @@
 <view class="container">
-  <!-- 搜索栏 -->
-  <view class="search-bar">
-    <text class="search-icon">🔍</text>
-    <input class="search-input" placeholder="搜索商品..." value="{{keyword}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch" />
-  </view>
-
   <!-- 流星雨动画（纯前端 CSS） -->
   <view class="banner-section">
     <view class="meteor-container">

@@ -187,11 +187,4 @@ Page({
     }
   },
 
-  onSearchInput(e) {
-    const keyword = e.detail.value
-    if (keyword) {
-      // 跳转到二手市场页并自动搜索
-      navigateTo(`/pages/market/market?keyword=${encodeURIComponent(keyword)}`)
-    }
-  }
 })
