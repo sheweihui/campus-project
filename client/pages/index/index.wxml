@@ -5,31 +5,27 @@
     <input class="search-input" placeholder="搜索商品..." value="{{keyword}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch" />
   </view>
 
-  <!-- 轮播图 -->
-  <swiper
-    class="banner-swiper"
-    indicator-dots
-    indicator-color="rgba(255,255,255,0.4)"
-    indicator-active-color="#ffffff"
-    autoplay
-    circular
-    wx:if="{{bannerList.length > 0}}">
-    <swiper-item wx:for="{{bannerList}}" wx:key="index">
-      <image src="{{item}}" mode="aspectFill" style="width: 100%;height: 100%;"/>
-    </swiper-item>
-  </swiper>
-  <swiper
-    class="banner-swiper"
-    indicator-dots
-    indicator-color="rgba(255,255,255,0.4)"
-    indicator-active-color="#ffffff"
-    autoplay
-    circular
-    wx:else>
-    <swiper-item><image src="/tabbar/主页.png" mode="aspectFill" style="width: 100%;height: 100%;"/></swiper-item>
-    <swiper-item><image src="/tabbar/工具.png" mode="aspectFill" style="width: 100%;height: 100%;"/></swiper-item>
-    <swiper-item><image src="/tabbar/我的.png" mode="aspectFill" style="width: 100%;height: 100%;"/></swiper-item>
-  </swiper>
+  <!-- 流星雨动画（纯前端 CSS） -->
+  <view class="banner-section">
+    <view class="meteor-container">
+      <view class="star s1"></view>
+      <view class="star s2"></view>
+      <view class="star s3"></view>
+      <view class="star s4"></view>
+      <view class="star s5"></view>
+      <view class="star s6"></view>
+      <view class="star s7"></view>
+      <view class="star s8"></view>
+      <view class="meteor m1"></view>
+      <view class="meteor m2"></view>
+      <view class="meteor m3"></view>
+      <view class="meteor m4"></view>
+      <view class="meteor m5"></view>
+      <view class="meteor m6"></view>
+      <view class="meteor-overlay"></view>
+      <view class="meteor-text">✨ 欢迎来到校园便利圈</view>
+    </view>
+  </view>
 
   <!-- 公告 -->
   <view class="announcement" wx:if="{{announcement.show}}">

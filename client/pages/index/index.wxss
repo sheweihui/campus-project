@@ -258,6 +258,112 @@
   flex-shrink: 0;
 }
 
+/* 流星雨动画（纯前端 CSS） */
+.meteor-container {
+  position: relative;
+  height: 300rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0b1026 0%, #1b2a5e 100%);
+}
+
+.star {
+  position: absolute;
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.7;
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+
+.s1 { top: 40rpx; left: 12%; animation-delay: 0s; }
+.s2 { top: 80rpx; left: 30%; animation-delay: 0.6s; }
+.s3 { top: 30rpx; left: 52%; animation-delay: 1.1s; }
+.s4 { top: 110rpx; left: 68%; animation-delay: 0.3s; }
+.s5 { top: 60rpx; left: 84%; animation-delay: 1.5s; }
+.s6 { top: 140rpx; left: 42%; animation-delay: 0.9s; }
+.s7 { top: 170rpx; left: 20%; animation-delay: 1.8s; }
+.s8 { top: 150rpx; left: 90%; animation-delay: 0.2s; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.9; }
+}
+
+.meteor {
+  position: absolute;
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  box-shadow: 0 0 12rpx rgba(255, 255, 255, 0.8);
+  animation: meteor-fall 3.2s linear infinite;
+}
+
+.meteor::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 240rpx;
+  height: 2rpx;
+  transform-origin: left center;
+  transform: rotate(-38deg);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9) 0%, rgba(190, 220, 255, 0.25) 60%, rgba(255, 255, 255, 0) 100%);
+}
+
+.m1 { top: 30rpx; left: 18%; animation-duration: 2.8s; animation-delay: 0s; }
+.m2 { top: 90rpx; left: 55%; animation-duration: 3.6s; animation-delay: 1.1s; }
+.m3 { top: 140rpx; left: 32%; animation-duration: 3.1s; animation-delay: 2.2s; }
+.m4 { top: 60rpx; left: 78%; animation-duration: 3.9s; animation-delay: 0.7s; }
+.m5 { top: 190rpx; left: 50%; animation-duration: 3.4s; animation-delay: 1.8s; }
+.m6 { top: 120rpx; left: 8%; animation-duration: 2.5s; animation-delay: 2.7s; }
+
+@keyframes meteor-fall {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  22% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 0;
+    transform: translate3d(-260rpx, 320rpx, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-260rpx, 320rpx, 0);
+  }
+}
+
+.meteor-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 90rpx;
+  background: linear-gradient(180deg, rgba(11, 16, 38, 0) 0%, rgba(11, 16, 38, 0.55) 100%);
+}
+
+.meteor-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 24rpx;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.35);
+}
+
 .list {
   margin-top: 10rpx;
 }
