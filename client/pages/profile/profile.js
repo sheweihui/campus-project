@@ -19,6 +19,9 @@ Page({
 
   async onShow() {
     this.setData({ isGuest: isGuest() })
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 2 })
+    }
     await this.loadUserInfo()
     await this.loadStats()
     await this.checkUnreadMessages()
