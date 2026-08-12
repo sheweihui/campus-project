@@ -5,6 +5,7 @@ Page({
     lostfoundList: [],
     marketList: [],
     helpList: [],
+    isNight: true,
     conditionMap: {
       'new': '全新',
       'likeNew': '99新',
@@ -26,15 +27,23 @@ Page({
   },
 
   onLoad() {
+    this.computeSky()
     this.loadData()
   },
 
   onShow() {
+    this.computeSky()
     this.loadData()
     this.checkUnreadMessages()
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 0 })
     }
+  },
+
+  // 根据当前时间切换白天/夜晚（6:00-18:00 白天，其余夜晚）
+  computeSky() {
+    const hour = new Date().getHours()
+    this.setData({ isNight: !(hour >= 6 && hour < 18) })
   },
   
   async checkUnreadMessages() {

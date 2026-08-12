@@ -267,14 +267,81 @@
 }
 
 /* 流星雨动画（纯前端 CSS） */
-.meteor-container {
+.sky-card {
   position: relative;
   height: 280rpx;
   border-radius: 24rpx;
   overflow: hidden;
-  background: linear-gradient(180deg, #0b1026 0%, #1b2a5e 100%);
   border: 1rpx solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8rpx 28rpx rgba(11, 16, 38, 0.18);
+}
+
+.sky-card.night {
+  background: linear-gradient(180deg, #0b1026 0%, #1b2a5e 100%);
+}
+
+.sky-card.day {
+  background: linear-gradient(180deg, #bfe3ff 0%, #e8f4ff 65%, #ffffff 100%);
+}
+
+/* 月亮 */
+.moon {
+  position: absolute;
+  top: 44rpx;
+  right: 56rpx;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e9e9f2 100%);
+  box-shadow: 0 0 40rpx rgba(255, 255, 255, 0.5), inset -14rpx -10rpx 0 rgba(0, 0, 0, 0.05);
+}
+
+.moon::after {
+  content: '';
+  position: absolute;
+  top: 26rpx;
+  left: 22rpx;
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+  box-shadow: 26rpx 18rpx 0 rgba(0, 0, 0, 0.06), 12rpx 34rpx 0 rgba(0, 0, 0, 0.05);
+}
+
+/* 太阳 */
+.sun {
+  position: absolute;
+  top: 40rpx;
+  right: 52rpx;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff6d8 0%, #ffd35c 100%);
+  box-shadow: 0 0 60rpx rgba(255, 205, 90, 0.85);
+  animation: sun-pulse 3s ease-in-out infinite;
+}
+
+@keyframes sun-pulse {
+  0%, 100% { box-shadow: 0 0 40rpx rgba(255, 205, 90, 0.7); }
+  50% { box-shadow: 0 0 70rpx rgba(255, 205, 90, 0.95); }
+}
+
+/* 白云 */
+.cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999rpx;
+  opacity: 0.9;
+  animation: cloud-drift 20s linear infinite;
+}
+
+.c1 { top: 60rpx; left: -220rpx; width: 220rpx; height: 56rpx; }
+.c2 { top: 130rpx; left: -260rpx; width: 170rpx; height: 44rpx; animation-duration: 28s; animation-delay: 5s; }
+.c3 { top: 190rpx; left: -240rpx; width: 240rpx; height: 60rpx; animation-duration: 24s; animation-delay: 9s; }
+
+@keyframes cloud-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(820rpx); }
 }
 
 .star {
@@ -352,7 +419,7 @@
   }
 }
 
-.meteor-overlay {
+.sky-overlay {
   position: absolute;
   left: 0;
   right: 0;
@@ -361,7 +428,7 @@
   background: linear-gradient(180deg, rgba(11, 16, 38, 0) 0%, rgba(11, 16, 38, 0.55) 100%);
 }
 
-.meteor-text {
+.sky-text {
   position: absolute;
   left: 0;
   right: 0;
@@ -372,6 +439,11 @@
   font-size: 36rpx;
   letter-spacing: 6rpx;
   text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.35);
+}
+
+.day-text {
+  color: #3b5b7d;
+  text-shadow: 0 1rpx 4rpx rgba(255, 255, 255, 0.6);
 }
 
 .list {

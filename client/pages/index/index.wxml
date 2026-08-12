@@ -1,23 +1,33 @@
 <view class="container">
-  <!-- 流星雨动画（纯前端 CSS） -->
+  <!-- 天空卡片：夜晚流星雨 / 白天太阳白云，按时间自动切换 -->
   <view class="banner-section">
-    <view class="meteor-container">
-      <view class="star s1"></view>
-      <view class="star s2"></view>
-      <view class="star s3"></view>
-      <view class="star s4"></view>
-      <view class="star s5"></view>
-      <view class="star s6"></view>
-      <view class="star s7"></view>
-      <view class="star s8"></view>
-      <view class="meteor m1"></view>
-      <view class="meteor m2"></view>
-      <view class="meteor m3"></view>
-      <view class="meteor m4"></view>
-      <view class="meteor m5"></view>
-      <view class="meteor m6"></view>
-      <view class="meteor-overlay"></view>
-      <view class="meteor-text">✨ 欢迎来到校园便利圈</view>
+    <view class="sky-card {{isNight ? 'night' : 'day'}}">
+      <block wx:if="{{isNight}}">
+        <view class="moon"></view>
+        <view class="star s1"></view>
+        <view class="star s2"></view>
+        <view class="star s3"></view>
+        <view class="star s4"></view>
+        <view class="star s5"></view>
+        <view class="star s6"></view>
+        <view class="star s7"></view>
+        <view class="star s8"></view>
+        <view class="meteor m1"></view>
+        <view class="meteor m2"></view>
+        <view class="meteor m3"></view>
+        <view class="meteor m4"></view>
+        <view class="meteor m5"></view>
+        <view class="meteor m6"></view>
+        <view class="sky-overlay"></view>
+        <view class="sky-text">✨ 欢迎来到校园便利圈</view>
+      </block>
+      <block wx:else>
+        <view class="sun"></view>
+        <view class="cloud c1"></view>
+        <view class="cloud c2"></view>
+        <view class="cloud c3"></view>
+        <view class="sky-text day-text">☀️ 欢迎来到校园便利圈</view>
+      </block>
     </view>
   </view>
 
