@@ -4,5 +4,9 @@ Page({
   data: {},
   goToMap() {
     navigateTo('/pages/tools/map')
+  },
+
+  goToTrainingPlan() {
+    navigateTo('/pages/tools/trainingPlan')
   }
 })

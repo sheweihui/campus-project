@@ -1,0 +1,46 @@
+<view class="container">
+  <!-- 总览卡片 -->
+  <view class="plan-header" wx:if="{{plan}}">
+    <view class="plan-major">{{plan.major || '专业培养方案'}}</view>
+    <view class="plan-meta">毕业总学分 {{plan.totalCredits || 0}} · {{semesters.length}} 个学期</view>
+    <view class="plan-sample" wx:if="{{isSample}}">当前为示例数据，可在 config 集合配置 trainingPlan 文档替换</view>
+  </view>
+
+  <!-- 学期切换 -->
+  <scroll-view scroll-x class="semester-scroll" wx:if="{{semesters.length > 0}}">
+    <view class="semester-tabs">
+      <view
+        class="semester-tab {{activeIndex === index ? 'active' : ''}}"
+        wx:for="{{semesters}}" wx:key="name"
+        data-index="{{index}}"
+        bindtap="switchSemester"
+      >{{item.name}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 课程列表 -->
+  <view class="semester-summary" wx:if="{{currentSemester}}">
+    <text>共 {{currentSemester.count}} 门课</text>
+    <text>学分 {{currentSemester.credits}}</text>
+    <text>学时 {{currentSemester.hours}}</text>
+  </view>
+
+  <view class="weui-cells" wx:if="{{currentSemester && currentSemester.courses.length > 0}}">
+    <view class="weui-cell" wx:for="{{currentSemester.courses}}" wx:key="name">
+      <view class="weui-cell__bd">
+        <view class="list-title-row">
+          <text class="tag {{item.type === '必修' ? 'tag-primary' : 'tag-warning'}}">{{item.type}}</text>
+          <text class="list-title">{{item.name}}</text>
+        </view>
+      </view>
+      <view class="weui-cell__ft course-ft">
+        <text class="course-credit">{{item.credit}} 学分</text>
+        <text class="course-hours">{{item.hours}} 学时</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{currentSemester && currentSemester.courses.length === 0}}">
+    <text class="empty-text">本学期暂无课程</text>
+  </view>
+</view>

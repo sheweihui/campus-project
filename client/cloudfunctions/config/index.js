@@ -99,10 +99,47 @@ exports.main = async (event, context) => {
         return await updateHomeConfig(data, OPENID)
       case 'initConfig':
         return await initConfig()
+      case 'getTrainingPlan':
+        return await getTrainingPlan()
+      case 'updateTrainingPlan':
+        return await updateTrainingPlan(data, OPENID)
       default:
         return { code: -1, msg: '未知操作' }
     }
   } catch (error) {
+    return { code: -1, msg: error.message }
+  }
+}
+
+// 读取培养方案（config 集合 trainingPlan 文档）
+async function getTrainingPlan() {
+  try {
+    const doc = await db.collection('config').doc('trainingPlan').get()
+    return { code: 0, data: doc.data || null }
+  } catch (e) {
+    // 文档不存在返回 null，客户端使用示例数据
+    return { code: 0, data: null }
+  }
+}
+
+// 保存培养方案（仅管理员）
+async function updateTrainingPlan(data, openid) {
+  if (!(await isAdmin(openid))) {
+    return { code: -1, msg: '无权限' }
+  }
+  try {
+    await db.collection('config').doc('trainingPlan').set({
+      data: {
+        _id: 'trainingPlan',
+        major: data.major || '',
+        totalCredits: data.totalCredits || 0,
+        semesters: data.semesters || [],
+        updateTime: db.serverDate()
+      }
+    })
+    return { code: 0, msg: '保存成功' }
+  } catch (error) {
+    console.error('保存培养方案失败:', error)
     return { code: -1, msg: error.message }
   }
 }

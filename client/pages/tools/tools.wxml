@@ -5,6 +5,10 @@
       <view class="grid-icon map">🗺️</view>
       <text class="grid-text">校园地图</text>
     </view>
+    <view class="grid-item" bindtap="goToTrainingPlan">
+      <view class="grid-icon training">📖</view>
+      <text class="grid-text">培养方案</text>
+    </view>
   </view>
 
   <!-- 快捷入口 -->
@@ -12,6 +16,10 @@
     <view class="quick-item" bindtap="goToMap">
       <text class="quick-icon">🗺️</text>
       <text class="quick-text">搜索校园地点</text>
+    </view>
+    <view class="quick-item" bindtap="goToTrainingPlan">
+      <text class="quick-icon">📖</text>
+      <text class="quick-text">查看专业培养方案</text>
     </view>
   </view>
 </view>

@@ -21,6 +21,7 @@
     "pages/chat/buyerList",
     "pages/tools/tools",
     "pages/tools/map",
+    "pages/tools/trainingPlan",
     "pages/finance/finance",
     "pages/finance/withdraw",
     "pages/finance/records",
