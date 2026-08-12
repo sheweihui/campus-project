@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, navigateTo } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast } = require('../../utils/util.js')
 
 // 示例数据：云数据库 config 集合 trainingPlan 文档配置后会自动替换
 const SAMPLE_PLANS = [
@@ -169,11 +169,15 @@ Page({
     semesters: [],
     activeIndex: 0,
     currentSemester: null,
-    isSample: false
+    isSample: false,
+    docOptions: [],
+    docIndex: 0,
+    docsLoading: true
   },
 
   onLoad() {
     this.loadPlans()
+    this.loadDocs()
   },
 
   async loadPlans() {
@@ -204,6 +208,98 @@ Page({
       this.applyMajor(0)
     } finally {
       hideLoading()
+    }
+  },
+
+  // 加载官方培养方案文档列表
+  async loadDocs() {
+    try {
+      const { result } = await wx.cloud.callFunction({
+        name: 'docs',
+        data: { action: 'list', data: { type: 'training' } }
+      })
+      if (result.code === 0 && result.data && result.data.length > 0) {
+        const docOptions = result.data.map(d => ({
+          ...d,
+          label: `${d.title}（${d.category}）`
+        }))
+        this.setData({ docOptions, docIndex: 0, docsLoading: false })
+      } else {
+        this.setData({ docsLoading: false })
+      }
+    } catch (error) {
+      console.error('加载培养方案文档失败:', error)
+      this.setData({ docsLoading: false })
+    }
+  },
+
+  // 切换所选文档
+  onDocChange(e) {
+    this.setData({ docIndex: Number(e.detail.value) })
+  },
+
+  // 打开所选文档
+  openSelectedDoc() {
+    const item = this.data.docOptions[this.data.docIndex]
+    if (!item) {
+      showToast('暂无文档')
+      return
+    }
+    this.openDoc(item)
+  },
+
+  // 下载并打开文档
+  openDoc(item) {
+    if (!item || (!item.url && !item.fileID)) {
+      showToast('文档地址缺失')
+      return
+    }
+    const fileName = item.fileName || item.title || ''
+    const ext = fileName.split('.').pop().toLowerCase()
+    const fileType = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf'].includes(ext) ? ext : 'pdf'
+
+    showLoading('下载文档...')
+    const doOpen = (url) => {
+      wx.downloadFile({
+        url,
+        success: (res) => {
+          hideLoading()
+          if (res.statusCode !== 200) {
+            showToast('下载失败')
+            return
+          }
+          wx.openDocument({
+            filePath: res.tempFilePath,
+            fileType,
+            showMenu: true,
+            fail: (err) => {
+              console.error('打开文档失败:', err)
+              showToast('打开失败')
+            }
+          })
+        },
+        fail: (err) => {
+          hideLoading()
+          console.error('下载失败:', err)
+          showToast('下载失败，请检查域名配置')
+        }
+      })
+    }
+
+    if (item.fileID) {
+      wx.cloud.getTempFileURL({ fileList: [item.fileID] }).then(res => {
+        const url = res.fileList && res.fileList[0] && res.fileList[0].tempFileURL
+        if (url) doOpen(url)
+        else {
+          hideLoading()
+          showToast('获取文件地址失败')
+        }
+      }).catch(() => {
+        hideLoading()
+        showToast('获取文件地址失败')
+      })
+    } else {
+      doOpen(item.url)
     }
   },
 
@@ -241,8 +337,4 @@ Page({
     })
   },
 
-  // 查看官方培养方案文档
-  goToDocs() {
-    navigateTo('/pages/tools/docs?type=training')
-  }
 })
