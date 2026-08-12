@@ -1,4 +1,4 @@
-﻿.tabs {
+.tabs {
   display: flex;
   background: #fff;
   border-radius: 16rpx;

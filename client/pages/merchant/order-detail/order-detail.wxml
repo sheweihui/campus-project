@@ -1,4 +1,4 @@
-﻿<wxs src="/utils/util.wxs" module="util" />
+<wxs src="/utils/util.wxs" module="util" />
 
 <view class="page-detail" wx:if="{{!loading && order}}">
   <!-- 金额展示 -->

@@ -1,4 +1,4 @@
-﻿.type-selector {
+.type-selector {
   display: flex;
   gap: 20rpx;
 }
