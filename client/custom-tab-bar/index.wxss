@@ -1,19 +1,19 @@
 .tab-bar {
   position: fixed;
-  left: 24rpx;
-  right: 24rpx;
-  bottom: calc(16rpx + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 999;
 }
 
 .tab-bar-inner {
   display: flex;
   align-items: center;
-  padding: 14rpx 12rpx;
-  border-radius: 32rpx;
-  background: linear-gradient(135deg, #ffe6ef 0%, #ffffff 100%);
-  border: 2rpx solid rgba(255, 150, 185, 0.45);
-  box-shadow: 0 8rpx 28rpx rgba(255, 120, 160, 0.16);
+  padding: 12rpx 12rpx calc(12rpx + env(safe-area-inset-bottom));
+  border-radius: 0;
+  background: linear-gradient(180deg, #fff0f5 0%, #ffffff 100%);
+  border: 2rpx solid rgba(255, 170, 195, 0.35);
+  box-shadow: 0 -4rpx 16rpx rgba(255, 150, 185, 0.1);
   box-sizing: border-box;
 }
 
