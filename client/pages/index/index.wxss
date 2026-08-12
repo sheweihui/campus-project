@@ -366,9 +366,9 @@
   bottom: 24rpx;
   text-align: center;
   color: rgba(255, 255, 255, 0.92);
-  font-size: 30rpx;
-  font-weight: 600;
-  letter-spacing: 2rpx;
+  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
+  font-size: 36rpx;
+  letter-spacing: 6rpx;
   text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.35);
 }
 
