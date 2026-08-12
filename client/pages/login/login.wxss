@@ -87,14 +87,14 @@
 .app-name {
   font-size: 46rpx;
   font-weight: 800;
-  color: #2b4a6f;
+  color: #c9973f;
   margin-bottom: 20rpx;
-  text-shadow: 1rpx 1rpx 0 rgba(255, 255, 255, 0.8);
+  text-shadow: 1rpx 1rpx 0 rgba(255, 255, 255, 0.9);
 }
 
 .subtitle {
   font-size: 30rpx;
-  color: #3b5b7d;
+  color: #a97b3f;
   font-weight: 600;
 }
 
@@ -119,7 +119,7 @@
 
 .wx-tips {
   font-size: 24rpx;
-  color: #4b5a6a;
+  color: #8a6d43;
   margin-top: 16rpx;
   text-align: center;
 }
@@ -133,13 +133,13 @@
 .divider-line {
   flex: 1;
   height: 2rpx;
-  background: rgba(43, 74, 111, 0.2);
+  background: rgba(169, 123, 63, 0.28);
 }
 
 .divider-text {
   padding: 0 30rpx;
   font-size: 24rpx;
-  color: #999999;
+  color: #a97b3f;
 }
 
 /* 按钮：漫画质感 */
