@@ -64,9 +64,9 @@
 
   <!-- 内容切换导航 -->
   <view class="comic-tabs">
-    <view class="comic-tab {{activeTab === 'lostfound' ? 'active' : ''}}" data-tab="lostfound" bindtap="switchTab">失物招领</view>
     <view class="comic-tab {{activeTab === 'market' ? 'active' : ''}}" data-tab="market" bindtap="switchTab">二手商品</view>
     <view class="comic-tab {{activeTab === 'help' ? 'active' : ''}}" data-tab="help" bindtap="switchTab">互助信息</view>
+    <view class="comic-tab {{activeTab === 'lostfound' ? 'active' : ''}}" data-tab="lostfound" bindtap="switchTab">失物招领</view>
   </view>
 
   <!-- 失物招领 -->
