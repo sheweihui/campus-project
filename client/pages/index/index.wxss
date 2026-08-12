@@ -469,7 +469,7 @@
 
 /* 内容一体卡片 */
 .content-box {
-  flex: 1;
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   background: #ffffff;
@@ -506,7 +506,7 @@
 }
 
 .content-body {
-  flex: 1;
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   padding: 24rpx 20rpx 8rpx;
@@ -517,14 +517,14 @@
 }
 
 .content-box .mission-list {
-  flex: 1;
+  flex: 1 1 auto;
   border: none;
   box-shadow: none;
   margin: 0;
 }
 
 .content-box .empty-state {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
