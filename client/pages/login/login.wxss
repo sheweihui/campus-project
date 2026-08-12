@@ -1,6 +1,6 @@
 .container {
   min-height: 100vh;
-  background: #f7f8fa;
+  background: transparent;
   padding: 40rpx;
   box-sizing: border-box;
   display: flex;
