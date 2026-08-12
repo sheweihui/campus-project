@@ -144,6 +144,6 @@
 }
 
 .bar-btn.primary {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background: #fa3534;
   color: #fff;
 }

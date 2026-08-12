@@ -21,7 +21,7 @@
 }
 
 .grid-icon.carpool {
-  background: #2979ff;
+  background: #fa3534;
 }
 
 .grid-icon.express {

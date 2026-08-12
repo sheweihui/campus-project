@@ -33,7 +33,7 @@
 }
 
 .grid-icon.training {
-  background: #2979ff;
+  background: #fa3534;
 }
 
 .grid-text {

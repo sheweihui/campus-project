@@ -3,12 +3,12 @@
 }
 
 .plan-header {
-  background: #2979ff;
+  background: #fa3534;
   border-radius: 16rpx;
   padding: 40rpx 32rpx;
   color: #fff;
   margin-bottom: 24rpx;
-  box-shadow: 0 6rpx 20rpx rgba(41, 121, 255, 0.25);
+  box-shadow: 0 6rpx 20rpx rgba(250, 53, 52, 0.25);
 }
 
 .plan-major {
@@ -52,7 +52,7 @@
 }
 
 .semester-tab.active {
-  background: #2979ff;
+  background: #fa3534;
   color: #fff;
   border-color: transparent;
   font-weight: 600;

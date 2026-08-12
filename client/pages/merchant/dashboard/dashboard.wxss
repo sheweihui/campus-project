@@ -4,7 +4,7 @@
 
 /* 顶部标题栏 */
 .header {
-  background: #2979ff;
+  background: #fa3534;
   padding: 40rpx 32rpx 48rpx;
 }
 .header-title {
@@ -70,7 +70,7 @@
   text-overflow: ellipsis;
 }
 
-.kpi-revenue { border-left: 6rpx solid #2979ff; }
+.kpi-revenue { border-left: 6rpx solid #fa3534; }
 .kpi-orders { border-left: 6rpx solid #19be6b; }
 .kpi-users { border-left: 6rpx solid #ff9900; }
 .kpi-withdraw { border-left: 6rpx solid #fa3534; }

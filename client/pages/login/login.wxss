@@ -1,12 +1,12 @@
 .container {
   min-height: 100vh;
-  background: #2979ff;
+  background: #fa3534;
   padding: 40rpx;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: linear-gradient(180deg, #2979ff 0%, #2b85e4 100%);
+  background: linear-gradient(180deg, #fa3534 0%, #e64340 100%);
 }
 
 /* Logo区域样式 */
@@ -120,7 +120,7 @@
 .wx-btn {
   width: 100%;
   height: 100rpx;
-  background: #2979ff;
+  background: #fa3534;
   color: #fff;
   font-size: 34rpx;
   font-weight: bold;
@@ -128,13 +128,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6rpx 16rpx rgba(41, 121, 255, 0.3);
+  box-shadow: 0 6rpx 16rpx rgba(250, 53, 52, 0.3);
   transition: transform 0.2s;
   border: none;
 }
 
 .wx-btn:active {
-  background: #2b85e4;
+  background: #e64340;
 }
 
 .wx-btn:active {
@@ -153,12 +153,12 @@
   width: 100%;
   height: 90rpx;
   background: #fff;
-  color: #2979ff;
+  color: #fa3534;
   font-size: 32rpx;
   font-weight: 600;
   border-radius: 16rpx;
   margin-top: 10rpx;
-  border: 2rpx solid #2979ff;
+  border: 2rpx solid #fa3534;
   display: flex;
   align-items: center;
   justify-content: center;
