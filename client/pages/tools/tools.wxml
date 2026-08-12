@@ -17,9 +17,5 @@
       <text class="quick-icon">🗺️</text>
       <text class="quick-text">搜索校园地点</text>
     </view>
-    <view class="quick-item" bindtap="goToTrainingPlan">
-      <text class="quick-icon">📖</text>
-      <text class="quick-text">查看各专业培养方案</text>
-    </view>
   </view>
 </view>
