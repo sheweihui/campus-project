@@ -118,43 +118,40 @@
 .logo {
   width: 180rpx;
   height: 180rpx;
-  background: rgba(255, 255, 255, 0.14);
-  -webkit-backdrop-filter: blur(24rpx);
-  backdrop-filter: blur(24rpx);
-  border: 2rpx solid rgba(255, 255, 255, 0.3);
-  border-radius: 40rpx;
+  background: #ffffff;
+  border: 3rpx solid #1a1a1a;
+  border-radius: 28rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 90rpx;
   margin-bottom: 40rpx;
-  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.25);
+  box-shadow: 8rpx 8rpx 0 rgba(26, 26, 26, 0.22);
 }
 
 .app-name {
   font-size: 52rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: #fff;
   margin-bottom: 20rpx;
-  text-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.35);
+  text-shadow: 2rpx 2rpx 0 rgba(0, 0, 0, 0.4);
 }
 
 .subtitle {
   font-size: 30rpx;
   color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
 }
 
-/* 磨砂玻璃登录卡片 */
+/* 漫画风登录卡片 */
 .form-section {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.14);
-  -webkit-backdrop-filter: blur(40rpx);
-  backdrop-filter: blur(40rpx);
-  border: 2rpx solid rgba(255, 255, 255, 0.28);
-  border-radius: 32rpx;
+  background: #ffffff;
+  border: 3rpx solid #1a1a1a;
+  border-radius: 24rpx;
   padding: 60rpx 48rpx;
-  box-shadow: 0 24rpx 64rpx rgba(0, 0, 0, 0.35);
+  box-shadow: 10rpx 10rpx 0 rgba(26, 26, 26, 0.2);
   min-height: 640rpx;
 }
 
@@ -166,7 +163,7 @@
 
 .wx-tips {
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.75);
+  color: #666666;
   margin-top: 20rpx;
   text-align: center;
 }
@@ -180,34 +177,44 @@
 .divider-line {
   flex: 1;
   height: 2rpx;
-  background: rgba(255, 255, 255, 0.25);
+  background: #e5e5e5;
 }
 
 .divider-text {
   padding: 0 30rpx;
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.75);
+  color: #999999;
 }
 
-/* 按钮：玻璃质感覆盖 */
+/* 按钮：漫画质感 */
 .form-section .weui-btn {
   width: 100%;
   margin-top: 8rpx;
 }
 
 .form-section .weui-btn_primary {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 45%), rgba(255, 255, 255, 0.18);
-  -webkit-backdrop-filter: blur(24rpx);
-  backdrop-filter: blur(24rpx);
-  border: 2rpx solid rgba(255, 255, 255, 0.35);
+  background: #1a1a1a;
+  border: none;
   color: #fff;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.25);
+  box-shadow: 6rpx 6rpx 0 #ffe66d;
+  border-radius: 16rpx;
+}
+
+.form-section .weui-btn_primary:active {
+  box-shadow: 2rpx 2rpx 0 #ffe66d;
+  transform: translate(4rpx, 4rpx);
 }
 
 .form-section .weui-btn_default {
-  background: rgba(255, 255, 255, 0.14);
-  -webkit-backdrop-filter: blur(24rpx);
-  backdrop-filter: blur(24rpx);
-  border: 2rpx solid rgba(255, 255, 255, 0.3);
-  color: #fff;
+  background: #ffffff;
+  border: 3rpx solid #1a1a1a;
+  color: #1a1a1a;
+  box-shadow: 4rpx 4rpx 0 rgba(26, 26, 26, 0.18);
+  border-radius: 16rpx;
+  font-weight: 600;
+}
+
+.form-section .weui-btn_default:active {
+  box-shadow: 1rpx 1rpx 0 rgba(26, 26, 26, 0.18);
+  transform: translate(3rpx, 3rpx);
 }

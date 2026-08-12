@@ -11,9 +11,9 @@
   align-items: center;
   padding: 12rpx 12rpx calc(12rpx + env(safe-area-inset-bottom));
   border-radius: 0;
-  background: linear-gradient(180deg, #eef4ff 0%, #ffffff 100%);
-  border: 2rpx solid rgba(140, 170, 230, 0.4);
-  box-shadow: 0 -4rpx 16rpx rgba(100, 140, 220, 0.12);
+  background: #faf8f3;
+  border: 3rpx solid #1a1a1a;
+  box-shadow: 0 -6rpx 0 rgba(26, 26, 26, 0.1);
   box-sizing: border-box;
 }
 
@@ -28,7 +28,9 @@
 }
 
 .tab-item.active {
-  background: rgba(255, 255, 255, 0.8);
+  background: #ffe66d;
+  border: 2rpx solid #1a1a1a;
+  border-radius: 16rpx;
 }
 
 .tab-icon {
@@ -38,11 +40,11 @@
 
 .tab-text {
   font-size: 22rpx;
-  color: #999999;
+  color: #666666;
   margin-top: 6rpx;
 }
 
 .tab-item.active .tab-text {
-  color: #2f6fed;
-  font-weight: 600;
+  color: #1a1a1a;
+  font-weight: 800;
 }
