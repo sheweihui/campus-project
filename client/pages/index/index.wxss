@@ -1,5 +1,5 @@
 .banner-section {
-  margin-bottom: 20rpx;
+  margin: -20rpx -20rpx 20rpx;
 }
 
 .banner-swiper {
@@ -270,7 +270,7 @@
 .meteor-container {
   position: relative;
   height: 300rpx;
-  border-radius: 24rpx;
+  border-radius: 0;
   overflow: hidden;
   background: linear-gradient(180deg, #0b1026 0%, #1b2a5e 100%);
 }
