@@ -1,0 +1,11 @@
+{
+  "name": "vision",
+  "version": "1.0.0",
+  "description": "视觉识别云函数（智谱 GLM-4.6V-Flash）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  },
+  "author": "",
+  "license": "ISC"
+}
