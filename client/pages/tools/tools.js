@@ -13,5 +13,9 @@ Page({
 
   goToTrainingPlan() {
     navigateTo('/pages/tools/trainingPlan')
+  },
+
+  goToTransfer() {
+    navigateTo('/pages/tools/docs?type=transfer')
   }
 })

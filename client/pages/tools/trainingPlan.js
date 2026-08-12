@@ -1,4 +1,5 @@
 const { showLoading, hideLoading } = require('../../../utils/util.js')
+const { navigateTo } = require('../../../utils/util.js')
 
 // 示例数据：云数据库 config 集合 trainingPlan 文档配置后会自动替换
 const SAMPLE_PLANS = [
@@ -239,5 +240,10 @@ Page({
       activeIndex: 0,
       currentSemester: semesters[0] || null
     })
+  },
+
+  // 查看官方培养方案文档
+  goToDocs() {
+    navigateTo('/pages/tools/docs?type=training')
   }
 })

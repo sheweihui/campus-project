@@ -45,4 +45,16 @@
   <view class="empty-state" wx:if="{{currentSemester && currentSemester.courses.length === 0}}">
     <text class="empty-text">本学期暂无课程</text>
   </view>
+
+  <!-- 官方文档 -->
+  <view class="weui-cells">
+    <view class="weui-cell weui-cell_access" bindtap="goToDocs" hover-class="weui-cell_active">
+      <view class="weui-cell__bd">
+        <view class="list-title-row">
+          <text class="doc-icon">📄</text>
+          <text class="list-title">查看官方培养方案文档（PDF）</text>
+        </view>
+      </view>
+    </view>
+  </view>
 </view>
