@@ -130,10 +130,11 @@
 
 .card {
   background: #fff;
-  border-radius: 20rpx;
-  padding: 32rpx;
+  border-radius: 24rpx;
+  padding: 30rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4rpx 20rpx rgba(31, 41, 55, 0.05);
 }
 
 .section-title {
@@ -213,7 +214,14 @@
 }
 
 .function-icon {
-  font-size: 44rpx;
+  font-size: 40rpx;
+  width: 76rpx;
+  height: 76rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f4fb;
+  border-radius: 22rpx;
   margin-right: 24rpx;
 }
 
