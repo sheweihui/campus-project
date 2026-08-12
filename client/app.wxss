@@ -3,7 +3,7 @@
 /* 全局样式 */
 page {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background: linear-gradient(180deg, #f0f6ff 0%, #ffffff 100%);
+  background: #faf8f3;
   color: #333333;
 }
 
@@ -246,7 +246,7 @@ page {
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --bg: #f0f6ff;
+  --bg: #faf8f3;
   --card-bg: #ffffff;
   --text: #1a1a2e;
   --text-secondary: #6b7280;
@@ -420,4 +420,92 @@ page {
 }
 .weui-cell__hd {
   margin-right: 20rpx;
+}
+
+/* ===== 全局漫画风覆盖（高优先级，作用于所有页面） ===== */
+page .card,
+page .weui-cells {
+  border: 3rpx solid #1a1a1a;
+  border-radius: 20rpx;
+  box-shadow: 6rpx 6rpx 0 rgba(26, 26, 26, 0.12);
+}
+
+page .btn-primary,
+page .weui-btn_primary {
+  background: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 16rpx;
+  box-shadow: 6rpx 6rpx 0 #ffe66d;
+}
+
+page .btn-primary:active,
+page .weui-btn_primary:active {
+  box-shadow: 2rpx 2rpx 0 #ffe66d;
+  transform: translate(4rpx, 4rpx);
+}
+
+page .btn-secondary,
+page .weui-btn_default {
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 3rpx solid #1a1a1a;
+  border-radius: 16rpx;
+  box-shadow: 4rpx 4rpx 0 rgba(26, 26, 26, 0.18);
+}
+
+page .tag {
+  border: 2rpx solid #1a1a1a;
+}
+
+page .search-bar {
+  background: #ffffff;
+  border: 3rpx solid #1a1a1a;
+  border-radius: 16rpx;
+  box-shadow: 4rpx 4rpx 0 rgba(26, 26, 26, 0.12);
+}
+
+page .list-thumb {
+  border: 2rpx solid #1a1a1a;
+  background: #fff6e5;
+}
+
+page .form-input,
+page .form-textarea {
+  background: #ffffff;
+  border: 2rpx solid #1a1a1a;
+  border-radius: 12rpx;
+}
+
+page .form-input:focus,
+page .form-textarea:focus {
+  border-color: #1a1a1a;
+  background: #ffffff;
+}
+
+page .kpi-card {
+  border: 3rpx solid #1a1a1a;
+  border-radius: 16rpx;
+  box-shadow: 4rpx 4rpx 0 rgba(26, 26, 26, 0.12);
+}
+
+page .search-btn,
+page .add-btn,
+page .submit-btn,
+page .action-btn.edit,
+page .bar-btn.primary {
+  background: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 12rpx;
+  box-shadow: 4rpx 4rpx 0 #ffe66d;
+}
+
+page .search-btn:active,
+page .add-btn:active,
+page .submit-btn:active,
+page .action-btn.edit:active,
+page .bar-btn.primary:active {
+  box-shadow: 1rpx 1rpx 0 #ffe66d;
+  transform: translate(3rpx, 3rpx);
 }
