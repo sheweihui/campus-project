@@ -153,16 +153,21 @@
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.42) 100%);
   -webkit-backdrop-filter: blur(24rpx);
   backdrop-filter: blur(24rpx);
-  border: 1rpx solid rgba(255, 255, 255, 0.85);
+  border: 2rpx solid rgba(140, 170, 230, 0.35);
   border-radius: 16rpx;
   padding: 28rpx 24rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 6rpx 20rpx rgba(90, 120, 200, 0.08);
+  box-shadow:
+    0 6rpx 20rpx rgba(90, 120, 200, 0.14),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.7);
   box-sizing: border-box;
 }
 
 .func-card-active {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.6) 100%);
+  box-shadow:
+    0 2rpx 10rpx rgba(90, 120, 200, 0.14),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.7);
 }
 
 .func-icon {
