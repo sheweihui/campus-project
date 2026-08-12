@@ -1,5 +1,5 @@
 .banner-section {
-  margin: -20rpx -20rpx 20rpx;
+  margin: 0 0 24rpx;
 }
 
 .banner-swiper {
@@ -269,15 +269,12 @@
 /* 流星雨动画（纯前端 CSS） */
 .meteor-container {
   position: relative;
-  height: 300rpx;
-  border-radius: 0;
+  height: 280rpx;
+  border-radius: 24rpx;
   overflow: hidden;
   background: linear-gradient(180deg, #0b1026 0%, #1b2a5e 100%);
-}
-
-.meteor-fade {
-  height: 140rpx;
-  background: linear-gradient(180deg, #1b2a5e 0%, #f0f6ff 100%);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8rpx 28rpx rgba(11, 16, 38, 0.18);
 }
 
 .star {

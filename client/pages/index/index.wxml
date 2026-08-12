@@ -19,7 +19,6 @@
       <view class="meteor-overlay"></view>
       <view class="meteor-text">✨ 欢迎来到校园便利圈</view>
     </view>
-    <view class="meteor-fade"></view>
   </view>
 
   <!-- 常用功能 -->
