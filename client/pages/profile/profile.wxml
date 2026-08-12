@@ -42,27 +42,23 @@
   <!-- 功能列表 -->
   <view class="card">
     <view class="section-title">常用功能</view>
-    <view class="function-list">
-      <view class="function-item" bindtap="goToMyPostsCenter">
-        <text class="function-icon">📋</text>
-        <text class="function-text">我的发布</text>
-        <text class="function-arrow">></text>
+    <view class="weui-cells">
+      <view class="weui-cell weui-cell_access" bindtap="goToMyPostsCenter" hover-class="weui-cell_active">
+        <view class="weui-cell__hd"><text class="function-icon">📋</text></view>
+        <view class="weui-cell__bd"><text class="function-text">我的发布</text></view>
       </view>
-      <view class="function-item" bindtap="goToFinance">
-        <text class="function-icon">💰</text>
-        <text class="function-text">我的财务</text>
-        <text class="function-arrow">></text>
+      <view class="weui-cell weui-cell_access" bindtap="goToFinance" hover-class="weui-cell_active">
+        <view class="weui-cell__hd"><text class="function-icon">💰</text></view>
+        <view class="weui-cell__bd"><text class="function-text">我的财务</text></view>
       </view>
-      <view class="function-item" bindtap="goToMessages">
-        <text class="function-icon">📬</text>
-        <text class="function-text">消息通知</text>
-        <view class="badge" wx:if="{{stats.unreadMessages > 0}}">{{stats.unreadMessages}}</view>
-        <text class="function-arrow">></text>
+      <view class="weui-cell weui-cell_access" bindtap="goToMessages" hover-class="weui-cell_active">
+        <view class="weui-cell__hd"><text class="function-icon">📬</text></view>
+        <view class="weui-cell__bd"><text class="function-text">消息通知</text></view>
+        <view class="weui-cell__ft"><view class="badge" wx:if="{{stats.unreadMessages > 0}}">{{stats.unreadMessages}}</view></view>
       </view>
-      <view class="function-item" bindtap="goToSettings">
-        <text class="function-icon">⚙️</text>
-        <text class="function-text">设置与反馈</text>
-        <text class="function-arrow">></text>
+      <view class="weui-cell weui-cell_access" bindtap="goToSettings" hover-class="weui-cell_active">
+        <view class="weui-cell__hd"><text class="function-icon">⚙️</text></view>
+        <view class="weui-cell__bd"><text class="function-text">设置与反馈</text></view>
       </view>
     </view>
   </view>

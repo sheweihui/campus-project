@@ -10,7 +10,7 @@
   <view class="form-section" wx:if="{{step === 'phone'}}">
     <view class="wx-login">
       <button
-        class="wx-btn"
+        class="weui-btn weui-btn_primary"
         open-type="getPhoneNumber"
         bindgetphonenumber="onGetPhoneNumber"
         loading="{{loading}}"
@@ -28,7 +28,7 @@
 
     <!-- 游客登录 -->
     <button
-      class="guest-btn"
+      class="weui-btn weui-btn_default"
       type="default"
       bindtap="guestLogin"
       loading="{{loading}}"
