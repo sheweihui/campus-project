@@ -29,11 +29,11 @@
 }
 
 .grid-icon.map {
-  background: linear-gradient(135deg, #FF9800, #F57C00);
+  background: #ff9900;
 }
 
 .grid-icon.training {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #2979ff;
 }
 
 .grid-text {

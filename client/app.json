@@ -43,14 +43,14 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#667eea",
+    "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTitleText": "校园便利圈",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#f5f7fa"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f3f4f6"
   },
   "tabBar": {
     "color": "#999999",
-    "selectedColor": "#667eea",
+    "selectedColor": "#2979ff",
     "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [

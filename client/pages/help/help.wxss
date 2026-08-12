@@ -21,19 +21,19 @@
 }
 
 .grid-icon.carpool {
-  background: linear-gradient(135deg, #2196F3, #1976D2);
+  background: #2979ff;
 }
 
 .grid-icon.express {
-  background: linear-gradient(135deg, #FF9800, #F57C00);
+  background: #ff9900;
 }
 
 .grid-icon.partner {
-  background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+  background: #909399;
 }
 
 .grid-icon.other {
-  background: linear-gradient(135deg, #00BCD4, #0097A7);
+  background: #19be6b;
 }
 
 .grid-text {

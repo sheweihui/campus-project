@@ -3,12 +3,12 @@
 }
 
 .plan-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 24rpx;
+  background: #2979ff;
+  border-radius: 16rpx;
   padding: 40rpx 32rpx;
   color: #fff;
   margin-bottom: 24rpx;
-  box-shadow: 0 8rpx 28rpx rgba(102, 126, 234, 0.3);
+  box-shadow: 0 6rpx 20rpx rgba(41, 121, 255, 0.25);
 }
 
 .plan-major {
@@ -52,7 +52,7 @@
 }
 
 .semester-tab.active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #2979ff;
   color: #fff;
   border-color: transparent;
   font-weight: 600;

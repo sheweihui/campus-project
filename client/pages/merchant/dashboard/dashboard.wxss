@@ -4,7 +4,7 @@
 
 /* 顶部标题栏 */
 .header {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: #2979ff;
   padding: 40rpx 32rpx 48rpx;
 }
 .header-title {
@@ -40,10 +40,9 @@
   width: calc(50% - 20rpx);
   margin: 8rpx 10rpx;
   padding: 26rpx;
-  border-radius: 20rpx;
+  border-radius: 16rpx;
   background: #fff;
-  border: 1rpx solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 4rpx 20rpx rgba(31,41,55,0.06);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
   min-width: 0;
 }
 .kpi-label {
@@ -71,10 +70,10 @@
   text-overflow: ellipsis;
 }
 
-.kpi-revenue { border-left: 6rpx solid #4a6cf7; }
-.kpi-orders { border-left: 6rpx solid #10b981; }
-.kpi-users { border-left: 6rpx solid #f59e0b; }
-.kpi-withdraw { border-left: 6rpx solid #ef4444; }
+.kpi-revenue { border-left: 6rpx solid #2979ff; }
+.kpi-orders { border-left: 6rpx solid #19be6b; }
+.kpi-users { border-left: 6rpx solid #ff9900; }
+.kpi-withdraw { border-left: 6rpx solid #fa3534; }
 
 /* 卡片标题 */
 .card-title {
