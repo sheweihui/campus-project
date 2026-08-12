@@ -465,15 +465,21 @@
   text-shadow: 0 1rpx 4rpx rgba(255, 255, 255, 0.6);
 }
 
-/* 内容切换导航（漫画风分段按钮） */
-.comic-tabs {
-  display: flex;
+/* 内容一体卡片 */
+.content-box {
   background: #ffffff;
   border: 3rpx solid #1a1a1a;
   border-radius: 20rpx;
   overflow: hidden;
-  box-shadow: 4rpx 4rpx 0 rgba(26, 26, 26, 0.12);
+  box-shadow: 6rpx 6rpx 0 rgba(26, 26, 26, 0.12);
   margin-bottom: 24rpx;
+}
+
+/* 内容切换导航（卡片头，与内容相连） */
+.comic-tabs {
+  display: flex;
+  background: #ffffff;
+  border-bottom: 3rpx solid #1a1a1a;
 }
 
 .comic-tab {
@@ -492,6 +498,38 @@
 .comic-tab.active {
   background: #ffe66d;
   color: #1a1a1a;
+}
+
+.content-body {
+  padding: 24rpx 20rpx 8rpx;
+}
+
+.content-body .section-title {
+  margin-bottom: 16rpx;
+}
+
+.content-box .mission-list {
+  border: none;
+  box-shadow: none;
+  margin: 0;
+}
+
+.content-box .mission-item {
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.content-box .mission-item:last-child {
+  border-bottom: none;
+}
+
+.content-more {
+  text-align: center;
+  padding: 22rpx 0;
+  margin-top: 10rpx;
+  border-top: 2rpx solid #f0f0f0;
+  color: #1a1a1a;
+  font-size: 28rpx;
+  font-weight: 700;
 }
 
 .list {
