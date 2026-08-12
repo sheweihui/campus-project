@@ -125,6 +125,6 @@
 }
 
 .bar-btn.primary {
-  background: #fa3534;
+  background: #333333;
   color: #fff;
 }

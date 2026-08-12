@@ -47,28 +47,24 @@
       <view class="func-icon lf">📋</view>
       <view class="func-text">
         <text class="func-main">失物招领</text>
-        <text class="func-sub">LOST &amp; FOUND</text>
       </view>
     </view>
     <view class="func-card" bindtap="navigateTo" data-page="market" hover-class="func-card-active">
       <view class="func-icon mk">🛒</view>
       <view class="func-text">
         <text class="func-main">二手集市</text>
-        <text class="func-sub">SECOND-HAND</text>
       </view>
     </view>
     <view class="func-card" bindtap="navigateTo" data-page="help" hover-class="func-card-active">
       <view class="func-icon hp">🤝</view>
       <view class="func-text">
         <text class="func-main">校园互助</text>
-        <text class="func-sub">CAMPUS HELP</text>
       </view>
     </view>
     <view class="func-card" bindtap="navigateTo" data-page="tools" hover-class="func-card-active">
       <view class="func-icon tp">🗺️</view>
       <view class="func-text">
         <text class="func-main">校园地图</text>
-        <text class="func-sub">CAMPUS MAP</text>
       </view>
     </view>
   </view>
@@ -89,7 +85,7 @@
           <view class="mission-title">{{item.title}}</view>
           <view class="mission-meta">🕐 {{item.time}}</view>
         </view>
-        <view class="mission-action">看</view>
+        <view class="mission-action">></view>
       </view>
     </view>
   </view>
@@ -110,7 +106,7 @@
           <view class="mission-title">{{item.title}}</view>
           <view class="mission-meta"><text class="list-price">¥{{item.price}}</text><text> | {{conditionMap[item.condition]}}</text></view>
         </view>
-        <view class="mission-action">看</view>
+        <view class="mission-action">></view>
       </view>
     </view>
   </view>
@@ -128,7 +124,7 @@
           <view class="mission-title">{{item.title || (item.type === 'express' ? item.pickupLocation || '代取快递' : (item.type === 'partner' ? item.description : (item.from + ' → ' + item.to)))}}</view>
           <view class="mission-meta">🕐 {{item.date || item.time}} {{item.timeSlot || ''}}</view>
         </view>
-        <view class="mission-action">看</view>
+        <view class="mission-action">></view>
       </view>
     </view>
   </view>

@@ -29,11 +29,11 @@
 }
 
 .grid-icon.map {
-  background: #ff9900;
+  background: #f5f5f5;
 }
 
 .grid-icon.training {
-  background: #fa3534;
+  background: #f5f5f5;
 }
 
 .grid-text {

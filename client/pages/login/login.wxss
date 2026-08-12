@@ -1,12 +1,11 @@
 .container {
   min-height: 100vh;
-  background: #fa3534;
+  background: #f7f8fa;
   padding: 40rpx;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: linear-gradient(180deg, #fa3534 0%, #e64340 100%);
 }
 
 /* Logo区域样式 */
@@ -28,8 +27,8 @@
   justify-content: center;
   font-size: 90rpx;
   margin-bottom: 40rpx;
-  box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.12);
-  border: none;
+  border: 1rpx solid #f0f1f3;
+  box-shadow: none;
 }
 
 .app-name {
@@ -50,7 +49,7 @@
   background: #fff;
   border-radius: 24rpx;
   padding: 60rpx 48rpx;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+  border: 1rpx solid #f0f1f3;
   min-height: 720rpx;
 }
 
@@ -120,7 +119,7 @@
 .wx-btn {
   width: 100%;
   height: 100rpx;
-  background: #fa3534;
+  background: #333333;
   color: #fff;
   font-size: 34rpx;
   font-weight: bold;
@@ -128,13 +127,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6rpx 16rpx rgba(250, 53, 52, 0.3);
+  box-shadow: none;
   transition: transform 0.2s;
   border: none;
 }
 
 .wx-btn:active {
-  background: #e64340;
+  background: #000000;
 }
 
 .wx-btn:active {
@@ -153,12 +152,12 @@
   width: 100%;
   height: 90rpx;
   background: #fff;
-  color: #fa3534;
+  color: #666666;
   font-size: 32rpx;
   font-weight: 600;
   border-radius: 16rpx;
   margin-top: 10rpx;
-  border: 2rpx solid #fa3534;
+  border: 2rpx solid #ddd;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -80,10 +80,7 @@
   font-size: 32rpx;
   font-weight: bold;
   margin-bottom: 20rpx;
-  padding-left: 18rpx;
-  border-left: 8rpx solid #fa3534;
-  border-radius: 4rpx;
-  color: #303133;
+  color: #1a1a1a;
 }
 
 .section-header {
@@ -95,7 +92,7 @@
 
 .more {
   font-size: 26rpx;
-  color: #fa3534;
+  color: #999999;
   font-weight: 500;
 }
 
@@ -157,7 +154,7 @@
   border-radius: 16rpx;
   padding: 28rpx 24rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid #f0f1f3;
   box-sizing: border-box;
 }
 
@@ -168,19 +165,10 @@
 .func-icon {
   width: 84rpx;
   height: 84rpx;
-  border-radius: 16rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 44rpx;
+  font-size: 48rpx;
   margin-right: 20rpx;
   flex-shrink: 0;
 }
-
-.func-icon.lf { background: #fdf6ec; }
-.func-icon.mk { background: #fef0f0; }
-.func-icon.hp { background: #dbf1e1; }
-.func-icon.tp { background: #ecf5ff; }
 
 .func-text {
   flex: 1;
@@ -205,7 +193,7 @@
   background: #fff;
   border-radius: 16rpx;
   overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid #f0f1f3;
   margin-bottom: 24rpx;
 }
 
@@ -264,15 +252,9 @@
 }
 
 .mission-action {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 50%;
-  background: #fa3534;
-  color: #fff;
-  font-size: 26rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #c0c4cc;
+  font-size: 40rpx;
+  padding-left: 16rpx;
   flex-shrink: 0;
 }
 
