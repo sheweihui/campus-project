@@ -1,24 +1,10 @@
 <view class="container">
-  <!-- 炫彩流星背景 -->
-  <view class="meteor-bg">
-    <view class="star s1"></view>
-    <view class="star s2"></view>
-    <view class="star s3"></view>
-    <view class="star s4"></view>
-    <view class="star s5"></view>
-    <view class="star s6"></view>
-    <view class="star s7"></view>
-    <view class="star s8"></view>
-    <view class="star s9"></view>
-    <view class="star s10"></view>
-    <view class="meteor m1"></view>
-    <view class="meteor m2"></view>
-    <view class="meteor m3"></view>
-    <view class="meteor m4"></view>
-    <view class="meteor m5"></view>
-    <view class="meteor m6"></view>
-    <view class="meteor m7"></view>
-    <view class="meteor m8"></view>
+  <!-- 白天风格背景：太阳 + 白云 -->
+  <view class="sky-bg">
+    <view class="sun"></view>
+    <view class="cloud c1"></view>
+    <view class="cloud c2"></view>
+    <view class="cloud c3"></view>
   </view>
 
   <!-- Logo区域 -->
@@ -28,7 +14,7 @@
     <text class="subtitle">登录</text>
   </view>
 
-  <!-- 磨砂玻璃登录卡片 -->
+  <!-- 漫画风登录卡片 -->
   <view class="form-section">
     <view class="wx-login">
       <button
