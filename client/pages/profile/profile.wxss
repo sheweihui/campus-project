@@ -1,4 +1,4 @@
-.container {
+﻿.container {
   min-height: 100vh;
   background: #f5f7fa;
   padding: 20rpx;
@@ -271,6 +271,6 @@
 }
 
 .about-value.contact {
-  color: #667eea;
+  color: #666666;
   font-weight: 500;
 }

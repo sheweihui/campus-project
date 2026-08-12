@@ -1,4 +1,4 @@
-.container {
+﻿.container {
   min-height: 100vh;
   background: #f5f5f5;
 }
@@ -22,8 +22,8 @@
 }
 
 .nav-item.active {
-  color: #4CAF50;
-  border-bottom-color: #4CAF50;
+  color: #333333;
+  border-bottom-color: #333333;
   font-weight: bold;
 }
 
@@ -79,7 +79,7 @@
 
 .post-type.market {
   background: #e8f5e9;
-  color: #388e3c;
+  color: #1a7f37;
 }
 
 .post-type.help {

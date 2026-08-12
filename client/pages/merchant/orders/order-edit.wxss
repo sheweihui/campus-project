@@ -1,4 +1,4 @@
-.page-edit {
+﻿.page-edit {
   padding-bottom: 160rpx;
 }
 
@@ -42,7 +42,7 @@
   border-radius: 12rpx;
   padding: 0 24rpx;
   font-size: 28rpx;
-  color: #1a1a2e;
+  color: #1a1a1a;
 }
 
 .picker-value.disabled {
@@ -60,7 +60,7 @@
 }
 
 .submit-btn {
-  background: #4a6cf7;
+  background: #333333;
   color: #fff;
   border-radius: 44rpx;
   font-size: 30rpx;

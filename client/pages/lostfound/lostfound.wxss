@@ -1,4 +1,4 @@
-.tabs {
+﻿.tabs {
   display: flex;
   background: #fff;
   border-radius: 16rpx;
@@ -16,7 +16,7 @@
 }
 
 .tab.active {
-  color: #4CAF50;
+  color: #333333;
   font-weight: bold;
 }
 
@@ -28,7 +28,7 @@
   transform: translateX(-50%);
   width: 60rpx;
   height: 4rpx;
-  background: #4CAF50;
+  background: #333333;
   border-radius: 2rpx;
 }
 
@@ -121,7 +121,7 @@
 
 .status.pending {
   background: #e8f5e9;
-  color: #4CAF50;
+  color: #333333;
 }
 
 .status.completed {

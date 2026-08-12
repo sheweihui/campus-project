@@ -1,4 +1,4 @@
-.detail-header {
+﻿.detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13,7 +13,7 @@
 
 .status.pending {
   background: #e8f5e9;
-  color: #4CAF50;
+  color: #333333;
 }
 
 .status.completed {
@@ -44,7 +44,7 @@
 }
 
 .section-content.contact {
-  color: #4CAF50;
+  color: #333333;
   font-weight: bold;
 }
 

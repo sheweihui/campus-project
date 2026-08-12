@@ -1,10 +1,10 @@
-.page-finance {
+﻿.page-finance {
   padding-bottom: 40rpx;
 }
 
 /* 收入头部 */
 .revenue-header {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background: #333333;
   padding: 40rpx 32rpx 48rpx;
   text-align: center;
 }
@@ -53,10 +53,10 @@
 .kpi-value {
   font-size: 36rpx;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #1a1a1a;
 }
-.kpi-value.accent { color: #4a6cf7; }
-.kpi-value.warn { color: #ef4444; }
+.kpi-value.accent { color: #333333; }
+.kpi-value.warn { color: #d4380d; }
 
 /* 抽成率 */
 .rate-display {
@@ -66,7 +66,7 @@
 .rate-number {
   font-size: 48rpx;
   font-weight: 700;
-  color: #4a6cf7;
+  color: #333333;
   margin-bottom: 16rpx;
 }
 .rate-bar-bg {
@@ -78,7 +78,7 @@
 }
 .rate-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4a6cf7, #818cf8);
+  background: #333333;
   border-radius: 8rpx;
   transition: width 0.5s;
 }
@@ -105,7 +105,7 @@
 .fi-id {
   font-size: 26rpx;
   font-weight: 500;
-  color: #1a1a2e;
+  color: #1a1a1a;
 }
 .fi-openid {
   font-size: 22rpx;
@@ -118,7 +118,7 @@
 .fi-balance {
   font-size: 28rpx;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #1a1a1a;
 }
 .fi-meta {
   font-size: 20rpx;
@@ -144,7 +144,7 @@
 .wi-amount {
   font-size: 28rpx;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #1a1a1a;
 }
 .wi-right {
   text-align: right;
@@ -157,5 +157,5 @@
 
 .card-more {
   font-size: 24rpx;
-  color: #4a6cf7;
+  color: #333333;
 }

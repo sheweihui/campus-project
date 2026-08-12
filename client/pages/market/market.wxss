@@ -1,4 +1,4 @@
-.search-bar {
+﻿.search-bar {
   display: flex;
   align-items: center;
   background: #fff;
@@ -44,7 +44,7 @@
 }
 
 .category-item.active {
-  background: #4CAF50;
+  background: #333333;
   color: #fff;
 }
 

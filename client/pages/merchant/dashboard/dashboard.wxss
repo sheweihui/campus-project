@@ -1,4 +1,4 @@
-.page-dashboard {
+﻿.page-dashboard {
   padding-bottom: 40rpx;
 }
 
@@ -56,7 +56,7 @@
 .kpi-value {
   font-size: 40rpx;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #1a1a1a;
   margin-bottom: 6rpx;
   white-space: nowrap;
   overflow: hidden;
@@ -79,12 +79,12 @@
 .card-title {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #1a1a1a;
   margin-bottom: 20rpx;
 }
 .card-more {
   font-size: 24rpx;
-  color: #4a6cf7;
+  color: #333333;
 }
 
 /* 分类列表 */
@@ -110,7 +110,7 @@
 .cat-name {
   font-size: 28rpx;
   font-weight: 500;
-  color: #1a1a2e;
+  color: #1a1a1a;
 }
 .cat-count {
   font-size: 22rpx;
@@ -120,7 +120,7 @@
 .cat-amount {
   font-size: 28rpx;
   font-weight: 600;
-  color: #4a6cf7;
+  color: #333333;
 }
 
 /* 图表 */
@@ -151,7 +151,7 @@
 .bar {
   width: 20rpx;
   min-height: 4rpx;
-  background: linear-gradient(180deg, #4a6cf7, #818cf8);
+  background: #333333;
   border-radius: 4rpx 4rpx 0 0;
   transition: height 0.3s;
 }
@@ -181,7 +181,7 @@
 .tx-type {
   font-size: 26rpx;
   font-weight: 500;
-  color: #1a1a2e;
+  color: #1a1a1a;
 }
 .tx-people {
   font-size: 22rpx;
@@ -194,7 +194,7 @@
 .tx-amount {
   font-size: 28rpx;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #1a1a1a;
 }
 .tx-status {
   margin-top: 4rpx;

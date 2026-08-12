@@ -1,4 +1,4 @@
-.map-section {
+﻿.map-section {
   background: #fff;
   border-radius: 16rpx;
   padding: 20rpx;
@@ -81,7 +81,7 @@
 }
 
 .category-item.active {
-  background: #4CAF50;
+  background: #333333;
   color: #fff;
 }
 
@@ -106,7 +106,7 @@
   width: 80rpx;
   height: 80rpx;
   border-radius: 16rpx;
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background: #333333;
   display: flex;
   align-items: center;
   justify-content: center;

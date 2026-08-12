@@ -1,9 +1,9 @@
-.page-detail {
+﻿.page-detail {
   padding-bottom: 40rpx;
 }
 
 .amount-card {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background: #333333;
   padding: 48rpx 32rpx;
   text-align: center;
 }
@@ -32,7 +32,7 @@
 }
 .info-value {
   font-size: 26rpx;
-  color: #1a1a2e;
+  color: #1a1a1a;
   font-weight: 500;
 }
 .info-value.mono {
@@ -45,11 +45,11 @@
   font-size: 30rpx;
 }
 .info-value.commission {
-  color: #f59e0b;
+  color: #b25e00;
   font-weight: 600;
 }
 .info-value.seller-amount {
-  color: #10b981;
+  color: #1a7f37;
   font-weight: 600;
 }
 
@@ -72,11 +72,11 @@
 }
 
 .action-btn.edit {
-  background: #4a6cf7;
+  background: #333333;
   color: #fff;
 }
 
 .action-btn.delete {
   background: #fee2e2;
-  color: #ef4444;
+  color: #d4380d;
 }

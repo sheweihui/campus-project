@@ -1,11 +1,11 @@
-.container {
+﻿.container {
   min-height: 100vh;
   background: #f5f7fa;
   padding-bottom: 120rpx;
 }
 
 .page-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #333333;
   padding: 48rpx 32rpx;
   color: #fff;
 }
@@ -94,7 +94,7 @@
 
 .upload-icon {
   font-size: 48rpx;
-  color: #667eea;
+  color: #666666;
   margin-bottom: 8rpx;
 }
 
@@ -133,7 +133,7 @@
 }
 
 .add-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #333333;
   color: #fff;
   border: none;
   border-radius: 12rpx;
@@ -224,7 +224,7 @@
 }
 
 .save-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #333333;
   color: #fff;
   border: none;
   border-radius: 12rpx;

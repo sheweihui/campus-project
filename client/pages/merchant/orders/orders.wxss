@@ -1,4 +1,4 @@
-.page-orders {
+﻿.page-orders {
   padding-bottom: 40rpx;
 }
 
@@ -18,14 +18,14 @@
   font-size: 26rpx;
 }
 .search-btn {
-  background: #4a6cf7;
+  background: #333333;
   color: #fff;
   padding: 14rpx 24rpx;
   border-radius: 10rpx;
   font-size: 26rpx;
 }
 .add-btn {
-  background: #10b981;
+  background: #333333;
   color: #fff;
   padding: 14rpx 20rpx;
   border-radius: 10rpx;
@@ -64,7 +64,7 @@
   display: inline-block;
 }
 .tab-item.active {
-  background: #4a6cf7;
+  background: #333333;
   color: #fff;
 }
 .tab-item-sm {
@@ -77,7 +77,7 @@
 }
 .tab-item-sm.active {
   background: #eef1ff;
-  color: #4a6cf7;
+  color: #333333;
   font-weight: 500;
 }
 
@@ -101,7 +101,7 @@
 }
 .filter-value {
   font-size: 26rpx;
-  color: #4a6cf7;
+  color: #333333;
 }
 .filter-actions {
   display: flex;
@@ -130,7 +130,7 @@
 .order-type-tag {
   font-size: 22rpx;
   background: #eef1ff;
-  color: #4a6cf7;
+  color: #333333;
   padding: 4rpx 12rpx;
   border-radius: 6rpx;
   margin-right: 12rpx;
@@ -138,7 +138,7 @@
 .order-amount {
   font-size: 32rpx;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #1a1a1a;
 }
 .order-body {
   margin-bottom: 12rpx;
@@ -161,5 +161,5 @@
 }
 .order-commission {
   font-size: 22rpx;
-  color: #f59e0b;
+  color: #b25e00;
 }

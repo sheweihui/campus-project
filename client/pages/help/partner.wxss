@@ -1,4 +1,4 @@
-.list {
+﻿.list {
   background: #fff;
   border-radius: 16rpx;
   padding: 0 20rpx;
@@ -50,7 +50,7 @@
 
 .item-people {
   font-size: 26rpx;
-  color: #4CAF50;
+  color: #333333;
   margin-bottom: 10rpx;
 }
 
@@ -70,7 +70,7 @@
 
 .item-status.active {
   background: #e8f5e9;
-  color: #4CAF50;
+  color: #333333;
 }
 
 .item-status.completed {

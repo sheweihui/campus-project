@@ -1,4 +1,4 @@
-.banner-section {
+﻿.banner-section {
   margin-bottom: 20rpx;
 }
 
@@ -123,7 +123,7 @@
 }
 
 .grid-icon.market {
-  background: #fa3534;
+  background: #f5f5f5;
 }
 
 .grid-icon.help {

@@ -1,4 +1,4 @@
-.image-swiper {
+﻿.image-swiper {
   height: 500rpx;
   margin: -30rpx -30rpx 30rpx;
   border-radius: 16rpx 16rpx 0 0;
@@ -68,7 +68,7 @@
 
 .status.onSale {
   background: #e8f5e9;
-  color: #4CAF50;
+  color: #333333;
 }
 
 .status.sold {
@@ -98,7 +98,7 @@
 }
 
 .section-content.contact {
-  color: #4CAF50;
+  color: #333333;
   font-weight: bold;
 }
 

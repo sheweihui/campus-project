@@ -1,4 +1,4 @@
-.page-settings {
+﻿.page-settings {
   padding-bottom: 40rpx;
 }
 
@@ -18,7 +18,7 @@
 }
 .info-value {
   font-size: 26rpx;
-  color: #1a1a2e;
+  color: #1a1a1a;
   font-weight: 500;
 }
 .info-value.mono {
@@ -27,7 +27,7 @@
   color: #9ca3af;
 }
 .info-value.accent {
-  color: #4a6cf7;
+  color: #333333;
 }
 
 .rate-note {
@@ -78,7 +78,7 @@
 }
 .action-label {
   font-size: 26rpx;
-  color: #1a1a2e;
+  color: #1a1a1a;
 }
 .action-arrow {
   font-size: 32rpx;

@@ -1,4 +1,4 @@
-.container {
+﻿.container {
   padding: 30rpx;
 }
 
@@ -34,9 +34,9 @@
 }
 
 .filter-item.active {
-  background: #4CAF50;
+  background: #333333;
   color: #fff;
-  border-color: #4CAF50;
+  border-color: #333333;
 }
 
 .record-list {
@@ -88,7 +88,7 @@
 }
 
 .record-status.completed {
-  background: #4CAF50;
+  background: #333333;
   color: #fff;
 }
 

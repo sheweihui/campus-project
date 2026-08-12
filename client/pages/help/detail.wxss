@@ -1,4 +1,4 @@
-.detail-header {
+﻿.detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -74,7 +74,7 @@
 }
 
 .section-value.contact {
-  color: #4CAF50;
+  color: #333333;
   font-weight: bold;
 }
 

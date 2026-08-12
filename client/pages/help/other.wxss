@@ -1,4 +1,4 @@
-.container {
+﻿.container {
   min-height: 100vh;
   background: #f5f5f5;
   padding: 20rpx;
@@ -66,7 +66,7 @@
 
 .item-status.active {
   background: #e8f5e9;
-  color: #4CAF50;
+  color: #333333;
 }
 
 .item-status.completed {
