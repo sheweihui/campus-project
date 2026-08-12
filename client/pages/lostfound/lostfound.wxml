@@ -7,22 +7,24 @@
   </view>
 
   <!-- 列表 -->
-  <view class="list">
-    <view class="list-item" wx:for="{{list}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
-      <view class="item-left">
-        <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" class="item-image" mode="aspectFill" />
-        <view wx:else class="item-image placeholder">{{item.type === 'lost' ? '🔍' : '📦'}}</view>
-      </view>
-      <view class="item-right">
-        <view class="item-header">
-          <text class="tag {{item.type === 'lost' ? 'tag-warning' : 'tag-primary'}}">{{item.type === 'lost' ? '寻物' : '归还'}}</text>
-          <text class="status {{item.status}}">{{item.status === 'pending' ? '进行中' : '已完成'}}</text>
+  <view class="weui-cells">
+    <view class="weui-cell weui-cell_access" wx:for="{{list}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}" hover-class="weui-cell_active">
+      <view class="weui-cell__hd">
+        <view class="list-thumb">
+          <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" mode="aspectFill" />
+          <text wx:else>{{item.type === 'lost' ? '🔍' : '📦'}}</text>
         </view>
-        <text class="item-title">{{item.title}}</text>
-        <text class="item-desc">{{item.description}}</text>
-        <view class="item-info">
-          <text class="item-location">📍 {{item.location || '未知地点'}}</text>
-          <text class="item-time">{{item.time || '未知时间'}}</text>
+      </view>
+      <view class="weui-cell__bd">
+        <view class="list-title-row">
+          <text class="tag {{item.type === 'lost' ? 'tag-warning' : 'tag-primary'}}">{{item.type === 'lost' ? '寻物' : '归还'}}</text>
+          <text class="list-title">{{item.title}}</text>
+          <text class="list-status {{item.status}}">{{item.status === 'pending' ? '进行中' : '已完成'}}</text>
+        </view>
+        <text class="list-desc">{{item.description}}</text>
+        <view class="list-meta">
+          <text>📍 {{item.location || '未知地点'}}</text>
+          <text>{{item.time || '未知时间'}}</text>
         </view>
       </view>
     </view>

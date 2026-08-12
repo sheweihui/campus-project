@@ -2,25 +2,22 @@
   <view class="card">
     <view class="section-title">账号设置</view>
 
-    <!-- 商家端切换（仅管理员） -->
-    <view class="setting-item" bindtap="goToMerchant" wx:if="{{isAdmin}}">
-      <view class="setting-info">
-        <view class="setting-label">商家端管理</view>
-        <view class="setting-desc">切换到商家端管理后台</view>
+    <view class="weui-cells">
+      <!-- 商家端切换（仅管理员） -->
+      <view class="weui-cell weui-cell_access" bindtap="goToMerchant" wx:if="{{isAdmin}}" hover-class="weui-cell_active">
+        <view class="weui-cell__bd">商家端管理</view>
+        <view class="weui-cell__ft">切换到商家端管理后台</view>
       </view>
-      <text class="setting-arrow">></text>
-    </view>
-    
-    <!-- 通知设置 -->
-    <view class="setting-item">
-      <view class="setting-label">消息通知</view>
-      <switch checked="{{settings.messageNotify}}" bindchange="onSettingChange" data-field="messageNotify" />
-    </view>
-    
-    <!-- 隐私设置 -->
-    <view class="setting-item">
-      <view class="setting-label">公开我的手机号</view>
-      <switch checked="{{settings.showPhone}}" bindchange="onSettingChange" data-field="showPhone" />
+      <!-- 通知设置 -->
+      <view class="weui-cell">
+        <view class="weui-cell__bd">消息通知</view>
+        <view class="weui-cell__ft"><switch checked="{{settings.messageNotify}}" bindchange="onSettingChange" data-field="messageNotify" /></view>
+      </view>
+      <!-- 隐私设置 -->
+      <view class="weui-cell">
+        <view class="weui-cell__bd">公开我的手机号</view>
+        <view class="weui-cell__ft"><switch checked="{{settings.showPhone}}" bindchange="onSettingChange" data-field="showPhone" /></view>
+      </view>
     </view>
   </view>
 
@@ -56,32 +53,23 @@
 
   <view class="card">
     <view class="section-title">其他</view>
-    
-    <!-- 清除缓存 -->
-    <view class="setting-item" bindtap="clearCache">
-      <view class="setting-info">
-        <view class="setting-label">清除缓存</view>
-        <view class="setting-desc">清除本地缓存数据</view>
-      </view>
-      <text class="setting-arrow">></text>
-    </view>
 
-    <!-- 关于我们 -->
-    <view class="setting-item" bindtap="showAbout">
-      <view class="setting-info">
-        <view class="setting-label">关于我们</view>
-        <view class="setting-desc">版本信息和联系方式</view>
+    <view class="weui-cells">
+      <!-- 清除缓存 -->
+      <view class="weui-cell weui-cell_access" bindtap="clearCache" hover-class="weui-cell_active">
+        <view class="weui-cell__bd">清除缓存</view>
+        <view class="weui-cell__ft">清除本地缓存数据</view>
       </view>
-      <text class="setting-arrow">></text>
-    </view>
-
-    <!-- 退出登录 -->
-    <view class="setting-item logout" bindtap="logout">
-      <view class="setting-info">
-        <view class="setting-label">退出登录</view>
-        <view class="setting-desc">退出当前账号</view>
+      <!-- 关于我们 -->
+      <view class="weui-cell weui-cell_access" bindtap="showAbout" hover-class="weui-cell_active">
+        <view class="weui-cell__bd">关于我们</view>
+        <view class="weui-cell__ft">版本信息和联系方式</view>
       </view>
-      <text class="setting-arrow">></text>
+      <!-- 退出登录 -->
+      <view class="weui-cell weui-cell_access" bindtap="logout" hover-class="weui-cell_active">
+        <view class="weui-cell__bd" style="color:#e11d48;">退出登录</view>
+        <view class="weui-cell__ft">退出当前账号</view>
+      </view>
     </view>
   </view>
 </view>

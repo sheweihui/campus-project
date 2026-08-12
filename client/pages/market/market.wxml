@@ -19,19 +19,23 @@
   </view>
 
   <!-- 商品列表 -->
-  <view class="market-grid">
-    <view class="market-item" wx:for="{{list}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
-      <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" class="market-image" mode="aspectFill" />
-      <view wx:else class="market-image placeholder">🛒</view>
-      <view class="market-info">
-        <text class="market-title">{{item.title}}</text>
+  <view class="weui-cells">
+    <view class="weui-cell weui-cell_access" wx:for="{{list}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}" hover-class="weui-cell_active">
+      <view class="weui-cell__hd">
+        <view class="list-thumb">
+          <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" mode="aspectFill" />
+          <text wx:else>🛒</text>
+        </view>
+      </view>
+      <view class="weui-cell__bd">
+        <view class="list-title-row"><text class="list-title">{{item.title}}</text></view>
         <view class="market-tags">
           <text class="tag tag-primary">{{categoryMap[item.category]}}</text>
           <text class="tag tag-secondary">{{conditionMap[item.condition]}}</text>
         </view>
-        <view class="market-footer">
-          <text class="market-price">¥{{item.price}}</text>
-          <text class="market-views">👁 {{item.viewCount || 0}}</text>
+        <view class="list-meta">
+          <text class="list-price">¥{{item.price}}</text>
+          <text>👁 {{item.viewCount || 0}}</text>
         </view>
       </view>
     </view>

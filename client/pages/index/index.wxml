@@ -65,19 +65,21 @@
       <text class="section-title">最新失物招领</text>
       <text class="more" bindtap="navigateTo" data-page="lostfound">查看更多 ></text>
     </view>
-    <view class="list">
-      <view class="list-item" wx:for="{{lostfoundList}}" wx:key="_id" bindtap="goToDetail" data-type="lostfound" data-id="{{item._id}}">
-        <view class="item-left">
-          <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" class="item-image" mode="aspectFill" />
-          <view wx:else class="item-image placeholder">{{item.type === 'lost' ? '🔍' : '📦'}}</view>
-        </view>
-        <view class="item-right">
-          <view class="item-header">
-            <text class="tag {{item.type === 'lost' ? 'tag-warning' : 'tag-primary'}}">{{item.type === 'lost' ? '寻物' : '归还'}}</text>
-            <text class="item-title">{{item.title}}</text>
+    <view class="weui-cells">
+      <view class="weui-cell weui-cell_access" wx:for="{{lostfoundList}}" wx:key="_id" bindtap="goToDetail" data-type="lostfound" data-id="{{item._id}}" hover-class="weui-cell_active">
+        <view class="weui-cell__hd">
+          <view class="list-thumb">
+            <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" mode="aspectFill" />
+            <text wx:else>{{item.type === 'lost' ? '🔍' : '📦'}}</text>
           </view>
-          <text class="item-desc">{{item.description}}</text>
-          <text class="item-time">{{item.time}}</text>
+        </view>
+        <view class="weui-cell__bd">
+          <view class="list-title-row">
+            <text class="tag {{item.type === 'lost' ? 'tag-warning' : 'tag-primary'}}">{{item.type === 'lost' ? '寻物' : '归还'}}</text>
+            <text class="list-title">{{item.title}}</text>
+          </view>
+          <text class="list-desc">{{item.description}}</text>
+          <view class="list-meta"><text>🕐 {{item.time}}</text></view>
         </view>
       </view>
     </view>
@@ -89,14 +91,20 @@
       <text class="section-title">最新二手商品</text>
       <text class="more" bindtap="navigateTo" data-page="market">查看更多 ></text>
     </view>
-    <view class="market-grid">
-      <view class="market-item" wx:for="{{marketList}}" wx:key="_id" bindtap="goToDetail" data-type="market" data-id="{{item._id}}">
-        <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" class="market-image" mode="aspectFill" />
-        <view wx:else class="market-image placeholder">🛒</view>
-        <text class="market-title">{{item.title}}</text>
-        <view class="market-footer">
-          <text class="market-price">¥{{item.price}}</text>
-          <text class="market-condition">{{conditionMap[item.condition]}}</text>
+    <view class="weui-cells">
+      <view class="weui-cell weui-cell_access" wx:for="{{marketList}}" wx:key="_id" bindtap="goToDetail" data-type="market" data-id="{{item._id}}" hover-class="weui-cell_active">
+        <view class="weui-cell__hd">
+          <view class="list-thumb">
+            <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" mode="aspectFill" />
+            <text wx:else>🛒</text>
+          </view>
+        </view>
+        <view class="weui-cell__bd">
+          <view class="list-title-row"><text class="list-title">{{item.title}}</text></view>
+          <view class="list-meta">
+            <text class="list-price">¥{{item.price}}</text>
+            <text>{{conditionMap[item.condition]}}</text>
+          </view>
         </view>
       </view>
     </view>
@@ -108,19 +116,17 @@
       <text class="section-title">最新互助信息</text>
       <text class="more" bindtap="navigateTo" data-page="help">查看更多 ></text>
     </view>
-    <view class="list">
-      <view class="list-item" wx:for="{{helpList}}" wx:key="_id" bindtap="goToDetail" data-type="{{item.type}}" data-id="{{item._id}}">
-        <view class="item-left">
-          <view class="help-icon {{item.type}}">{{helpIconMap[item.type]}}</view>
-        </view>
-        <view class="item-right">
-          <view class="item-header">
+    <view class="weui-cells">
+      <view class="weui-cell weui-cell_access" wx:for="{{helpList}}" wx:key="_id" bindtap="goToDetail" data-type="{{item.type}}" data-id="{{item._id}}" hover-class="weui-cell_active">
+        <view class="weui-cell__hd"><view class="list-thumb">{{helpIconMap[item.type]}}</view></view>
+        <view class="weui-cell__bd">
+          <view class="list-title-row">
             <text class="tag tag-primary">{{helpTypeMap[item.type]}}</text>
-            <text class="item-title">{{item.title || (item.type === 'express' ? item.pickupLocation || '代取快递' : (item.type === 'partner' ? item.description : (item.from + ' → ' + item.to)))}}</text>
+            <text class="list-title">{{item.title || (item.type === 'express' ? item.pickupLocation || '代取快递' : (item.type === 'partner' ? item.description : (item.from + ' → ' + item.to)))}}</text>
           </view>
-          <text class="item-desc" wx:if="{{item.description}}">{{item.description}}</text>
-          <text class="item-desc" wx:elif="{{item.remark}}">{{item.remark}}</text>
-          <text class="item-time">{{item.date || item.time}} {{item.timeSlot || ''}}</text>
+          <text class="list-desc" wx:if="{{item.description}}">{{item.description}}</text>
+          <text class="list-desc" wx:elif="{{item.remark}}">{{item.remark}}</text>
+          <view class="list-meta"><text>{{item.date || item.time}} {{item.timeSlot || ''}}</text></view>
         </view>
       </view>
     </view>
