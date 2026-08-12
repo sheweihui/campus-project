@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, showToast } = require('../../../utils/util.js')
+const { showLoading, hideLoading, showToast } = require('../../utils/util.js')
 
 Page({
   data: {
