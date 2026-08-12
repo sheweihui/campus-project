@@ -128,12 +128,13 @@ async function updateTrainingPlan(data, openid) {
     return { code: -1, msg: '无权限' }
   }
   try {
+    const plans = Array.isArray(data.plans)
+      ? data.plans
+      : (data.major ? [data] : [])
     await db.collection('config').doc('trainingPlan').set({
       data: {
         _id: 'trainingPlan',
-        major: data.major || '',
-        totalCredits: data.totalCredits || 0,
-        semesters: data.semesters || [],
+        plans,
         updateTime: db.serverDate()
       }
     })

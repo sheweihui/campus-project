@@ -1,8 +1,10 @@
 <view class="container">
   <!-- 总览卡片 -->
-  <view class="plan-header" wx:if="{{plan}}">
-    <view class="plan-major">{{plan.major || '专业培养方案'}}</view>
-    <view class="plan-meta">毕业总学分 {{plan.totalCredits || 0}} · {{semesters.length}} 个学期</view>
+  <view class="plan-header" wx:if="{{plans.length > 0}}">
+    <picker mode="selector" range="{{plans}}" range-key="major" value="{{majorIndex}}" bindchange="onMajorChange">
+      <view class="plan-major">{{plans[majorIndex].major || '专业培养方案'}} ▾</view>
+    </picker>
+    <view class="plan-meta">毕业总学分 {{plans[majorIndex].totalCredits || 0}} · {{semesters.length}} 个学期</view>
     <view class="plan-sample" wx:if="{{isSample}}">当前为示例数据，可在 config 集合配置 trainingPlan 文档替换</view>
   </view>
 
