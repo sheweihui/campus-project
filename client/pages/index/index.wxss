@@ -55,6 +55,7 @@
   min-height: 100vh;
   background: #faf8f3;
   padding: 20rpx;
+  padding-bottom: calc(160rpx + env(safe-area-inset-bottom));
 }
 
 .search-bar {
