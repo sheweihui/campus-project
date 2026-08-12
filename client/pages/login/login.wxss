@@ -64,26 +64,28 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 60rpx;
-  padding-top: 60rpx;
+  margin-bottom: 40rpx;
+  padding-top: 30rpx;
 }
 
 .logo {
-  width: 180rpx;
-  height: 180rpx;
-  background: #ffffff;
-  border: 3rpx solid #1a1a1a;
-  border-radius: 28rpx;
+  width: 150rpx;
+  height: 150rpx;
+  background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(24rpx);
+  backdrop-filter: blur(24rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.9);
+  border-radius: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 90rpx;
-  margin-bottom: 40rpx;
-  box-shadow: 8rpx 8rpx 0 rgba(26, 26, 26, 0.22);
+  font-size: 76rpx;
+  margin-bottom: 28rpx;
+  box-shadow: 0 8rpx 24rpx rgba(26, 26, 26, 0.12);
 }
 
 .app-name {
-  font-size: 52rpx;
+  font-size: 46rpx;
   font-weight: 800;
   color: #2b4a6f;
   margin-bottom: 20rpx;
@@ -100,12 +102,13 @@
 .form-section {
   position: relative;
   z-index: 1;
-  background: #ffffff;
-  border: 3rpx solid #1a1a1a;
+  background: rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(40rpx);
+  backdrop-filter: blur(40rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.85);
   border-radius: 24rpx;
-  padding: 60rpx 48rpx;
-  box-shadow: 10rpx 10rpx 0 rgba(26, 26, 26, 0.2);
-  min-height: 640rpx;
+  padding: 40rpx 40rpx 44rpx;
+  box-shadow: 0 12rpx 36rpx rgba(26, 26, 26, 0.14);
 }
 
 .wx-login {
@@ -116,21 +119,21 @@
 
 .wx-tips {
   font-size: 24rpx;
-  color: #666666;
-  margin-top: 20rpx;
+  color: #4b5a6a;
+  margin-top: 16rpx;
   text-align: center;
 }
 
 .divider {
   display: flex;
   align-items: center;
-  margin: 44rpx 0 32rpx;
+  margin: 28rpx 0 24rpx;
 }
 
 .divider-line {
   flex: 1;
   height: 2rpx;
-  background: #e5e5e5;
+  background: rgba(43, 74, 111, 0.2);
 }
 
 .divider-text {
@@ -142,7 +145,7 @@
 /* 按钮：漫画质感 */
 .form-section .weui-btn {
   width: 100%;
-  margin-top: 8rpx;
+  margin-top: 4rpx;
 }
 
 .form-section .weui-btn_primary {
