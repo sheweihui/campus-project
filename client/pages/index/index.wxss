@@ -51,7 +51,7 @@
 
 .container {
   min-height: 100vh;
-  background: transparent;
+  background: #faf8f3;
   padding: 20rpx;
 }
 
@@ -78,7 +78,7 @@
 
 .section-title {
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 800;
   margin-bottom: 20rpx;
   color: #1a1a1a;
 }
@@ -92,8 +92,8 @@
 
 .more {
   font-size: 26rpx;
-  color: #999999;
-  font-weight: 500;
+  color: #1a1a1a;
+  font-weight: 700;
 }
 
 .grid {
@@ -150,30 +150,24 @@
   width: calc(50% - 12rpx);
   display: flex;
   align-items: center;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.42) 100%);
-  -webkit-backdrop-filter: blur(24rpx);
-  backdrop-filter: blur(24rpx);
-  border: 2rpx solid rgba(140, 170, 230, 0.35);
-  border-radius: 16rpx;
+  background: #ffffff;
+  border: 3rpx solid #1a1a1a;
+  border-radius: 20rpx;
   padding: 28rpx 24rpx;
   margin-bottom: 20rpx;
-  box-shadow:
-    0 6rpx 20rpx rgba(90, 120, 200, 0.14),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.7);
+  box-shadow: 6rpx 6rpx 0 rgba(26, 26, 26, 0.14);
   box-sizing: border-box;
 }
 
 .func-card-active {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.6) 100%);
-  box-shadow:
-    0 2rpx 10rpx rgba(90, 120, 200, 0.14),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.7);
+  background: #fff6e5;
+  box-shadow: 2rpx 2rpx 0 rgba(26, 26, 26, 0.14);
 }
 
 .func-icon {
   width: 84rpx;
   height: 84rpx;
-  font-size: 48rpx;
+  font-size: 56rpx;
   margin-right: 20rpx;
   flex-shrink: 0;
 }
@@ -186,7 +180,7 @@
 
 .func-main {
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: #303133;
 }
 
@@ -199,9 +193,10 @@
 /* 任务风格列表（参考 mission-list-item） */
 .mission-list {
   background: #fff;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   overflow: hidden;
-  border: 1rpx solid #f0f1f3;
+  border: 3rpx solid #1a1a1a;
+  box-shadow: 6rpx 6rpx 0 rgba(26, 26, 26, 0.12);
   margin-bottom: 24rpx;
 }
 
@@ -223,12 +218,13 @@
 .mission-thumb {
   width: 96rpx;
   height: 96rpx;
-  border-radius: 16rpx;
-  background: #f4f4f5;
+  border-radius: 14rpx;
+  border: 2rpx solid #1a1a1a;
+  background: #fff6e5;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48rpx;
+  font-size: 52rpx;
   overflow: hidden;
   margin-right: 24rpx;
   flex-shrink: 0;
@@ -260,9 +256,17 @@
 }
 
 .mission-action {
-  color: #c0c4cc;
-  font-size: 40rpx;
-  padding-left: 16rpx;
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  border: 2rpx solid #1a1a1a;
+  background: #ffe66d;
+  color: #1a1a1a;
+  font-size: 30rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
@@ -272,8 +276,8 @@
   height: 280rpx;
   border-radius: 24rpx;
   overflow: visible;
-  border: 1rpx solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8rpx 28rpx rgba(11, 16, 38, 0.18);
+  border: 3rpx solid #1a1a1a;
+  box-shadow: 8rpx 8rpx 0 rgba(26, 26, 26, 0.16);
 }
 
 /* 白天内容单独裁切，避免白云跑出卡片 */
@@ -303,6 +307,7 @@
   width: 88rpx;
   height: 88rpx;
   border-radius: 50%;
+  border: 3rpx solid #1a1a1a;
   background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e9e9f2 100%);
   box-shadow: 0 0 40rpx rgba(255, 255, 255, 0.5), inset -14rpx -10rpx 0 rgba(0, 0, 0, 0.05);
 }
@@ -327,6 +332,7 @@
   width: 96rpx;
   height: 96rpx;
   border-radius: 50%;
+  border: 3rpx solid #1a1a1a;
   background: radial-gradient(circle at 35% 35%, #fff6d8 0%, #ffd35c 100%);
   box-shadow: 0 0 60rpx rgba(255, 205, 90, 0.85);
   animation: sun-pulse 3s ease-in-out infinite;
@@ -341,6 +347,7 @@
 .cloud {
   position: absolute;
   background: rgba(255, 255, 255, 0.92);
+  border: 2rpx solid rgba(26, 26, 26, 0.6);
   border-radius: 999rpx;
   opacity: 0.9;
   animation: cloud-drift 20s linear infinite;
@@ -447,10 +454,10 @@
   bottom: 24rpx;
   text-align: center;
   color: rgba(255, 255, 255, 0.92);
-  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
-  font-size: 36rpx;
-  letter-spacing: 6rpx;
-  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.35);
+  font-weight: 800;
+  font-size: 34rpx;
+  letter-spacing: 4rpx;
+  text-shadow: 2rpx 2rpx 0 rgba(0, 0, 0, 0.35);
 }
 
 .day-text {
