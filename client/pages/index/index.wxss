@@ -50,6 +50,8 @@
 }
 
 .container {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: #faf8f3;
   padding: 20rpx;
@@ -467,6 +469,9 @@
 
 /* 内容一体卡片 */
 .content-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   background: #ffffff;
   border: 3rpx solid #1a1a1a;
   border-radius: 20rpx;
@@ -501,6 +506,9 @@
 }
 
 .content-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 24rpx 20rpx 8rpx;
 }
 
@@ -509,9 +517,18 @@
 }
 
 .content-box .mission-list {
+  flex: 1;
   border: none;
   box-shadow: none;
   margin: 0;
+}
+
+.content-box .empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40rpx 0;
 }
 
 .content-box .mission-item {
@@ -523,6 +540,7 @@
 }
 
 .content-more {
+  margin-top: auto;
   text-align: center;
   padding: 22rpx 0;
   margin-top: 10rpx;
