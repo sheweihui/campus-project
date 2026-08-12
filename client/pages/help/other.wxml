@@ -12,7 +12,7 @@
         </view>
         <view class="item-desc" wx:if="{{item.description}}">{{item.description}}</view>
       </view>
-      <view class="item-status {{item.status}}">{{item.status === 'pending' ? '待接单' : item.status === 'accepted' ? '已接单' : '已完成'}}</view>
+      <view class="item-status {{item.status}}">{{item.status === 'pending' ? '待支付' : item.status === 'prepaid' ? '待接单' : item.status === 'accepted' ? '已接单' : '已完成'}}</view>
     </view>
   </view>
 

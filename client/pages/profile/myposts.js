@@ -28,7 +28,8 @@ Page({
       'help': {
         'active': '待接单',
         'completed': '已完成',
-        'pending': '待接单',
+        'pending': '待支付',
+        'prepaid': '待接单',
         'accepted': '已接单',
         'paying': '支付中',
         'paid': '已支付'

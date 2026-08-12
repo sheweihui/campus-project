@@ -8,7 +8,8 @@ Page({
     hasMore: true,
     isLoading: false,
     expressStatusMap: {
-      'pending': '待接单',
+      'pending': '待支付',
+      'prepaid': '待接单',
       'accepted': '已接单',
       'completed': '已完成'
     }

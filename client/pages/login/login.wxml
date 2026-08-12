@@ -3,11 +3,11 @@
   <view class="logo-section">
     <view class="logo">🎓</view>
     <text class="app-name">校园便利圈</text>
-    <text class="subtitle">登录</text>
+    <text class="subtitle">{{step === 'phone' ? '登录' : '完善资料'}}</text>
   </view>
 
-  <!-- 微信一键登录 -->
-  <view class="form-section">
+  <!-- Step 1: 微信一键登录（手机号授权） -->
+  <view class="form-section" wx:if="{{step === 'phone'}}">
     <view class="wx-login">
       <button
         class="wx-btn"
@@ -34,5 +34,84 @@
       loading="{{loading}}"
       disabled="{{loading}}"
     >游客登录（仅浏览）</button>
+  </view>
+
+  <!-- Step 2: 完善资料（手机号授权成功后） -->
+  <view class="form-section" wx:if="{{step === 'profile'}}">
+    <!-- 头像 -->
+    <view class="profile-avatar-section">
+      <button
+        class="profile-avatar-btn"
+        open-type="chooseAvatar"
+        bindchooseavatar="onChooseAvatar"
+      >
+        <image
+          wx:if="{{avatarUrl}}"
+          class="profile-avatar-img"
+          src="{{avatarUrl}}"
+          mode="aspectFill"
+        />
+        <view wx:else class="profile-avatar-placeholder">
+          <text class="profile-avatar-icon">📷</text>
+          <text class="profile-avatar-tip">点击获取微信头像</text>
+        </view>
+      </button>
+    </view>
+
+    <!-- 姓名 -->
+    <view class="profile-input-group">
+      <view class="profile-input-label">
+        <text>真实姓名</text>
+        <text class="required">*</text>
+      </view>
+      <input
+        class="profile-input"
+        placeholder="请输入你的真实姓名"
+        value="{{name}}"
+        bindinput="onInput"
+        data-field="name"
+      />
+    </view>
+
+    <!-- 学号 -->
+    <view class="profile-input-group">
+      <view class="profile-input-label">
+        <text>学号</text>
+        <text class="required">*</text>
+      </view>
+      <input
+        class="profile-input"
+        placeholder="请输入你的学号"
+        value="{{stuId}}"
+        bindinput="onInput"
+        data-field="stuId"
+      />
+    </view>
+
+    <!-- 手机号（已获取，只读展示） -->
+    <view class="profile-input-group">
+      <view class="profile-input-label">
+        <text>手机号</text>
+      </view>
+      <view class="profile-phone-display">{{phone}}</view>
+    </view>
+
+    <!-- 完成注册 -->
+    <button
+      class="profile-submit-btn"
+      bindtap="submitProfile"
+      loading="{{loading}}"
+      disabled="{{loading}}"
+    >完成注册</button>
+
+    <!-- 跳过 -->
+    <view class="profile-skip" bindtap="skipProfile">
+      <text>跳过，稍后完善</text>
+    </view>
+  </view>
+
+  <!-- 返回上一步 -->
+  <view class="back-section" wx:if="{{step === 'profile'}}">
+    <text class="back-btn" bindtap="goBackToPhone">← 返回上一步</text>
   </view>
 </view>

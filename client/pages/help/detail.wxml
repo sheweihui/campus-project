@@ -147,7 +147,7 @@
         <view class="section-label">联系方式</view>
         <view class="section-value contact" bindtap="copyContact">{{detail.contact}}</view>
       </view>
-      <view class="detail-section" wx:if="{{isVisitor && detail.status === 'pending'}}">
+      <view class="detail-section" wx:if="{{isVisitor && (detail.status === 'pending' || detail.status === 'prepaid')}}">
         <view class="section-label">联系方式</view>
         <view class="section-value hidden">请接单后查看</view>
       </view>
@@ -173,24 +173,22 @@
 
 <!-- 发布者操作栏（快递/其他互助） -->
 <view class="bottom-bar" wx:if="{{isOwner && (detail.type === 'express' || detail.type === 'other')}}">
-  <view class="bar-btn primary {{detail.status !== 'accepted' ? 'disabled' : ''}}" bindtap="payNow">支付酬金</view>
+  <view class="bar-btn primary {{detail.status !== 'pending' ? 'disabled' : ''}}" bindtap="payToEscrow">去支付</view>
+  <view class="bar-btn primary {{detail.status !== 'accepted' ? 'disabled' : ''}}" bindtap="updateStatus">确认完成并放款</view>
   <view class="bar-btn" bindtap="startChat">聊天</view>
-  <view class="bar-btn {{detail.status === 'completed' ? 'disabled' : ''}}" bindtap="updateStatus">
-    {{detail.status === 'completed' ? '已完成' : '标记已完成'}}
-  </view>
 </view>
 
 <!-- 接单者操作栏（快递/其他互助） -->
 <view class="bottom-bar" wx:if="{{isAcceptor && (detail.type === 'express' || detail.type === 'other')}}">
-  <view class="bar-btn primary" wx:if="{{detail.status === 'pending'}}" bindtap="acceptExpress">接单</view>
+  <view class="bar-btn primary" wx:if="{{detail.status === 'prepaid'}}" bindtap="acceptExpress">接单</view>
   <view class="bar-btn" bindtap="startChat">聊天</view>
   <view class="bar-btn" bindtap="copyContact">复制联系方式</view>
 </view>
 
 <!-- 普通浏览者操作栏 -->
 <view class="bottom-bar" wx:if="{{isVisitor}}">
-  <view class="bar-btn primary" wx:if="{{detail.type === 'express' && detail.status === 'pending'}}" bindtap="acceptExpress">接单</view>
-  <view class="bar-btn primary" wx:if="{{detail.type === 'other' && (detail.status === 'pending' || detail.status === 'active')}}" bindtap="acceptExpress">接单</view>
+  <view class="bar-btn primary" wx:if="{{detail.type === 'express' && detail.status === 'prepaid'}}" bindtap="acceptExpress">接单</view>
+  <view class="bar-btn primary" wx:if="{{detail.type === 'other' && detail.status === 'prepaid'}}" bindtap="acceptExpress">接单</view>
   <view class="bar-btn primary" wx:if="{{detail.type === 'carpool' || detail.type === 'partner'}}" bindtap="startChat">💬 在线聊天</view>
   <view class="bar-btn" bindtap="copyContact" wx:if="{{detail.type === 'carpool' || detail.type === 'partner'}}">📋 复制号码</view>
 </view>

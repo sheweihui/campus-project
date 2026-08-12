@@ -1,6 +1,11 @@
 Page({
   data: {
-    loading: false
+    loading: false,
+    step: 'phone',       // 'phone' | 'profile'
+    avatarUrl: '',       // 微信头像临时路径
+    name: '',            // 真实姓名
+    stuId: '',           // 学号
+    phone: ''            // 已获取的手机号
   },
 
   onLoad() {
@@ -14,14 +19,14 @@ Page({
   checkAutoLogin() {
     const userInfo = wx.getStorageSync('userInfo')
     const isGuest = wx.getStorageSync('isGuest')
-    
+
     // 已登录（微信/手机号）或游客都直接进入
     if (userInfo || isGuest) {
       wx.switchTab({ url: '/pages/index/index' })
     }
   },
 
-  // 微信手机号一键登录
+  // Step 1: 微信手机号授权
   onGetPhoneNumber(e) {
     if (this.data.loading) return
 
@@ -54,23 +59,140 @@ Page({
           const { openid, phone } = result.data
           wx.setStorageSync('openid', openid)
           wx.removeStorageSync('isGuest')
-          wx.setStorageSync('userInfo', {
-            openid,
-            phone,
-            nickName: `用户${phone.slice(-4)}`
+
+          // 进入完善资料步骤（不直接跳首页）
+          this.setData({
+            loading: false,
+            step: 'profile',
+            phone: phone || ''
           })
-          wx.showToast({ title: '登录成功', icon: 'success' })
-          setTimeout(() => wx.switchTab({ url: '/pages/index/index' }), 800)
         } else {
           wx.showToast({ title: result.msg || '登录失败', icon: 'none' })
+          this.setData({ loading: false })
         }
       },
       fail: () => {
         wx.showToast({ title: '网络异常', icon: 'none' })
-      },
-      complete: () => {
         this.setData({ loading: false })
       }
+    })
+  },
+
+  // Step 2: 选择微信头像
+  onChooseAvatar(e) {
+    const { avatarUrl } = e.detail
+    if (avatarUrl) {
+      this.setData({ avatarUrl })
+    }
+  },
+
+  // Step 2: 输入姓名/学号
+  onInput(e) {
+    const field = e.currentTarget.dataset.field
+    this.setData({ [field]: e.detail.value })
+  },
+
+  // Step 2: 提交完善资料
+  async submitProfile() {
+    const { name, stuId, avatarUrl, phone } = this.data
+
+    // 校验
+    if (!name.trim()) {
+      wx.showToast({ title: '请输入真实姓名', icon: 'none' })
+      return
+    }
+    if (!stuId.trim()) {
+      wx.showToast({ title: '请输入学号', icon: 'none' })
+      return
+    }
+
+    this.setData({ loading: true })
+
+    try {
+      let finalAvatarUrl = ''
+
+      // 上传头像到云存储（如果有选择头像）
+      if (avatarUrl) {
+        try {
+          const cloudPath = `avatars/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`
+          const uploadRes = await wx.cloud.uploadFile({
+            cloudPath,
+            filePath: avatarUrl
+          })
+          finalAvatarUrl = uploadRes.fileID
+        } catch (uploadErr) {
+          console.error('头像上传失败:', uploadErr)
+          // 头像上传失败不阻塞注册流程
+        }
+      }
+
+      // 保存到数据库
+      const { result } = await wx.cloud.callFunction({
+        name: 'user',
+        data: {
+          action: 'update',
+          data: {
+            name: name.trim(),
+            stuId: stuId.trim(),
+            phone,
+            avatarUrl: finalAvatarUrl || undefined
+          }
+        }
+      })
+
+      if (result.code !== 0) {
+        wx.showToast({ title: result.msg || '保存失败', icon: 'none' })
+        this.setData({ loading: false })
+        return
+      }
+
+      // 更新本地存储
+      const userInfo = {
+        name: name.trim(),
+        stuId: stuId.trim(),
+        phone,
+        nickName: name.trim(),
+        avatarUrl: finalAvatarUrl
+      }
+      wx.setStorageSync('userInfo', userInfo)
+
+      wx.showToast({ title: '注册成功', icon: 'success' })
+      setTimeout(() => {
+        wx.switchTab({ url: '/pages/index/index' })
+      }, 800)
+    } catch (error) {
+      console.error('完善资料失败:', error)
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' })
+    } finally {
+      this.setData({ loading: false })
+    }
+  },
+
+  // 跳过完善资料
+  skipProfile() {
+    const { phone } = this.data
+    const userInfo = {
+      phone,
+      nickName: `用户${phone.slice(-4)}`,
+      name: '',
+      stuId: '',
+      avatarUrl: ''
+    }
+    wx.setStorageSync('userInfo', userInfo)
+    wx.showToast({ title: '可稍后在"我的"中完善', icon: 'none' })
+    setTimeout(() => {
+      wx.switchTab({ url: '/pages/index/index' })
+    }, 800)
+  },
+
+  // 返回手机号授权步骤
+  goBackToPhone() {
+    this.setData({
+      step: 'phone',
+      avatarUrl: '',
+      name: '',
+      stuId: '',
+      loading: false
     })
   },
 

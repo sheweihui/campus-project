@@ -54,9 +54,9 @@ async function validateItem(itemType, itemId, amount, openid) {
       return { ok: false, msg: '不能购买自己发布的商品' }
     }
   } else {
-    // 帮助类：必须是已接单状态，金额与酬金一致
-    if (item.status !== 'accepted' && item.status !== 'paying') {
-      return { ok: false, msg: '该需求尚未接单，无法支付' }
+    // 帮助类：必须是待支付或支付中状态（发布后即可预付，无需等接单）
+    if (item.status !== 'pending' && item.status !== 'paying') {
+      return { ok: false, msg: '该需求当前状态无法支付' }
     }
     const itemReward = Number(item.reward)
     if (!Number.isFinite(itemReward) || itemReward <= 0) {
@@ -65,9 +65,7 @@ async function validateItem(itemType, itemId, amount, openid) {
     if (Math.abs(itemReward - numericAmount) > 0.001) {
       return { ok: false, msg: '支付金额与酬金不一致' }
     }
-    if (item.openid === openid) {
-      return { ok: false, msg: '不能支付自己发布的需求' }
-    }
+    // 帮助类需求：发布人预支付酬金，允许自己支付
   }
 
   return { ok: true, item }
@@ -155,7 +153,17 @@ async function unifiedOrder(data, openid) {
       throw new Error(res.errCodeDes || res.errCode || '统一下单失败')
     }
 
-    return { code: 0, data: { payment: res.payment, outTradeNo } }
+    // 显式提取 payment 字段为普通对象，防止序列化丢失
+    const payment = res.payment ? {
+      appId: res.payment.appId,
+      timeStamp: res.payment.timeStamp,
+      nonceStr: res.payment.nonceStr,
+      package: res.payment.package,
+      signType: res.payment.signType,
+      paySign: res.payment.paySign
+    } : null
+
+    return { code: 0, data: { payment, outTradeNo } }
   } catch (error) {
     console.error('统一下单失败:', error)
     // 下单失败：释放商品占用，标记支付记录为取消
@@ -182,7 +190,7 @@ async function requirePhone(openid) {
 // 原子占位：market 从 onSale 占为 paying；帮助类从 accepted 占为 paying
 async function claimItem(itemType, itemId, outTradeNo, openid) {
   const collection = getCollectionByType(itemType)
-  const expectedStatus = itemType === 'market' ? 'onSale' : 'accepted'
+  const expectedStatus = itemType === 'market' ? 'onSale' : 'pending'
 
   try {
     const claimRes = await db.collection(collection)
@@ -290,7 +298,7 @@ async function releaseClaim(itemType, itemId, outTradeNo) {
   if (!itemType || !itemId || !outTradeNo) return
   const collection = getCollectionByType(itemType)
   if (!collection) return
-  const expectedStatus = itemType === 'market' ? 'onSale' : 'accepted'
+  const expectedStatus = itemType === 'market' ? 'onSale' : 'pending'
   try {
     await db.collection(collection)
       .where({ _id: itemId, status: 'paying', payOrderNo: outTradeNo })

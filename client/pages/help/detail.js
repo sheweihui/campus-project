@@ -18,9 +18,9 @@ Page({
       'others': '其他'
     },
     expressStatusMap: {
-      'pending': '待接单',
+      'pending': '待支付',
+      'prepaid': '待接单（已预付）',
       'accepted': '已接单',
-      'paying': '支付中',
       'paid': '已支付',
       'completed': '已完成',
       'active': '待接单'
@@ -197,9 +197,9 @@ Page({
     
     let confirmContent = ''
     if (detail.type === 'express') {
-      confirmContent = `取件码：${detail.pickupCode}\n收件人：${detail.recipient}\n酬金：¥${detail.reward}\n确定要接单吗？`
+      confirmContent = `取件码：${detail.pickupCode}\n收件人：${detail.recipient}\n酬金：¥${detail.reward}（已预付托管）\n确定要接单吗？`
     } else if (detail.type === 'other') {
-      confirmContent = `标题：${detail.title}\n地点：${detail.location}\n酬金：¥${detail.reward}\n确定要接单吗？`
+      confirmContent = `标题：${detail.title}\n地点：${detail.location}\n酬金：¥${detail.reward}（已预付托管）\n确定要接单吗？`
     }
     
     const { confirm } = await wx.showModal({
@@ -253,26 +253,26 @@ Page({
     }
   },
 
-  async payNow() {
+  // 发布者预支付（担保交易：先付钱到平台，完成后才打给接单者）
+  async payToEscrow() {
     if (!requireLogin()) return
 
     const { detail } = this.data
-    
+
     const { confirm } = await wx.showModal({
       title: '确认支付',
-      content: `支付金额：¥${detail.reward}\n接单者：${detail.acceptorNickName || '接单用户'}\n确定要支付吗？`
+      content: `支付金额：¥${detail.reward}\n支付后资金由平台托管，确认完成后才会打给接单者\n确定支付吗？`
     })
 
     if (!confirm) return
 
     showLoading('支付中...')
+    let outTradeNo = ''
     try {
-      const description = detail.type === 'express' 
-        ? `代取快递酬金 ¥${detail.reward}` 
+      const description = detail.type === 'express'
+        ? `代取快递酬金 ¥${detail.reward}`
         : `互助酬金 ¥${detail.reward}`
-      
-      console.log('调用支付云函数:', { itemId: detail._id, amount: detail.reward, description, itemType: detail.type })
-      
+
       const { result } = await wx.cloud.callFunction({
         name: 'pay',
         data: {
@@ -294,21 +294,21 @@ Page({
       }
 
       const paymentParams = result.data.payment
-      const outTradeNo = result.data.outTradeNo
-      
-      console.log('支付参数:', JSON.stringify(paymentParams, null, 2))
-      
+      outTradeNo = result.data.outTradeNo
+
+      console.log('支付参数 paymentParams:', JSON.stringify(paymentParams, null, 2))
+      console.log('outTradeNo:', outTradeNo)
+
       wx.hideLoading()
-      
-      const payResult = await wx.requestPayment(paymentParams)
-      
+
+      await wx.requestPayment(paymentParams)
+
       showToast('支付成功', 'success')
       this.setData({
-        'detail.status': 'paid'
+        'detail.status': 'prepaid'
       })
     } catch (error) {
       console.error('支付失败:', error)
-      console.error('支付失败详情:', JSON.stringify(error, null, 2))
       if (error.errMsg && error.errMsg.includes('requestPayment:fail')) {
         showToast('支付已取消')
         if (outTradeNo) {

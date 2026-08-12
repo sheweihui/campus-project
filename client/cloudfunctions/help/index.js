@@ -71,10 +71,10 @@ async function addHelp(data, openid) {
 async function listHelp({ type, page = 1, pageSize = 10 }) {
   const collection = getCollectionByType(type)
   const where = { type }
-  
+
   if (type === 'express' || type === 'other') {
-    // 支持 pending, accepted, active, paid 状态（paid 表示已支付，仍可查看）
-    where.status = _.in(['pending', 'accepted', 'active', 'paid'])
+    // 支持 pending（待支付）、prepaid（已预付待接单）、accepted、paid、active 状态
+    where.status = _.in(['pending', 'prepaid', 'accepted', 'active', 'paid'])
   } else {
     where.status = 'active'
   }
@@ -85,7 +85,7 @@ async function listHelp({ type, page = 1, pageSize = 10 }) {
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .get()
-  
+
   return { code: 0, data: result.data }
 }
 
@@ -102,7 +102,7 @@ async function updateHelp(data, openid) {
   const { type, id, ...updateData } = data
   const collection = getCollectionByType(type)
   const item = await db.collection(collection).doc(id).get()
-  
+
   if (item.data.openid !== openid) {
     return { code: -1, msg: '无权限修改' }
   }
@@ -114,13 +114,13 @@ async function updateHelp(data, openid) {
     delete updateData[k]
   })
 
-  // 酬金校验：必须为合法正数且最多两位小数；已被接单/支付后锁定
+  // 酬金校验：必须为合法正数且最多两位小数；已被接单/预付/支付后锁定
   if (updateData.reward !== undefined) {
     if (!isValidAmount(updateData.reward)) {
       return { code: -1, msg: '酬金必须是大于 0 且最多两位小数的金额' }
     }
     const cur = item.data.status
-    if (cur === 'accepted' || cur === 'paying' || cur === 'paid' || cur === 'completed') {
+    if (cur === 'prepaid' || cur === 'accepted' || cur === 'paying' || cur === 'paid' || cur === 'completed') {
       return { code: -1, msg: '该需求已被接单或已支付，酬金不能修改' }
     }
   }
@@ -137,7 +137,7 @@ async function updateHelp(data, openid) {
 async function deleteHelp({ type, id }, openid) {
   const collection = getCollectionByType(type)
   const item = await db.collection(collection).doc(id).get()
-  
+
   if (item.data.openid !== openid) {
     return { code: -1, msg: '无权限删除' }
   }
@@ -155,20 +155,25 @@ async function getMyList(openid, { type, stuId, page = 1, pageSize = 10 }) {
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .get()
-  
+
   return { code: 0, data: result.data }
 }
 
 async function updateStatus({ type, id, status }, openid) {
   const collection = getCollectionByType(type)
   const item = await db.collection(collection).doc(id).get()
-  
+
   if (item.data.openid !== openid) {
     return { code: -1, msg: '无权限修改' }
   }
 
   if (status === 'completed') {
-    // 标记为已完成，不再删除，保留商家端统计数据
+    // 如果有预支付订单号，需要释放资金给接单者
+    if (item.data.payOrderNo && item.data.acceptorOpenid) {
+      return await completeWithRelease(collection, item.data, id, type)
+    }
+
+    // 无支付的订单直接标记完成
     await db.collection(collection).doc(id).update({
       data: {
         status: 'completed',
@@ -177,6 +182,7 @@ async function updateStatus({ type, id, status }, openid) {
       }
     })
 
+    // 更新关联 orders
     const orders = await db.collection('orders').where({
       itemId: id,
       type
@@ -201,6 +207,159 @@ async function updateStatus({ type, id, status }, openid) {
     }
   })
   return { code: 0, msg: '状态更新成功' }
+}
+
+// 确认完成并释放资金给接单者
+async function completeWithRelease(collection, item, id, type) {
+  const outTradeNo = item.payOrderNo
+  const acceptorOpenid = item.acceptorOpenid
+
+  // 查找预支付记录
+  const payRes = await db.collection('payments').where({ outTradeNo, status: 'prepaid' }).get()
+  if (payRes.data.length === 0) {
+    return { code: -1, msg: '未找到预支付记录，无法放款' }
+  }
+
+  const payment = payRes.data[0]
+  const amount = Number(payment.amount)
+  const commissionRate = 0.15
+  const commission = parseFloat((amount * commissionRate).toFixed(2))
+  const sellerAmount = parseFloat((amount - commission).toFixed(2))
+  const orderId = `ord_${outTradeNo}`
+
+  // 获取买卖双方信息
+  const [buyerNick, sellerNick] = await Promise.all([
+    getNickName(payment.buyerOpenid),
+    getNickName(acceptorOpenid)
+  ])
+
+  // 预查财务记录
+  const financeRes = await db.collection('finance').where({ openid: acceptorOpenid }).get()
+  const financeDoc = financeRes.data.length > 0 ? financeRes.data[0] : null
+
+  // 事务：放款 + 创建订单 + 更新状态
+  const transaction = await db.startTransaction()
+  try {
+    // 双重检查支付状态
+    const tPay = await transaction.collection('payments').doc(payment._id).get()
+    if (!tPay.data || tPay.data.status !== 'prepaid') {
+      await transaction.rollback()
+      return { code: -1, msg: '支付状态异常，无法放款' }
+    }
+
+    // 双重检查商品状态
+    const tItem = await transaction.collection(collection).doc(id).get()
+    if (!tItem.data || tItem.data.status !== 'accepted') {
+      await transaction.rollback()
+      return { code: -1, msg: '订单状态异常，无法完成' }
+    }
+
+    // 创建订单记录
+    await transaction.collection('orders').doc(orderId).set({
+      data: {
+        type,
+        itemId: id,
+        buyerOpenid: payment.buyerOpenid,
+        sellerOpenid: acceptorOpenid,
+        buyerNickName: buyerNick || '',
+        sellerNickName: sellerNick || '',
+        amount,
+        commission,
+        sellerAmount,
+        paymentStatus: 'paid',
+        orderStatus: 'completed',
+        outTradeNo,
+        createTime: db.serverDate(),
+        payTime: payment.payTime || db.serverDate(),
+        completeTime: db.serverDate()
+      }
+    })
+
+    // 接单者入账
+    const newFinanceId = `fin_${acceptorOpenid}`
+    if (financeDoc) {
+      const tFinance = await transaction.collection('finance').doc(financeDoc._id).get()
+      const f = tFinance.data
+      await transaction.collection('finance').doc(financeDoc._id).update({
+        data: {
+          totalCommission: (f.totalCommission || 0) + commission,
+          availableAmount: (f.availableAmount || 0) + sellerAmount,
+          updateTime: db.serverDate()
+        }
+      })
+    } else {
+      let tFinance = null
+      try {
+        tFinance = await transaction.collection('finance').doc(newFinanceId).get()
+      } catch (e) { tFinance = null }
+      if (tFinance && tFinance.data) {
+        const f = tFinance.data
+        await transaction.collection('finance').doc(newFinanceId).update({
+          data: {
+            totalCommission: (f.totalCommission || 0) + commission,
+            availableAmount: (f.availableAmount || 0) + sellerAmount,
+            updateTime: db.serverDate()
+          }
+        })
+      } else {
+        await transaction.collection('finance').doc(newFinanceId).set({
+          data: {
+            openid: acceptorOpenid,
+            totalCommission: commission,
+            availableAmount: sellerAmount,
+            withdrawAmount: 0,
+            withdrawRecords: [],
+            createTime: db.serverDate(),
+            updateTime: db.serverDate()
+          }
+        })
+      }
+    }
+
+    // 标记支付完成
+    await transaction.collection('payments').doc(payment._id).update({
+      data: {
+        status: 'paid',
+        commission,
+        sellerAmount,
+        financeCredited: true
+      }
+    })
+
+    // 标记商品完成
+    await transaction.collection(collection).doc(id).update({
+      data: {
+        status: 'completed',
+        completeTime: db.serverDate(),
+        updateTime: db.serverDate()
+      }
+    })
+
+    await transaction.commit()
+  } catch (e) {
+    try { await transaction.rollback() } catch (e2) { /* 已回滚 */ }
+    console.error('放款事务失败:', e)
+    return { code: -1, msg: '放款失败，请重试' }
+  }
+
+  // 通知接单者收到款项
+  let notifyContent = ''
+  if (type === 'express') {
+    notifyContent = `代取快递酬金 ¥${sellerAmount} 已到账（总¥${amount}，平台服务费¥${commission}）`
+  } else {
+    notifyContent = `互助酬金 ¥${sellerAmount} 已到账（总¥${amount}，平台服务费¥${commission}）`
+  }
+
+  await sendMessage({
+    toOpenid: acceptorOpenid,
+    title: '酬金已到账',
+    content: notifyContent,
+    type: 'user',
+    relatedId: id,
+    relatedType: `help-${type}`
+  })
+
+  return { code: 0, msg: '已完成，酬金已打给接单者' }
 }
 
 function getCollectionByType(type) {
@@ -238,9 +397,10 @@ async function acceptExpress(data, openid) {
       return { code: -1, msg: '该需求已结束，无法接单' }
     }
 
-    if (tItem.data.status !== 'pending') {
+    // 只有已预付（prepaid）的需求才能接单
+    if (tItem.data.status !== 'prepaid') {
       await transaction.rollback()
-      return { code: -1, msg: '该需求已被接单' }
+      return { code: -1, msg: '该需求尚未预付酬金，无法接单' }
     }
 
     await transaction.collection(collection).doc(id).update({
@@ -270,11 +430,11 @@ async function acceptExpress(data, openid) {
   const publisherInfo = await db.collection('users').where({ openid: item.data.openid }).get()
   const publisherNickName = publisherInfo.data[0]?.nickName || '用户'
 
-  // 给发布者发送消息通知
+  // 给发布者发送消息通知（钱已预付，只需通知有人接单）
   const notifyTitle = type === 'express' ? '代取需求被接单' : '互助需求被接单'
-  const notifyContent = type === 'express' 
-    ? `您发布的代取快递需求已被接单，取件码：${item.data.pickupCode}，请及时支付酬金`
-    : `您发布的"${item.data.title}"已被接单，请及时支付酬金`
+  const notifyContent = type === 'express'
+    ? `您发布的代取快递需求已被接单，取件码：${item.data.pickupCode}，完成后请确认放款`
+    : `您发布的"${item.data.title}"已被接单，完成后请确认放款`
 
   await sendMessage({
     toOpenid: item.data.openid,
@@ -284,17 +444,17 @@ async function acceptExpress(data, openid) {
     relatedId: id,
     relatedType: `help-${type}`
   })
-  
+
   // 给接单者发送消息
   await sendMessage({
     toOpenid: openid,
     title: '接单成功',
-    content: `您已成功接下"${publisherNickName}"发布的${type === 'express' ? '代取快递' : '"' + item.data.title + '"'}需求，请联系发布者完成互助`,
+    content: `您已成功接下"${publisherNickName}"发布的${type === 'express' ? '代取快递' : '"' + item.data.title + '"'}需求，酬金已由平台托管，完成后自动到账`,
     type: 'user',
     relatedId: id,
     relatedType: `help-${type}`
   })
-  
+
   return { code: 0, msg: '接单成功' }
 }
 
@@ -314,6 +474,22 @@ function isValidAmount(value) {
   const num = Number(value)
   if (!Number.isFinite(num) || num <= 0) return false
   return Math.abs(num * 100 - Math.round(num * 100)) <= 0.001
+}
+
+// 获取用户昵称
+async function getNickName(openid) {
+  if (!openid) return ''
+  try {
+    const userRes = await db.collection('users').where({ openid }).get()
+    if (userRes.data.length > 0) {
+      const u = userRes.data[0]
+      if (u.nickName) return u.nickName
+      if (u.phone) return `用户${u.phone.slice(-4)}`
+    }
+  } catch (e) {
+    return ''
+  }
+  return ''
 }
 
 async function sendMessage(messageData) {
