@@ -276,7 +276,7 @@
 }
 
 .meteor-fade {
-  height: 48rpx;
+  height: 140rpx;
   background: linear-gradient(180deg, #1b2a5e 0%, #f0f6ff 100%);
 }
 
