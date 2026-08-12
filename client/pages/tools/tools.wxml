@@ -7,7 +7,7 @@
     </view>
     <view class="grid-item" bindtap="goToTrainingPlan">
       <view class="grid-icon training">📖</view>
-      <text class="grid-text">各专业培养方案</text>
+      <text class="grid-text">培养方案</text>
     </view>
     <view class="grid-item" bindtap="goToTransfer">
       <view class="grid-icon transfer">📄</view>

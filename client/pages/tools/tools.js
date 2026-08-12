@@ -12,7 +12,8 @@ Page({
   },
 
   goToTrainingPlan() {
-    navigateTo('/pages/tools/trainingPlan')
+    // 培养方案 = 官方文档整合（按版本/专业选择文件直接查看）
+    navigateTo('/pages/tools/docs?type=training')
   },
 
   goToTransfer() {
