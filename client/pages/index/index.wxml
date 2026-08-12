@@ -27,15 +27,6 @@
     </view>
   </view>
 
-  <!-- 公告 -->
-  <view class="announcement" wx:if="{{announcement.show}}">
-    <view class="announcement-icon">📢</view>
-    <view class="announcement-content">
-      <text class="announcement-title">{{announcement.title}}</text>
-      <text class="announcement-text">{{announcement.content}}</text>
-    </view>
-  </view>
-
   <!-- 常用功能 -->
   <view class="section-title">常用功能</view>
   <view class="func-grid">

@@ -2,12 +2,6 @@ const { showLoading, hideLoading, navigateTo, switchTab } = require('../../utils
 
 Page({
   data: {
-    bannerList: [
-      
-    ],
-    announcement: {
-      
-    },
     lostfoundList: [],
     marketList: [],
     helpList: [],
@@ -79,7 +73,6 @@ Page({
     showLoading()
     try {
       await Promise.all([
-        this.loadHomeConfig(),
         this.loadLostfound(),
         this.loadMarket(),
         this.loadHelp()
@@ -88,74 +81,6 @@ Page({
       console.error('加载数据失败:', error)
     } finally {
       hideLoading()
-    }
-  },
-
-  async loadHomeConfig() {
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'config',
-        data: {
-          action: 'getHomeConfig'
-        }
-      })
-      
-      if (res.result.code === 0 && res.result.data) {
-        const config = res.result.data
-        if (config.bannerList && config.bannerList.length > 0) {
-          // 兼容两种存储格式：字符串 URL（banner 管理页）或对象 {image, link}（homeConfig 管理页）
-          let validBanners = config.bannerList.map(item => {
-            if (typeof item === 'string') return item
-            if (item && (item.image || item.url)) return item.image || item.url
-            return null
-          }).filter(Boolean)
-          validBanners = await this.getCloudFileUrls(validBanners)
-          this.setData({ bannerList: validBanners })
-        }
-        if (config.announcement) {
-          const show = config.announcement.show === true || config.announcement.show === 'true'
-          if (show && config.announcement.title) {
-            this.setData({
-              announcement: {
-                show: true,
-                title: config.announcement.title,
-                content: config.announcement.content || ''
-              }
-            })
-          }
-        }
-      }
-    } catch (error) {
-      console.error('加载配置失败:', error)
-    }
-  },
-
-  async getCloudFileUrls(urls) {
-    // 分离云存储路径和普通URL
-    const cloudUrls = urls.filter(u => u && u.startsWith('cloud://'))
-    const normalUrls = urls.filter(u => u && !u.startsWith('cloud://'))
-    
-    if (cloudUrls.length === 0) {
-      return urls.filter(u => u)
-    }
-    
-    try {
-      const res = await wx.cloud.getTempFileURL({
-        fileList: cloudUrls
-      })
-      
-      const urlMap = {}
-      res.fileList.forEach((item, index) => {
-        urlMap[cloudUrls[index]] = item.tempFileURL || cloudUrls[index]
-      })
-      
-      return urls.map(url => {
-        if (!url) return null
-        return url.startsWith('cloud://') ? urlMap[url] || url : url
-      }).filter(u => u)
-    } catch (error) {
-      console.error('获取临时URL失败:', error)
-      return urls.filter(u => u)
     }
   },
 
