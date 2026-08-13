@@ -43,6 +43,11 @@ Page({
     ]
   },
 
+  onLoad() {
+    // 初始化时即展示全部地点，避免列表为空
+    this.filterLocations()
+  },
+
   previewMap() {
     // 代码包内图片不能直接预览，先转成临时路径
     wx.getImageInfo({

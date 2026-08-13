@@ -275,11 +275,12 @@ Page({
       
       console.log('删除结果:', result)
 
-      if (result && result.code === 0) {
+      const deleteRes = result && result.result
+      if (deleteRes && deleteRes.code === 0) {
         showToast('删除成功')
         this.loadAllPosts()
       } else {
-        showToast(result && result.msg || '删除失败')
+        showToast((deleteRes && deleteRes.msg) || '删除失败')
       }
     } catch (error) {
       console.error('删除失败:', error)

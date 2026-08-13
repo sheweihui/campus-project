@@ -400,8 +400,9 @@ Page({
         data: {
           action,
           data: {
-            publisherStuId: detail.stuId,
-            acceptorStuId: detail.acceptorStuId,
+            publisherOpenid: detail.openid,
+            acceptorOpenid: detail.acceptorOpenid,
+            type: detail.type,
             orderId: detail._id,
             title: detail.title || detail.from || '互助任务',
             reward: detail.reward

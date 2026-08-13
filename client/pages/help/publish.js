@@ -14,7 +14,24 @@ Page({
     selectedTime: '',
     weekdays: ['日', '一', '二', '三', '四', '五', '六'],
     calendarDays: [],
-    timeSlots: []
+    timeSlots: [],
+    partnerTypeIndex: 0,
+    partnerTypes: [
+      { name: '自习', value: 'study' },
+      { name: '运动', value: 'sport' },
+      { name: '吃饭', value: 'eat' },
+      { name: '游戏', value: 'game' },
+      { name: '旅游', value: 'travel' },
+      { name: '其他', value: 'others' }
+    ],
+    partnerTypeMap: {
+      'study': '自习',
+      'sport': '运动',
+      'eat': '吃饭',
+      'game': '游戏',
+      'travel': '旅游',
+      'others': '其他'
+    }
   },
 
   onLoad(options) {

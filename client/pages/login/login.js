@@ -60,12 +60,18 @@ Page({
           wx.setStorageSync('openid', openid)
           wx.removeStorageSync('isGuest')
 
-          // 进入完善资料步骤（不直接跳首页）
-          this.setData({
-            loading: false,
-            step: 'profile',
-            phone: phone || ''
-          })
+          // 手机号登录成功即视为登录完成，直接进入首页（姓名/学号稍后在"我的"中完善）
+          const userInfo = {
+            phone: phone || '',
+            nickName: phone ? `用户${phone.slice(-4)}` : '微信用户',
+            name: '',
+            stuId: '',
+            avatarUrl: ''
+          }
+          wx.setStorageSync('userInfo', userInfo)
+          this.setData({ loading: false })
+          wx.showToast({ title: '登录成功', icon: 'success' })
+          setTimeout(() => wx.switchTab({ url: '/pages/index/index' }), 800)
         } else {
           wx.showToast({ title: result.msg || '登录失败', icon: 'none' })
           this.setData({ loading: false })
@@ -96,15 +102,9 @@ Page({
   async submitProfile() {
     const { name, stuId, avatarUrl, phone } = this.data
 
-    // 校验
-    if (!name.trim()) {
-      wx.showToast({ title: '请输入真实姓名', icon: 'none' })
-      return
-    }
-    if (!stuId.trim()) {
-      wx.showToast({ title: '请输入学号', icon: 'none' })
-      return
-    }
+    // 姓名/学号为选填（微信手机号登录，不强制学号），可稍后在"我的"中完善
+    const finalName = name.trim()
+    const finalStuId = stuId.trim()
 
     this.setData({ loading: true })
 
@@ -132,8 +132,8 @@ Page({
         data: {
           action: 'update',
           data: {
-            name: name.trim(),
-            stuId: stuId.trim(),
+            name: finalName,
+            stuId: finalStuId,
             phone,
             avatarUrl: finalAvatarUrl || undefined
           }
@@ -148,10 +148,10 @@ Page({
 
       // 更新本地存储
       const userInfo = {
-        name: name.trim(),
-        stuId: stuId.trim(),
+        name: finalName,
+        stuId: finalStuId,
         phone,
-        nickName: name.trim(),
+        nickName: finalName || (phone ? `用户${phone.slice(-4)}` : '微信用户'),
         avatarUrl: finalAvatarUrl
       }
       wx.setStorageSync('userInfo', userInfo)

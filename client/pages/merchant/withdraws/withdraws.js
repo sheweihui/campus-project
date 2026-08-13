@@ -2,10 +2,11 @@ const { formatAmount, formatTime, showToast, showLoading, hideLoading } = requir
 
 Page({
   data: {
-    statusFilter: 'pending',  // all, pending, completed, failed
+    statusFilter: 'all',  // all, pending, processing, completed, failed
     statusTabs: [
       { key: 'all', label: '全部' },
       { key: 'pending', label: '待处理' },
+      { key: 'processing', label: '处理中' },
       { key: 'completed', label: '已完成' },
       { key: 'failed', label: '已失败' }
     ],

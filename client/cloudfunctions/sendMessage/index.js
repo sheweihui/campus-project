@@ -38,6 +38,13 @@ async function getOpenidByStuId(stuId) {
   }
 }
 
+// 优先使用调用方传入的 openid（当前登录体系为微信手机号），兼容旧的按学号查询
+async function resolveOpenid(openid, stuId) {
+  if (openid) return openid
+  if (stuId) return getOpenidByStuId(stuId)
+  return null
+}
+
 exports.main = async (event, context) => {
   const { action, data } = event
   
@@ -50,8 +57,8 @@ exports.main = async (event, context) => {
       }
       
       case 'orderAccept': {
-        const { publisherStuId, orderId, title, reward } = data
-        const touser = await getOpenidByStuId(publisherStuId)
+        const { publisherOpenid, publisherStuId, orderId, title, reward, type = 'other' } = data
+        const touser = await resolveOpenid(publisherOpenid, publisherStuId)
         if (!touser) {
           return { code: -1, msg: '找不到发布者openid' }
         }
@@ -61,7 +68,7 @@ exports.main = async (event, context) => {
           return { code: -1, msg: '未配置模板ID' }
         }
         
-        const result = await sendSubscribeMessage(touser, templateId, `/pages/help/detail?id=${orderId}&type=other`, {
+        const result = await sendSubscribeMessage(touser, templateId, `/pages/help/detail?id=${orderId}&type=${type}`, {
           thing1: { value: title },
           money2: { value: `¥${reward}` },
           phrase3: { value: '有人接单' },
@@ -71,8 +78,8 @@ exports.main = async (event, context) => {
       }
       
       case 'orderPay': {
-        const { acceptorStuId, orderId, title, reward } = data
-        const touser = await getOpenidByStuId(acceptorStuId)
+        const { acceptorOpenid, acceptorStuId, orderId, title, reward, type = 'other' } = data
+        const touser = await resolveOpenid(acceptorOpenid, acceptorStuId)
         if (!touser) {
           return { code: -1, msg: '找不到接单者openid' }
         }
@@ -82,7 +89,7 @@ exports.main = async (event, context) => {
           return { code: -1, msg: '未配置模板ID' }
         }
         
-        const result = await sendSubscribeMessage(touser, templateId, `/pages/help/detail?id=${orderId}&type=other`, {
+        const result = await sendSubscribeMessage(touser, templateId, `/pages/help/detail?id=${orderId}&type=${type}`, {
           thing1: { value: title },
           money2: { value: `¥${reward}` },
           phrase3: { value: '酬金已支付' },
@@ -92,10 +99,11 @@ exports.main = async (event, context) => {
       }
       
       case 'orderComplete': {
-        const { publisherStuId, orderId, title } = data
-        const touser = await getOpenidByStuId(publisherStuId)
+        // 发布者确认完成后，通知接单者任务已完成
+        const { acceptorOpenid, acceptorStuId, orderId, title, type = 'other' } = data
+        const touser = await resolveOpenid(acceptorOpenid, acceptorStuId)
         if (!touser) {
-          return { code: -1, msg: '找不到发布者openid' }
+          return { code: -1, msg: '找不到接单者openid' }
         }
         
         const templateId = TEMPLATES.ORDER_COMPLETE
@@ -103,7 +111,7 @@ exports.main = async (event, context) => {
           return { code: -1, msg: '未配置模板ID' }
         }
         
-        const result = await sendSubscribeMessage(touser, templateId, `/pages/help/detail?id=${orderId}&type=other`, {
+        const result = await sendSubscribeMessage(touser, templateId, `/pages/help/detail?id=${orderId}&type=${type}`, {
           thing1: { value: title },
           phrase3: { value: '任务已完成' },
           time4: { value: new Date().toLocaleString('zh-CN') }
