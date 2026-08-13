@@ -11,7 +11,7 @@
       <view class="form-item">
         <text class="form-label">提现金额 <text class="required">*</text></text>
         <input class="form-input" type="digit" placeholder="请输入提现金额" value="{{withdrawAmount}}" bindinput="onAmountInput" />
-        <text class="form-tip">最低提现 ¥10</text>
+        <text class="form-tip">最低提现 ¥1</text>
       </view>
 
       <view class="form-item">

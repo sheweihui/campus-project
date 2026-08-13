@@ -6,7 +6,8 @@ Page({
     withdrawAmount: '',
     wechat: '',
     realName: '',
-    remark: ''
+    remark: '',
+    canSubmit: false
   },
 
   onLoad() {
@@ -25,6 +26,7 @@ Page({
 
       if (result.code === 0) {
         this.setData({ finance: result.data })
+        this.updateCanSubmit()
       }
     } catch (error) {
       console.error('加载财务信息失败:', error)
@@ -36,6 +38,7 @@ Page({
 
   onAmountInput(e) {
     this.setData({ withdrawAmount: e.detail.value })
+    this.updateCanSubmit()
   },
 
   onWechatInput(e) {
@@ -44,39 +47,31 @@ Page({
 
   onNameInput(e) {
     this.setData({ realName: e.detail.value })
+    this.updateCanSubmit()
   },
 
   onRemarkInput(e) {
     this.setData({ remark: e.detail.value })
   },
 
-  get canSubmit() {
-    const { withdrawAmount, realName } = this.data
+  updateCanSubmit() {
+    const { withdrawAmount, realName, finance } = this.data
     const amount = parseFloat(withdrawAmount)
-    
-    if (!amount || amount <= 0) {
-      return false
-    }
-    
-    if (amount < 10) {
-      return false
-    }
-    
-    if (amount > this.data.finance.availableAmount) {
-      return false
-    }
-    
-    if (!realName.trim()) {
-      return false
-    }
-    
-    return true
+    const available = (finance && finance.availableAmount) || 0
+
+    const canSubmit = !!(
+      amount > 0 &&
+      amount >= 1 &&
+      amount <= available &&
+      realName && realName.trim()
+    )
+    this.setData({ canSubmit })
   },
 
   async submitWithdraw() {
     if (!requireLogin()) return
 
-    if (!this.canSubmit) {
+    if (!this.data.canSubmit) {
       showToast('请填写完整信息')
       return
     }
@@ -91,10 +86,11 @@ Page({
     if (!confirm) return
 
     showLoading('提现中...')
+    let res
     try {
       const partnerTradeNo = `WITHDRAW_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      
-      const { result } = await wx.cloud.callFunction({
+
+      res = await wx.cloud.callFunction({
         name: 'transfer',
         data: {
           action: 'transfer',
@@ -106,20 +102,22 @@ Page({
           }
         }
       })
-
-      if (result.code === 0) {
-        showToast('提现成功，款项将在1-3个工作日到账', 'success')
-        setTimeout(() => {
-          navigateBack()
-        }, 2000)
-      } else {
-        showToast(result.msg || '提现失败')
-      }
     } catch (error) {
       console.error('提现失败:', error)
-      showToast('提现失败')
-    } finally {
       hideLoading()
+      showToast('提现失败，请确认 transfer 云函数已部署')
+      return
+    }
+    hideLoading()
+
+    const result = res && res.result
+    if (result && result.code === 0) {
+      showToast('提现成功，款项将在1-3个工作日到账', 'success')
+      setTimeout(() => {
+        navigateBack()
+      }, 2000)
+    } else {
+      showToast((result && result.msg) || '提现失败')
     }
   }
 })

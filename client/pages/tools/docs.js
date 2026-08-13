@@ -4,6 +4,7 @@ Page({
   data: {
     type: '',
     title: '文档资料',
+    keyword: '',
     groups: [],
     loading: true
   },
@@ -19,12 +20,16 @@ Page({
     this.loadDocs(type)
   },
 
+  onUnload() {
+    clearTimeout(this._searchTimer)
+  },
+
   async loadDocs(type) {
     showLoading('加载中...')
     try {
       const { result } = await wx.cloud.callFunction({
         name: 'docs',
-        data: { action: 'list', data: { type } }
+        data: { action: 'list', data: { type, keyword: this.data.keyword } }
       })
       if (result.code === 0) {
         const groups = []
@@ -48,6 +53,27 @@ Page({
     } finally {
       hideLoading()
     }
+  },
+
+  // 关键字搜索：输入防抖 300ms 后触发
+  onSearchInput(e) {
+    this.setData({ keyword: e.detail.value })
+    clearTimeout(this._searchTimer)
+    this._searchTimer = setTimeout(() => {
+      this.loadDocs(this.data.type)
+    }, 300)
+  },
+
+  // 键盘「搜索」键触发
+  onSearchConfirm() {
+    clearTimeout(this._searchTimer)
+    this.loadDocs(this.data.type)
+  },
+
+  // 清空关键字
+  clearSearch() {
+    this.setData({ keyword: '' })
+    this.loadDocs(this.data.type)
   },
 
   // 打开文档：下载后调用 wx.openDocument
@@ -91,14 +117,19 @@ Page({
     }
 
     if (item.fileID) {
-      wx.cloud.getTempFileURL({ fileList: [item.fileID] }).then(res => {
-        const url = res.fileList && res.fileList[0] && res.fileList[0].tempFileURL
-        if (url) doOpen(url)
-        else {
+      wx.cloud.callFunction({
+        name: 'docs',
+        data: { action: 'getUrl', data: { fileID: item.fileID } }
+      }).then(res => {
+        const result = res && res.result
+        if (result && result.code === 0 && result.data && result.data.url) {
+          doOpen(result.data.url)
+        } else {
           hideLoading()
-          showToast('获取文件地址失败')
+          showToast((result && result.msg) || '获取文件地址失败')
         }
-      }).catch(() => {
+      }).catch(err => {
+        console.error('[openDoc] 获取文件地址异常:', err)
         hideLoading()
         showToast('获取文件地址失败')
       })

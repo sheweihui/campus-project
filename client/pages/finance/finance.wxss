@@ -44,10 +44,6 @@
   color: #fff;
 }
 
-.overview-value.commission {
-  color: #fff9c4;
-}
-
 .overview-value.available {
   color: #81c784;
 }

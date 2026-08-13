@@ -2,6 +2,19 @@
   <view class="tip" wx:if="{{type === 'transfer'}}">大连交通大学本科生转专业相关政策、细则与申请表格</view>
   <view class="tip" wx:if="{{type === 'training'}}">各版本专业培养方案官方文档（2022版 / 18版 / 14版）</view>
 
+  <!-- 关键字搜索 -->
+  <view class="search-bar">
+    <input
+      class="search-input"
+      placeholder="搜索标题 / 文件名 / 分类"
+      confirm-type="search"
+      value="{{keyword}}"
+      bindinput="onSearchInput"
+      bindconfirm="onSearchConfirm"
+    />
+    <view class="search-clear" wx:if="{{keyword}}" bindtap="clearSearch">✕</view>
+  </view>
+
   <block wx:for="{{groups}}" wx:key="category" wx:for-item="group">
     <view class="group-title">{{group.category}}</view>
     <view class="weui-cells">
@@ -13,7 +26,8 @@
           </view>
           <view class="list-meta">
             <text>{{item.fileName}}</text>
-            <text>{{item.date}} · {{item.sizeKB}}KB</text>
+            <text wx:if="{{item.date}}">{{item.date}} · {{item.sizeKB}}KB</text>
+            <text wx:else>{{item.sizeKB}}KB</text>
           </view>
         </view>
       </view>
@@ -21,6 +35,6 @@
   </block>
 
   <view class="empty-state" wx:if="{{!loading && groups.length === 0}}">
-    <text class="empty-text">暂无文档</text>
+    <text class="empty-text">{{keyword ? '未找到相关文档' : '暂无文档'}}</text>
   </view>
 </view>

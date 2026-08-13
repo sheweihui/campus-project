@@ -3,7 +3,7 @@ const { showToast, showLoading, hideLoading } = require('/utils/util.js')
 Page({
   data: {
     // 提现设置
-    minWithdrawAmount: 10,
+    minWithdrawAmount: 1,
     commissionRate: 15,
 
     // 管理员信息

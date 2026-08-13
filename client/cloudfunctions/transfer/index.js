@@ -37,8 +37,8 @@ async function doTransfer(data, openid) {
   }
   const finalAmount = amountCents / 100
 
-  if (finalAmount < 10) {
-    return { code: -1, msg: '最低提现金额为 ¥10' }
+  if (finalAmount < 1) {
+    return { code: -1, msg: '最低提现金额为 ¥1' }
   }
   if (!partnerTradeNo) {
     return { code: -1, msg: '交易号不能为空' }
