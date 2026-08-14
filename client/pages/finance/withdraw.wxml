@@ -1,7 +1,7 @@
 <view class="container">
   <view class="card">
     <view class="section-title">申请提现</view>
-    
+
     <view class="form-section">
       <view class="form-item">
         <text class="form-label">可提现金额</text>
@@ -15,9 +15,15 @@
       </view>
 
       <view class="form-item">
-        <text class="form-label">收款姓名 <text class="required">*</text></text>
-        <input class="form-input" placeholder="请输入真实姓名（与微信实名一致）" value="{{realName}}" bindinput="onNameInput" />
-        <text class="form-tip">必须与微信实名认证姓名一致</text>
+        <text class="form-label">持卡人姓名 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入银行卡持卡人姓名" value="{{realName}}" bindinput="onNameInput" />
+        <text class="form-tip">须与银行卡开户姓名一致</text>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">银行卡号 <text class="required">*</text></text>
+        <input class="form-input" type="number" placeholder="请输入银行卡号" value="{{bankCard}}" bindinput="onBankCardInput" />
+        <text class="form-tip">款项将人工打款到此银行卡</text>
       </view>
 
       <view class="form-item">
@@ -30,8 +36,8 @@
       <view class="info-title">提现说明</view>
       <view class="info-content">
         <text class="info-item">1. 提现手续费：免费</text>
-        <text class="info-item">2. 提现到账时间：1-3个工作日</text>
-        <text class="info-item">3. 提现方式：企业转账到微信零钱</text>
+        <text class="info-item">2. 到账时间：1-3个工作日（人工打款）</text>
+        <text class="info-item">3. 提现方式：人工打款到银行卡</text>
       </view>
     </view>
 

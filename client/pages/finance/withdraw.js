@@ -4,8 +4,8 @@ Page({
   data: {
     finance: null,
     withdrawAmount: '',
-    wechat: '',
     realName: '',
+    bankCard: '',
     remark: '',
     canSubmit: false
   },
@@ -41,12 +41,13 @@ Page({
     this.updateCanSubmit()
   },
 
-  onWechatInput(e) {
-    this.setData({ wechat: e.detail.value })
-  },
-
   onNameInput(e) {
     this.setData({ realName: e.detail.value })
+    this.updateCanSubmit()
+  },
+
+  onBankCardInput(e) {
+    this.setData({ bankCard: e.detail.value })
     this.updateCanSubmit()
   },
 
@@ -55,7 +56,7 @@ Page({
   },
 
   updateCanSubmit() {
-    const { withdrawAmount, realName, finance } = this.data
+    const { withdrawAmount, realName, bankCard, finance } = this.data
     const amount = parseFloat(withdrawAmount)
     const available = (finance && finance.availableAmount) || 0
 
@@ -63,7 +64,8 @@ Page({
       amount > 0 &&
       amount >= 1 &&
       amount <= available &&
-      realName && realName.trim()
+      realName && realName.trim() &&
+      bankCard && bankCard.trim()
     )
     this.setData({ canSubmit })
   },
@@ -78,14 +80,14 @@ Page({
 
     const { confirm } = await wx.showModal({
       title: '确认提现',
-      content: `提现金额：¥${this.data.withdrawAmount}\n收款姓名：${this.data.realName}`,
+      content: `提现金额：¥${this.data.withdrawAmount}\n持卡人：${this.data.realName}\n银行卡号：${this.data.bankCard}`,
       confirmText: '确认提交',
       cancelText: '取消'
     })
 
     if (!confirm) return
 
-    showLoading('提现中...')
+    showLoading('提交中...')
     let res
     try {
       const partnerTradeNo = `WITHDRAW_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -98,6 +100,7 @@ Page({
             amount: parseFloat(this.data.withdrawAmount),
             partnerTradeNo,
             realName: this.data.realName,
+            bankCard: this.data.bankCard,
             remark: this.data.remark || '互助酬金提现'
           }
         }
@@ -112,7 +115,7 @@ Page({
 
     const result = res && res.result
     if (result && result.code === 0) {
-      showToast('提现成功，款项将在1-3个工作日到账', 'success')
+      showToast('提现申请已提交，等待平台打款', 'success')
       setTimeout(() => {
         navigateBack()
       }, 2000)

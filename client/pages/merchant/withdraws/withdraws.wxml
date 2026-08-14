@@ -34,6 +34,14 @@
           <text class="wc-label">用户ID</text>
           <text class="wc-value">{{item.stuId || item.openid || '未知'}}</text>
         </view>
+        <view class="wc-row" wx:if="{{item.realName}}">
+          <text class="wc-label">持卡人</text>
+          <text class="wc-value">{{item.realName}}</text>
+        </view>
+        <view class="wc-row" wx:if="{{item.bankCard}}">
+          <text class="wc-label">银行卡号</text>
+          <text class="wc-value mono">{{item.bankCard}}</text>
+        </view>
         <view class="wc-row" wx:if="{{item.remark}}">
           <text class="wc-label">备注</text>
           <text class="wc-value">{{item.remark}}</text>

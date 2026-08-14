@@ -16,7 +16,8 @@ Page({
     navigateTo('/pages/tools/docs?type=training')
   },
 
-  goToTransfer() {
-    navigateTo('/pages/tools/docs?type=transfer')
+  goToBaoyan() {
+    // 保研+奖学金 = 官方通知与细则文档
+    navigateTo('/pages/tools/docs?type=baoyan')
   }
 })

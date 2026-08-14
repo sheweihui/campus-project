@@ -13,7 +13,8 @@ Page({
     const type = options.type || 'transfer'
     const titles = {
       transfer: '转专业资料',
-      training: '培养方案文档'
+      training: '培养方案文档',
+      baoyan: '保研+奖学金'
     }
     this.setData({ type, title: titles[type] || '文档资料' })
     wx.setNavigationBarTitle({ title: titles[type] || '文档资料' })
