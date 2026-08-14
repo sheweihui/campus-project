@@ -10,7 +10,8 @@ Component({
       { pagePath: '/pages/merchant/dashboard/dashboard', text: '概览', icon: '📊' },
       { pagePath: '/pages/merchant/orders/orders', text: '订单', icon: '📋' },
       { pagePath: '/pages/merchant/finance/finance', text: '财务', icon: '💰' },
-      { pagePath: '/pages/merchant/settings/settings', text: '设置', icon: '⚙️' }
+      { pagePath: '/pages/merchant/settings/settings', text: '设置', icon: '⚙️' },
+      { pagePath: '/pages/merchant/users/users', text: '发消息', icon: '✉️' }
     ]
   },
   methods: {

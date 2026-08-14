@@ -2,5 +2,8 @@
   "navigationBarTitleText": "用户管理",
   "navigationBarBackgroundColor": "#1a1a2e",
   "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "merchant-tabbar": "/components/merchant-tabbar/index"
+  },
   "enablePullDownRefresh": true
 }
