@@ -1,5 +1,5 @@
 .page-users {
-  padding-bottom: 40rpx;
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
 }
 
 .search-bar {
