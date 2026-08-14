@@ -25,7 +25,11 @@ Page({
   // 手动一键全部已读
   async markAllRead() {
     try {
-      await this.markAllAsRead()
+      const ok = await this.markAllAsRead()
+      if (!ok) {
+        showToast('标记已读失败，请重试')
+        return
+      }
       this.setData({ unreadCount: 0 })
       refreshUnreadBadge(0)
       showToast('已全部标记为已读')
@@ -124,6 +128,9 @@ Page({
           messageList: newList,
           hasMore: messageList.length === this.data.pageSize
         })
+      } else {
+        console.error('加载消息列表失败:', res.result)
+        showToast((res.result && res.result.msg) || '加载失败')
       }
     } catch (error) {
       console.error('加载消息失败:', error)
@@ -172,7 +179,9 @@ Page({
       if (res.result.code === 0) {
         // 更新未读计数
         this.updateUnreadCount()
+        return true
       }
+      return false
     } catch (error) {
       console.error('标记所有消息为已读失败:', error)
     }
@@ -185,11 +194,11 @@ Page({
     const type = e.currentTarget.dataset.type
     const message = this.data.messageList.find(item => item._id === id)
     
-    // 标记消息为已读
+    // 标记消息为已读（以服务端结果为准）
     if (message && !message.isRead) {
       try {
         const openid = wx.getStorageSync('openid')
-        await wx.cloud.callFunction({
+        const res = await wx.cloud.callFunction({
           name: 'messages',
           data: {
             action: 'markRead',
@@ -197,17 +206,19 @@ Page({
           }
         })
 
-        const messageList = this.data.messageList.map(item => {
-          if (item._id === id) {
-            item.isRead = true
-          }
-          return item
-        })
+        const markRes = res && res.result
+        if (!markRes || markRes.code !== 0) {
+          console.error('标记已读失败:', markRes)
+          showToast((markRes && markRes.msg) || '标记已读失败，请重试')
+          return
+        }
 
-        this.setData({ messageList })
+        // 服务端已标记成功，重新拉取当前列表保持与服务端一致
         this.updateUnreadCount()
+        this.loadData()
       } catch (error) {
         console.error('标记已读失败:', error)
+        showToast('标记已读失败，请重试')
       }
     }
     
