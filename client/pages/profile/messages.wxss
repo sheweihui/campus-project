@@ -127,3 +127,12 @@
   border-radius: 50%;
   margin-top: 5rpx;
 }
+.mark-all-read {
+  margin-left: auto;
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+  color: #1a7f37;
+  border: 2rpx solid #1a7f37;
+  border-radius: 24rpx;
+  background: #fff;
+}

@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, refreshUnreadBadge } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, refreshUnreadBadge } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -17,10 +17,23 @@ Page({
   },
 
   async onShow() {
-    // 先标记所有消息为已读，再加载数据
-    await this.markAllAsRead()
+    // 不自动标记已读：保留未读状态，用户点开某条消息时才标记
     await this.loadData()
     await this.loadUnreadCount()
+  },
+
+  // 手动一键全部已读
+  async markAllRead() {
+    try {
+      await this.markAllAsRead()
+      this.setData({ unreadCount: 0 })
+      refreshUnreadBadge(0)
+      showToast('已全部标记为已读')
+      this.loadData()
+    } catch (error) {
+      console.error('全部已读失败:', error)
+      showToast('操作失败')
+    }
   },
 
   onPullDownRefresh() {
@@ -63,7 +76,9 @@ Page({
       })
       
       if (res.result.code === 0) {
-        this.setData({ unreadCount: res.result.data.count })
+        const count = res.result.data.count
+        this.setData({ unreadCount: count })
+        refreshUnreadBadge(count)
       }
     } catch (error) {
       console.error('获取未读消息数失败:', error)

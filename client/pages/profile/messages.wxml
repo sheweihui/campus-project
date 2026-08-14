@@ -10,6 +10,7 @@
       <text class="badge" wx:if="{{unreadCount > 0}}">{{unreadCount > 99 ? '99+' : unreadCount}}</text>
     </view>
     <view class="tab {{currentTab === 'read' ? 'active' : ''}}" bindtap="switchTab" data-tab="read">已读</view>
+    <view class="mark-all-read" bindtap="markAllRead">全部已读</view>
   </view>
 
   <!-- 消息列表 -->
