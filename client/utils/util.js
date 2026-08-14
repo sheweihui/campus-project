@@ -122,6 +122,25 @@ const navigateBack = (delta = 1) => {
   wx.navigateBack({ delta })
 }
 
+// 刷新未读消息角标：自定义 tabBar 不支持 wx.setTabBarBadge，
+// 统一把未读数写入本地缓存，并实时更新当前页可见的 tabBar 组件
+const refreshUnreadBadge = (count) => {
+  const safeCount = Math.max(0, Number(count) || 0)
+  wx.setStorageSync('unreadCount', safeCount)
+  try {
+    const pages = getCurrentPages()
+    const page = pages && pages[pages.length - 1]
+    if (page && typeof page.getTabBar === 'function') {
+      const tabBar = page.getTabBar()
+      if (tabBar) {
+        tabBar.setData({ unreadCount: safeCount })
+      }
+    }
+  } catch (error) {
+    console.error('刷新未读角标失败:', error)
+  }
+}
+
 // 是否为游客模式
 const isGuest = () => !!wx.getStorageSync('isGuest')
 
@@ -182,6 +201,7 @@ module.exports = {
   navigateBack,
   isGuest,
   requireLogin,
+  refreshUnreadBadge,
   getOpenid,
   uploadImage,
   uploadImages,

@@ -1,4 +1,4 @@
-const { showLoading, hideLoading } = require('../../utils/util.js')
+const { showLoading, hideLoading, refreshUnreadBadge } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -254,14 +254,7 @@ Page({
       if (res.result.code === 0) {
         const count = res.result.data.count
         // 根据未读消息数量显示或隐藏数字角标
-        if (count > 0) {
-          wx.setTabBarBadge({
-            index: 2,
-            text: count > 99 ? '99+' : String(count)
-          })
-        } else {
-          wx.removeTabBarBadge({ index: 2 })
-        }
+        refreshUnreadBadge(count)
       }
     } catch (error) {
       console.error('更新未读计数失败:', error)

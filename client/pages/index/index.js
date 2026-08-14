@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, navigateTo, switchTab } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, switchTab, refreshUnreadBadge } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -70,14 +70,7 @@ Page({
       
       if (res.result && res.result.code === 0) {
         const count = res.result.data.count
-        if (count > 0) {
-          wx.setTabBarBadge({
-            index: 2,
-            text: count > 99 ? '99+' : String(count)
-          })
-        } else {
-          wx.removeTabBarBadge({ index: 2 })
-        }
+        refreshUnreadBadge(count)
       }
     } catch (error) {
       console.error('检查未读消息失败:', error)

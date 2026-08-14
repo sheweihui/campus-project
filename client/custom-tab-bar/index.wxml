@@ -6,7 +6,10 @@
       data-path="{{item.pagePath}}" data-index="{{index}}"
       bindtap="switchTab"
     >
-      <image class="tab-icon" src="{{selected === index ? item.selectedIcon : item.icon}}" mode="aspectFit" />
+      <view class="tab-icon-wrap">
+        <image class="tab-icon" src="{{selected === index ? item.selectedIcon : item.icon}}" mode="aspectFit" />
+        <view class="tab-badge" wx:if="{{index === 2 && unreadCount > 0}}">{{unreadCount > 99 ? '99+' : unreadCount}}</view>
+      </view>
       <text class="tab-text">{{item.text}}</text>
     </view>
   </view>

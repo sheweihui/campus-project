@@ -56,6 +56,11 @@
         <view class="weui-cell__bd"><text class="function-text">消息通知</text></view>
         <view class="weui-cell__ft"><view class="badge" wx:if="{{stats.unreadMessages > 0}}">{{stats.unreadMessages}}</view></view>
       </view>
+      <view class="weui-cell weui-cell_access" bindtap="goToMerchant" wx:if="{{isAdmin}}" hover-class="weui-cell_active">
+        <view class="weui-cell__hd"><text class="function-icon">🏪</text></view>
+        <view class="weui-cell__bd"><text class="function-text">商家管理</text></view>
+        <view class="weui-cell__ft"><text class="function-arrow">›</text></view>
+      </view>
       <view class="weui-cell weui-cell_access" bindtap="goToSettings" hover-class="weui-cell_active">
         <view class="weui-cell__hd"><text class="function-icon">⚙️</text></view>
         <view class="weui-cell__bd"><text class="function-text">设置与反馈</text></view>

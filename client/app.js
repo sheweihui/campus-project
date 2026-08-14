@@ -1,3 +1,5 @@
+const { refreshUnreadBadge } = require('./utils/util.js')
+
 App({
   onLaunch: function () {
     if (!wx.cloud) {
@@ -46,14 +48,7 @@ App({
       
       if (res.result && res.result.code === 0) {
         const count = res.result.data.count
-        if (count > 0) {
-          wx.setTabBarBadge({
-            index: 2,
-            text: count > 99 ? '99+' : String(count)
-          })
-        } else {
-          wx.removeTabBarBadge({ index: 2 })
-        }
+        refreshUnreadBadge(count)
       }
     } catch (error) {
       console.error('检查未读消息失败:', error)

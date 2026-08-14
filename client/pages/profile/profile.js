@@ -1,9 +1,10 @@
-const { showLoading, hideLoading, navigateTo, isGuest, requireLogin } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, isGuest, requireLogin, refreshUnreadBadge } = require('../../utils/util.js')
 
 Page({
   data: {
     userInfo: {},
     isGuest: false,
+    isAdmin: false,
     stats: {
       lostfound: 0,
       market: 0,
@@ -15,6 +16,25 @@ Page({
   onLoad() {
     this.loadUserInfo()
     this.loadStats()
+    this.checkAdmin()
+  },
+
+  // 检查是否商家端管理员
+  async checkAdmin() {
+    try {
+      const { result } = await wx.cloud.callFunction({
+        name: 'admin',
+        data: { action: 'checkAdmin' }
+      })
+      this.setData({ isAdmin: !!(result && result.code === 0) })
+    } catch (error) {
+      this.setData({ isAdmin: false })
+    }
+  },
+
+  // 进入商家管理后台
+  goToMerchant() {
+    navigateTo('/pages/merchant/dashboard/dashboard')
   },
 
   async onShow() {
@@ -33,7 +53,7 @@ Page({
       
       if (!openid) {
         console.log('没有用户信息，跳过检查')
-        wx.removeTabBarBadge({ index: 2 })
+        refreshUnreadBadge(0)
         this.setData({ 'stats.unreadMessages': 0 })
         return
       }
@@ -55,17 +75,7 @@ Page({
         // 更新 stats.unreadMessages
         this.setData({ 'stats.unreadMessages': count })
         
-        if (count > 0) {
-          // 显示数字角标
-          wx.setTabBarBadge({
-            index: 2,
-            text: count > 99 ? '99+' : String(count)
-          })
-          console.log('显示数字角标:', count)
-        } else {
-          wx.removeTabBarBadge({ index: 2 })
-          console.log('移除角标')
-        }
+        refreshUnreadBadge(count)
       } else {
         console.log('云函数返回错误:', res.result)
       }
