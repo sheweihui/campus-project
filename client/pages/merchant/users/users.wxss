@@ -106,3 +106,13 @@
   font-size: 26rpx;
   border: 2rpx solid #1a1a1a;
 }
+
+.broadcast-btn {
+  background: #ffe66d;
+  color: #1a1a1a;
+  padding: 14rpx 24rpx;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  border: 2rpx solid #1a1a1a;
+  font-weight: 600;
+}

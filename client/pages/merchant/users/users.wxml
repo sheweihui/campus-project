@@ -10,6 +10,7 @@
       bindconfirm="onSearch"
     />
     <view class="search-btn" bindtap="onSearch">搜索</view>
+    <view class="broadcast-btn" bindtap="goToBroadcast">群发</view>
   </view>
 
   <!-- 统计 -->

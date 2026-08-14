@@ -116,6 +116,11 @@ Page({
     this.setData({ chartData, chartMax: maxAmount })
   },
 
+  // 跳转到群发消息
+  goToBroadcast() {
+    wx.navigateTo({ url: '/pages/merchant/broadcast/broadcast' })
+  },
+
   // 跳转到订单页
   goToOrders(e) {
     const type = e.currentTarget.dataset.type || ''

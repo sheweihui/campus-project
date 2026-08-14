@@ -84,6 +84,8 @@ exports.main = async (event, context) => {
         return await getUserList(data)
       case 'sendUserMessage':
         return await sendUserMessage(data)
+      case 'broadcastMessage':
+        return await broadcastMessage(data)
       case 'getCategoryStats':
         return await getCategoryStats(data)
       case 'getRecentTransactions':
@@ -928,6 +930,60 @@ async function getUserList(data) {
     }
   } catch (e) {
     console.error('getUserList error:', e)
+    return { code: -1, msg: e.message }
+  }
+}
+
+// 商家端群发消息：给所有注册用户各写一条站内通知
+async function broadcastMessage(data) {
+  const { title, content } = data || {}
+  const text = String(content || '').trim()
+  if (!text) {
+    return { code: -1, msg: '消息内容不能为空' }
+  }
+  const msgTitle = String(title || '平台通知').trim().slice(0, 30)
+  const safeContent = text.slice(0, 500)
+
+  try {
+    // 收集所有用户 openid（去重）
+    const users = await getAll(db.collection('users'))
+    const openids = []
+    const seen = {}
+    users.forEach(u => {
+      const oid = u.openid
+      if (oid && !seen[oid]) {
+        seen[oid] = true
+        openids.push(oid)
+      }
+    })
+
+    if (openids.length === 0) {
+      return { code: -1, msg: '暂无用户可发送' }
+    }
+
+    // 分批写入 messages，避免单次并发过多
+    const CHUNK = 100
+    for (let i = 0; i < openids.length; i += CHUNK) {
+      const batch = openids.slice(i, i + CHUNK)
+      await Promise.all(batch.map(oid =>
+        db.collection('messages').add({
+          data: {
+            toOpenid: oid,
+            title: msgTitle,
+            content: safeContent,
+            type: 'admin',
+            relatedId: '',
+            relatedType: 'admin',
+            isRead: false,
+            createTime: db.serverDate()
+          }
+        })
+      ))
+    }
+
+    return { code: 0, msg: `群发成功，已发送给 ${openids.length} 名用户` }
+  } catch (e) {
+    console.error('群发消息失败:', e)
     return { code: -1, msg: e.message }
   }
 }

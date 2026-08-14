@@ -32,6 +32,7 @@
     "pages/profile/myposts",
     "pages/admin/homeConfig",
     "pages/admin/banner",
+    "pages/merchant/broadcast/broadcast",
     "pages/merchant/dashboard/dashboard",
     "pages/merchant/orders/orders",
     "pages/merchant/order-detail/order-detail",

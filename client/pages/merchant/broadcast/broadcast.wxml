@@ -1,0 +1,19 @@
+<view class="page-broadcast">
+  <view class="card">
+    <view class="form-item">
+      <text class="form-label">消息标题</text>
+      <input class="form-input" placeholder="默认：平台通知" value="{{title}}" bindinput="onTitleInput" maxlength="30" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">消息内容 <text class="required">*</text></text>
+      <textarea class="form-textarea" placeholder="请输入要群发给所有用户的消息内容" value="{{content}}" bindinput="onContentInput" maxlength="500" />
+      <text class="form-tip">{{content.length}}/500</text>
+    </view>
+  </view>
+
+  <view class="broadcast-info">
+    <text>群发后，所有注册用户的消息中心都会收到该通知，底部导航栏会显示未读角标。</text>
+  </view>
+
+  <button class="btn-primary submit-btn" bindtap="submit">确认群发</button>
+</view>

@@ -64,6 +64,11 @@ Page({
     }
   },
 
+  // 跳转到群发消息
+  goToBroadcast() {
+    wx.navigateTo({ url: '/pages/merchant/broadcast/broadcast' })
+  },
+
   // 搜索
   // 给用户发送站内消息（管理员）
   sendMessageToUser(e) {
