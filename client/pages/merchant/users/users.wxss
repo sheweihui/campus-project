@@ -93,3 +93,16 @@
   font-size: 22rpx;
   color: #9ca3af;
 }
+.user-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12rpx;
+}
+.msg-btn {
+  background: #333333;
+  color: #fff;
+  padding: 10rpx 28rpx;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  border: 2rpx solid #1a1a1a;
+}

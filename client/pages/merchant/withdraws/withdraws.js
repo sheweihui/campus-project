@@ -1,4 +1,4 @@
-const { formatAmount, formatTime, showToast, showLoading, hideLoading } = require('/utils/util.js')
+const { formatAmount, formatTime, showToast, showLoading, hideLoading } = require('../../../utils/util.js')
 
 Page({
   data: {
@@ -81,14 +81,18 @@ Page({
     this.loadWithdraws()
   },
 
-  // 批准提现
+  // 批准提现（人工打款后确认，可填备注）
   async approveWithdraw(e) {
     const item = e.currentTarget.dataset.item
     wx.showModal({
-      title: '确认批准',
-      content: `批准提现 ${formatAmount(item.amount)}？`,
+      title: '确认批准打款',
+      content: `批准 ${formatAmount(item.amount)} 打款到 ${item.realName || '用户'}？可填写打款备注。`,
+      editable: true,
+      placeholderText: '打款备注（选填），如：已打款尾号1234',
+      confirmText: '批准打款',
       success: async (res) => {
         if (!res.confirm) return
+        const remark = (res.content || '').trim()
 
         showLoading('处理中...')
         try {
@@ -99,7 +103,8 @@ Page({
               data: {
                 financeId: item.financeId,
                 partnerTradeNo: item.partnerTradeNo,
-                action: 'approve'
+                action: 'approve',
+                remark
               }
             }
           })
@@ -119,14 +124,18 @@ Page({
     })
   },
 
-  // 拒绝提现
+  // 拒绝提现（退回余额，可填原因）
   async rejectWithdraw(e) {
     const item = e.currentTarget.dataset.item
     wx.showModal({
-      title: '确认拒绝',
-      content: `拒绝提现 ${formatAmount(item.amount)}？金额将退回用户余额。`,
+      title: '确认拒绝提现',
+      content: `拒绝 ${formatAmount(item.amount)}？金额将退回用户余额。可填写拒绝原因。`,
+      editable: true,
+      placeholderText: '拒绝原因（选填）',
+      confirmText: '确认拒绝',
       success: async (res) => {
         if (!res.confirm) return
+        const remark = (res.content || '').trim()
 
         showLoading('处理中...')
         try {
@@ -137,7 +146,8 @@ Page({
               data: {
                 financeId: item.financeId,
                 partnerTradeNo: item.partnerTradeNo,
-                action: 'reject'
+                action: 'reject',
+                remark
               }
             }
           })

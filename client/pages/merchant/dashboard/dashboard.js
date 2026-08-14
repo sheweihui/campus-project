@@ -1,4 +1,4 @@
-const { formatAmount, showToast, showLoading, hideLoading } = require('/utils/util.js')
+const { formatAmount, showToast, showLoading, hideLoading } = require('../../../utils/util.js')
 
 Page({
   data: {
@@ -12,7 +12,9 @@ Page({
       pendingWithdraws: 0,
       pendingWithdrawAmount: 0,
       completedOrders: 0,
-      cancelledOrders: 0
+      cancelledOrders: 0,
+      todayAmount: 0,
+      todayCommission: 0
     },
     // 分类数据
     categories: [],
@@ -69,7 +71,9 @@ Page({
             pendingWithdraws: d.pendingWithdraws || 0,
             pendingWithdrawAmount: d.pendingWithdrawAmount || 0,
             completedOrders: d.completedOrders || 0,
-            cancelledOrders: d.cancelledOrders || 0
+            cancelledOrders: d.cancelledOrders || 0,
+            todayAmount: d.todayAmount || 0,
+            todayCommission: d.todayCommission || 0
           },
           categories: [
             { key: 'market', name: '二手市场', icon: '🛒', count: cats.market?.count || 0, amount: cats.market?.amount || 0 },

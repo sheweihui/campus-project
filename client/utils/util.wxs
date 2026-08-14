@@ -88,6 +88,19 @@ function getWithdrawTagClass(status) {
   return 'tag-default'
 }
 
+
+function maskOpenid(openid) {
+  if (!openid) return ''
+  if (openid.length <= 12) return openid
+  return openid.slice(0, 12) + '...'
+}
+
+function maskBankCard(card) {
+  if (!card) return ''
+  var c = '' + card
+  if (c.length <= 8) return '****' + c.slice(-4)
+  return c.slice(0, 4) + ' **** **** ' + c.slice(-4)
+}
 module.exports = {
   formatAmount: formatAmount,
   formatDate: formatDate,
@@ -97,5 +110,7 @@ module.exports = {
   getOrderStatusName: getOrderStatusName,
   getWithdrawStatusName: getWithdrawStatusName,
   getStatusTagClass: getStatusTagClass,
-  getWithdrawTagClass: getWithdrawTagClass
+  getWithdrawTagClass: getWithdrawTagClass,
+  maskOpenid: maskOpenid,
+  maskBankCard: maskBankCard
 }

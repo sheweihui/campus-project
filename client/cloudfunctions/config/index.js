@@ -3,7 +3,7 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
 // 兜底管理员 openid 列表；优先读取 config 集合的 admin 文档（{ _id: 'admin', openidList: [...] }）
-const ADMIN_LIST = []
+const ADMIN_LIST = ['oqfU73aKz53RErVbMk2c1fMprXjc', 'oqfU73fMYpw6k8jvZsVR_YHP44qE']
 
 async function isAdmin(openid) {
   if (!openid) return false

@@ -9,7 +9,7 @@ const _ = db.command
 // 优先从 config 集合的 admin 文档（{ _id: 'admin', openidList: ['openid', ...] }）读取，
 // 两者都为空时所有请求都会被拒绝。
 // 测试前请把你的 openid 填到这里，或在云开发控制台 config 集合建 admin 文档。
-const ADMIN_LIST = []
+const ADMIN_LIST = ['oqfU73aKz53RErVbMk2c1fMprXjc', 'oqfU73fMYpw6k8jvZsVR_YHP44qE']
 
 // 校验调用者是否为管理员
 async function isAdmin(openid) {
@@ -82,6 +82,8 @@ exports.main = async (event, context) => {
         return await processWithdraw(data)
       case 'getUserList':
         return await getUserList(data)
+      case 'sendUserMessage':
+        return await sendUserMessage(data)
       case 'getCategoryStats':
         return await getCategoryStats(data)
       case 'getRecentTransactions':
@@ -127,7 +129,8 @@ async function getDashboard(data) {
     todayOrders,
     pendingWithdraws,
     pendingWithdrawAmount,
-    payments
+    payments,
+    todayStats
   ] = await Promise.all([
     getOrderStats(dateFilter),
     getFinanceStats(),
@@ -135,7 +138,8 @@ async function getDashboard(data) {
     getTodayOrderCount(),
     getPendingWithdrawCount(),
     getPendingWithdrawAmount(),
-    getPaymentStats(dateFilter)
+    getPaymentStats(dateFilter),
+    getTodayStats()
   ])
 
   return {
@@ -149,6 +153,8 @@ async function getDashboard(data) {
       cancelledOrders: orderStats.cancelled || 0,              // 已取消订单
       userCount: userCount || 0,                                // 总用户数
       todayOrders: todayOrders || 0,                            // 今日订单
+      todayAmount: todayStats.todayAmount || 0,                 // 今日交易额
+      todayCommission: todayStats.todayCommission || 0,         // 今日佣金
       pendingWithdraws: pendingWithdraws || 0,                  // 待处理提现
       pendingWithdrawAmount: pendingWithdrawAmount || 0,         // 待处理提现金额
 
@@ -279,6 +285,38 @@ async function getTotalUserCount() {
     } catch (e2) {
       return 0
     }
+  }
+}
+
+// 今日已支付订单的交易额与佣金（用于商家端概览）
+async function getTodayStats() {
+  try {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    const res = await db.collection('orders')
+      .where({
+        createTime: _.gte(today).and(_.lt(tomorrow)),
+        paymentStatus: _.in(['paid', 'confirmed'])
+      })
+      .limit(100)
+      .get()
+
+    let amount = 0
+    let commission = 0
+    res.data.forEach(o => {
+      amount += o.amount || 0
+      commission += o.commission || 0
+    })
+    return {
+      todayAmount: Math.round(amount * 100) / 100,
+      todayCommission: Math.round(commission * 100) / 100
+    }
+  } catch (e) {
+    console.error('getTodayStats error:', e)
+    return { todayAmount: 0, todayCommission: 0 }
   }
 }
 
@@ -890,6 +928,37 @@ async function getUserList(data) {
     }
   } catch (e) {
     console.error('getUserList error:', e)
+    return { code: -1, msg: e.message }
+  }
+}
+
+// 商家端给用户发站内消息（写入 messages 集合，用户消息中心可见）
+async function sendUserMessage(data) {
+  const { targetOpenid, title, content } = data || {}
+  if (!targetOpenid) {
+    return { code: -1, msg: '缺少目标用户' }
+  }
+  const text = String(content || '').trim()
+  if (!text) {
+    return { code: -1, msg: '消息内容不能为空' }
+  }
+
+  try {
+    await db.collection('messages').add({
+      data: {
+        toOpenid: targetOpenid,
+        title: String(title || '平台通知').trim().slice(0, 30),
+        content: text.slice(0, 500),
+        type: 'admin',
+        relatedId: '',
+        relatedType: 'admin',
+        isRead: false,
+        createTime: db.serverDate()
+      }
+    })
+    return { code: 0, msg: '发送成功' }
+  } catch (e) {
+    console.error('发送用户消息失败:', e)
     return { code: -1, msg: e.message }
   }
 }

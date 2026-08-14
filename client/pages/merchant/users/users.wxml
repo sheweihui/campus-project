@@ -52,6 +52,9 @@
       <view class="user-footer" wx:if="{{item.createTime}}">
         <text class="user-time">注册时间：{{util.formatTime(item.createTime)}}</text>
       </view>
+      <view class="user-actions">
+        <view class="msg-btn" bindtap="sendMessageToUser" data-item="{{item}}">✉️ 发消息</view>
+      </view>
     </view>
   </view>
 

@@ -1,13 +1,21 @@
 <wxs src="/utils/util.wxs" module="util" />
 
 <view class="page-finance" wx:if="{{!loading}}">
+  <!-- 时间范围切换 -->
+  <view class="period-tabs">
+    <view class="period-tab {{periodFilter === item.key ? 'active' : ''}}"
+      wx:for="{{periodTabs}}" wx:key="key"
+      data-key="{{item.key}}" bindtap="switchPeriod"
+    >{{item.label}}</view>
+  </view>
+
   <!-- 收入总览 -->
   <view class="revenue-header">
     <view class="revenue-label">平台总交易额</view>
     <view class="revenue-value">{{util.formatAmount(overview.totalRevenue)}}</view>
     <view class="revenue-sub">
       <text>平台抽成 {{util.formatAmount(overview.totalCommission)}}</text>
-      <text class="revenue-period">本期交易 {{util.formatAmount(period.revenue)}} · 抽成 {{util.formatAmount(period.commission)}} · {{period.orderCount}} 单</text>
+      <text class="revenue-period">{{periodLabel}}交易 {{util.formatAmount(period.revenue)}} · 抽成 {{util.formatAmount(period.commission)}} · {{period.orderCount}} 单</text>
     </view>
   </view>
 

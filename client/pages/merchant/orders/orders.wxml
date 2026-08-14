@@ -83,6 +83,7 @@
             <text class="tag {{util.getStatusTagClass(item.paymentStatus)}}">
               {{util.getPaymentStatusName(item.paymentStatus)}}
             </text>
+            <text class="tag tag-default">{{util.getOrderStatusName(item.orderStatus, item.paymentStatus)}}</text>
           </view>
           <text class="order-amount">{{util.formatAmount(item.amount)}}</text>
         </view>

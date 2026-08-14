@@ -22,6 +22,10 @@
       <text class="info-label">订单编号</text>
       <text class="info-value mono">{{order._id}}</text>
     </view>
+    <view class="info-row" wx:if="{{order.outTradeNo}}">
+      <text class="info-label">交易号</text>
+      <text class="info-value mono">{{order.outTradeNo}}</text>
+    </view>
     <view class="info-row">
       <text class="info-label">创建时间</text>
       <text class="info-value">{{util.formatTime(order.createTime)}}</text>
@@ -34,6 +38,10 @@
       <text class="info-label">确认时间</text>
       <text class="info-value">{{util.formatTime(order.confirmTime)}}</text>
     </view>
+    <view class="info-row" wx:if="{{order.completeTime}}">
+      <text class="info-label">完成时间</text>
+      <text class="info-value">{{util.formatTime(order.completeTime)}}</text>
+    </view>
   </view>
 
   <!-- 交易双方 -->
@@ -43,9 +51,17 @@
       <text class="info-label">买家</text>
       <text class="info-value">{{order.buyerNickName || '匿名用户'}}</text>
     </view>
+    <view class="info-row" wx:if="{{order.buyerOpenid}}">
+      <text class="info-label">买家ID</text>
+      <text class="info-value mono">{{util.maskOpenid(order.buyerOpenid)}}</text>
+    </view>
     <view class="info-row">
       <text class="info-label">卖家</text>
       <text class="info-value">{{order.sellerNickName || '匿名用户'}}</text>
+    </view>
+    <view class="info-row" wx:if="{{order.sellerOpenid}}">
+      <text class="info-label">卖家ID</text>
+      <text class="info-value mono">{{util.maskOpenid(order.sellerOpenid)}}</text>
     </view>
   </view>
 

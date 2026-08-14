@@ -1,4 +1,4 @@
-const { formatAmount, formatTime, showToast } = require('/utils/util.js')
+const { formatAmount, formatTime, showToast, showLoading, hideLoading } = require('../../../utils/util.js')
 
 Page({
   data: {
@@ -65,6 +65,56 @@ Page({
   },
 
   // 搜索
+  // 给用户发送站内消息（管理员）
+  sendMessageToUser(e) {
+    const item = e.currentTarget.dataset.item
+    if (!item || !item.openid) {
+      showToast('用户信息不完整')
+      return
+    }
+
+    wx.showModal({
+      title: `给 ${item.nickName || '该用户'} 发消息`,
+      editable: true,
+      placeholderText: '请输入消息内容',
+      confirmText: '发送',
+      cancelText: '取消',
+      success: async (res) => {
+        if (!res.confirm) return
+        const content = (res.content || '').trim()
+        if (!content) {
+          showToast('消息内容不能为空')
+          return
+        }
+
+        showLoading('发送中...')
+        try {
+          const { result } = await wx.cloud.callFunction({
+            name: 'admin',
+            data: {
+              action: 'sendUserMessage',
+              data: {
+                targetOpenid: item.openid,
+                title: '平台通知',
+                content
+              }
+            }
+          })
+          if (result.code === 0) {
+            showToast('发送成功', 'success')
+          } else {
+            showToast(result.msg || '发送失败')
+          }
+        } catch (error) {
+          console.error('发送消息失败:', error)
+          showToast('发送失败')
+        } finally {
+          hideLoading()
+        }
+      }
+    })
+  },
+
   onSearchInput(e) {
     this.setData({ keyword: e.detail.value })
   },

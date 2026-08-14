@@ -13,7 +13,7 @@
     <view class="kpi-card kpi-revenue" bindtap="goToFinance">
       <view class="kpi-label">总交易额</view>
       <view class="kpi-value">{{util.formatAmount(kpis.totalRevenue)}}</view>
-      <view class="kpi-sub">平台抽成 {{util.formatAmount(kpis.platformCommission)}}</view>
+      <view class="kpi-sub">今日 {{util.formatAmount(kpis.todayAmount)}} · 平台抽成 {{util.formatAmount(kpis.platformCommission)}}</view>
     </view>
     <view class="kpi-card kpi-orders" bindtap="goToOrders">
       <view class="kpi-label">总订单数</view>
