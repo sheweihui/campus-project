@@ -11,7 +11,11 @@
     </view>
     <view class="grid-item" bindtap="goToBaoyan">
       <view class="grid-icon baoyan">🎓</view>
-      <text class="grid-text">保研+奖学金</text>
+      <text class="grid-text">保研</text>
+    </view>
+    <view class="grid-item" bindtap="goToScholarship">
+      <view class="grid-icon scholarship">🏅</view>
+      <text class="grid-text">奖学金</text>
     </view>
   </view>
 

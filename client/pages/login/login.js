@@ -63,7 +63,7 @@ Page({
           // 手机号登录成功即视为登录完成，直接进入首页（姓名/学号稍后在"我的"中完善）
           const userInfo = {
             phone: phone || '',
-            nickName: phone ? `用户${phone.slice(-4)}` : '微信用户',
+            nickName: '微信用户',
             name: '',
             stuId: '',
             avatarUrl: ''
@@ -151,7 +151,7 @@ Page({
         name: finalName,
         stuId: finalStuId,
         phone,
-        nickName: finalName || (phone ? `用户${phone.slice(-4)}` : '微信用户'),
+        nickName: finalName || '微信用户',
         avatarUrl: finalAvatarUrl
       }
       wx.setStorageSync('userInfo', userInfo)
@@ -173,7 +173,7 @@ Page({
     const { phone } = this.data
     const userInfo = {
       phone,
-      nickName: `用户${phone.slice(-4)}`,
+      nickName: '微信用户',
       name: '',
       stuId: '',
       avatarUrl: ''

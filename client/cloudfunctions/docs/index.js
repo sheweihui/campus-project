@@ -7,9 +7,10 @@ const _ = db.command
 
 // type -> 集合名：培养方案与转专业分集合存储
 const COLLECTIONS = {
-  training: 'trainingDocs',  // 培养方案
-  transfer: 'transferDocs',  // 转专业
-  baoyan: 'baoyanDocs'       // 保研+奖学金
+  training: 'trainingDocs',       // 培养方案
+  transfer: 'transferDocs',       // 转专业
+  baoyan: 'baoyanDocs',           // 保研
+  scholarship: 'scholarshipDocs'  // 奖学金
 }
 
 async function getAll(query) {

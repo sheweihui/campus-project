@@ -1,7 +1,8 @@
 <view class="container">
   <view class="tip" wx:if="{{type === 'transfer'}}">大连交通大学本科生转专业相关政策、细则与申请表格</view>
   <view class="tip" wx:if="{{type === 'training'}}">各版本专业培养方案官方文档（2022版 / 18版 / 14版）</view>
-  <view class="tip" wx:if="{{type === 'baoyan'}}">保研推免、奖学金评定等官方通知与细则</view>
+  <view class="tip" wx:if="{{type === 'baoyan'}}">保研推免、免试攻读研究生相关官方通知</view>
+  <view class="tip" wx:if="{{type === 'scholarship'}}">奖学金评定相关官方通知与细则</view>
 
   <!-- 关键字搜索 -->
   <view class="search-bar">

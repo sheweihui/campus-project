@@ -897,7 +897,7 @@ async function getUserList(data) {
       stuId: studentMap[u.openid] || u.stuId || '',
       phone: u.phone || '',
       avatarUrl: u.avatarUrl || '',
-      nickName: u.nickName || '',
+      nickName: u.name || u.nickName || '',
       createTime: u.createTime || '',
       ...(financeMap[u.openid || u.stuId] || {})
     }))
@@ -1090,14 +1090,31 @@ async function getRecentTransactions(data) {
       .limit(limit)
       .get()
 
+    // 查买卖家当前真实姓名，优先用姓名展示（老订单存的是手机尾号昵称）
+    const openids = new Set()
+    orders.data.forEach(o => {
+      if (o.buyerOpenid) openids.add(o.buyerOpenid)
+      if (o.sellerOpenid) openids.add(o.sellerOpenid)
+    })
+
+    const nameMap = {}
+    if (openids.size > 0) {
+      const users = await db.collection('users')
+        .where({ openid: _.in([...openids]) })
+        .get()
+      users.data.forEach(u => {
+        nameMap[u.openid] = u.name || u.nickName || ''
+      })
+    }
+
     return {
       code: 0,
       data: orders.data.map(o => ({
         id: o._id,
         type: o.type,
         amount: o.amount,
-        buyer: o.buyerNickName || '匿名',
-        seller: o.sellerNickName || '匿名',
+        buyer: (o.buyerOpenid && nameMap[o.buyerOpenid]) || o.buyerNickName || '匿名',
+        seller: (o.sellerOpenid && nameMap[o.sellerOpenid]) || o.sellerNickName || '匿名',
         status: o.paymentStatus,
         time: o.createTime
       }))

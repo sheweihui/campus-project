@@ -57,7 +57,7 @@ async function sendMessageNotification(senderId, receiverId, content, relatedTyp
   try {
     // 获取发送者信息
     const senderRes = await db.collection('users').where({ openid: senderId }).get()
-    const senderName = senderRes.data.length > 0 ? (senderRes.data[0].nickName || '用户') : '用户'
+    const senderName = senderRes.data.length > 0 ? (senderRes.data[0].name || senderRes.data[0].nickName || '用户') : '用户'
 
     // 判断消息类型
     let title = '新消息'
@@ -154,7 +154,7 @@ async function getBuyerList(data, openid) {
   for (let buyer of buyerList) {
     const userRes = await db.collection('users').where({ openid: buyer.openid }).get()
     if (userRes.data.length > 0) {
-      buyer.nickName = userRes.data[0].nickName || '用户'
+      buyer.nickName = userRes.data[0].name || userRes.data[0].nickName || '用户'
       buyer.phoneMask = userRes.data[0].phone
         ? `${userRes.data[0].phone.slice(0, 3)}****${userRes.data[0].phone.slice(-4)}`
         : ''

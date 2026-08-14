@@ -83,23 +83,18 @@ async function loginByPhone(openid, data) {
   }
 
   const user = await db.collection('users').where({ openid }).get()
-  const nickName = `用户${phone.slice(-4)}`
 
   if (user.data.length === 0) {
     await db.collection('users').add({
       data: {
         openid,
         phone,
-        nickName,
         createTime: db.serverDate(),
         updateTime: db.serverDate()
       }
     })
   } else {
     const updateData = { phone, updateTime: db.serverDate() }
-    if (!user.data[0].nickName) {
-      updateData.nickName = nickName
-    }
     await db.collection('users').doc(user.data[0]._id).update({ data: updateData })
   }
 

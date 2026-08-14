@@ -483,8 +483,8 @@ async function getNickName(openid) {
     const userRes = await db.collection('users').where({ openid }).get()
     if (userRes.data.length > 0) {
       const u = userRes.data[0]
+      if (u.name) return u.name
       if (u.nickName) return u.nickName
-      if (u.phone) return `用户${u.phone.slice(-4)}`
     }
   } catch (e) {
     return ''

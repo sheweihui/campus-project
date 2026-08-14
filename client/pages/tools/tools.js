@@ -17,7 +17,12 @@ Page({
   },
 
   goToBaoyan() {
-    // 保研+奖学金 = 官方通知与细则文档
+    // 保研 = 免试攻读研究生相关官方通知
     navigateTo('/pages/tools/docs?type=baoyan')
+  },
+
+  goToScholarship() {
+    // 奖学金 = 奖学金评定相关细则
+    navigateTo('/pages/tools/docs?type=scholarship')
   }
 })
