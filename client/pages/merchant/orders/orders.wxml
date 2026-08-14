@@ -109,3 +109,5 @@
   <view class="load-more" wx:if="{{loading}}">加载中...</view>
   <view class="load-more" wx:elif="{{!hasMore && orders.length > 0}}">— 已加载全部 —</view>
 </view>
+
+<merchant-tabbar selected="{{1}}" />

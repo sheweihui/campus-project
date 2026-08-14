@@ -2,5 +2,8 @@
   "navigationBarTitleText": "订单管理",
   "navigationBarBackgroundColor": "#1a1a2e",
   "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "merchant-tabbar": "/components/merchant-tabbar/index"
+  },
   "enablePullDownRefresh": true
 }

@@ -61,3 +61,5 @@
     <text>Powered by WeChat CloudBase</text>
   </view>
 </view>
+
+<merchant-tabbar selected="{{3}}" />

@@ -97,3 +97,5 @@
     </view>
   </view>
 </view>
+
+<merchant-tabbar selected="{{2}}" />

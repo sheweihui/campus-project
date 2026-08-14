@@ -169,3 +169,7 @@
   font-size: 22rpx;
   color: #b25e00;
 }
+
+.page-orders {
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
+}

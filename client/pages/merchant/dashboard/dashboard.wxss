@@ -199,3 +199,7 @@
 .tx-status {
   margin-top: 4rpx;
 }
+
+.page-dashboard {
+  padding-bottom: calc(150rpx + env(safe-area-inset-bottom));
+}
