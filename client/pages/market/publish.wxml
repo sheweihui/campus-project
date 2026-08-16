@@ -11,8 +11,9 @@
       <text class="form-label">价格 <text class="required">*</text></text>
       <view class="price-input">
         <text class="price-symbol">¥</text>
-        <input class="form-input" type="digit" placeholder="请输入价格" value="{{form.price}}" bindinput="onInput" data-field="price" />
+        <input class="form-input" type="digit" placeholder="请输入价格" value="{{form.price}}" bindinput="onPriceInput" />
       </view>
+      <text class="amount-hint" wx:if="{{priceHint}}">{{priceHint}}</text>
     </view>
 
     <!-- 原价 -->
@@ -20,8 +21,9 @@
       <text class="form-label">原价（选填）</text>
       <view class="price-input">
         <text class="price-symbol">¥</text>
-        <input class="form-input" type="digit" placeholder="请输入原价" value="{{form.originalPrice}}" bindinput="onInput" data-field="originalPrice" />
+        <input class="form-input" type="digit" placeholder="请输入原价" value="{{form.originalPrice}}" bindinput="onOriginalPriceInput" />
       </view>
+      <text class="amount-hint" wx:if="{{originalPriceHint}}">{{originalPriceHint}}</text>
     </view>
 
     <!-- 分类 -->

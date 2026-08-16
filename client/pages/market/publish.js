@@ -38,7 +38,9 @@ Page({
       'fair': '一般'
     },
     categoryIndex: 0,
-    conditionIndex: 0
+    conditionIndex: 0,
+    priceHint: '',
+    originalPriceHint: ''
   },
 
   onLoad(options) {
@@ -91,6 +93,38 @@ Page({
     this.setData({
       [`form.${field}`]: value
     })
+  },
+
+  // 价格输入：实时过滤非法字符、限制两位小数，并即时提示
+  onPriceInput(e) {
+    const value = this.sanitizeAmount(e.detail.value)
+    const valid = /^\d+(\.\d{1,2})?$/.test(value) && Number(value) > 0
+    this.setData({
+      'form.price': value,
+      priceHint: value && !valid ? '请输入大于0的金额，最多两位小数' : ''
+    })
+  },
+
+  // 原价输入：同样实时过滤与校验（允许为0）
+  onOriginalPriceInput(e) {
+    const value = this.sanitizeAmount(e.detail.value)
+    const valid = /^\d+(\.\d{1,2})?$/.test(value)
+    this.setData({
+      'form.originalPrice': value,
+      originalPriceHint: value && !valid ? '原价最多两位小数' : ''
+    })
+  },
+
+  // 金额清洗：只保留数字和一个小数点，最多两位小数，小数点开头自动补0
+  sanitizeAmount(value) {
+    let v = String(value || '').replace(/[^\d.]/g, '')
+    const firstDot = v.indexOf('.')
+    if (firstDot !== -1) {
+      v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).replace(/\./g, '')
+      v = v.slice(0, firstDot + 1) + v.slice(firstDot + 1).slice(0, 2)
+    }
+    if (v.startsWith('.')) v = '0' + v
+    return v
   },
 
   onCategoryChange(e) {

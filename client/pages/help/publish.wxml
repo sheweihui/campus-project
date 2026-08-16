@@ -53,8 +53,9 @@
         <text class="form-label">酬金 <text class="required">*</text></text>
         <view class="price-input">
           <text class="price-symbol">¥</text>
-          <input class="form-input" type="digit" placeholder="请输入酬金" value="{{form.reward}}" bindinput="onInput" data-field="reward" />
+          <input class="form-input" type="digit" placeholder="请输入酬金" value="{{form.reward}}" bindinput="onRewardInput" />
         </view>
+        <text class="amount-hint" wx:if="{{rewardHint}}">{{rewardHint}}</text>
       </view>
       <view class="form-item">
         <text class="form-label">截止时间 <text class="required">*</text></text>
@@ -130,8 +131,9 @@
         <text class="form-label">酬金 <text class="required">*</text></text>
         <view class="price-input">
           <text class="price-symbol">¥</text>
-          <input class="form-input" type="digit" placeholder="请输入酬金" value="{{form.reward}}" bindinput="onInput" data-field="reward" />
+          <input class="form-input" type="digit" placeholder="请输入酬金" value="{{form.reward}}" bindinput="onRewardInput" />
         </view>
+        <text class="amount-hint" wx:if="{{rewardHint}}">{{rewardHint}}</text>
       </view>
       <view class="form-item">
         <text class="form-label">联系方式 <text class="required">*</text></text>

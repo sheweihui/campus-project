@@ -70,3 +70,9 @@
 .submit-btn {
   margin-top: 40rpx;
 }
+.amount-hint {
+  display: block;
+  font-size: 22rpx;
+  color: #e64340;
+  margin-top: 8rpx;
+}
