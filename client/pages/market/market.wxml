@@ -55,3 +55,5 @@
 <view class="fab" bindtap="goToPublish">
   <text class="fab-icon">+</text>
 </view>
+
+<view class="refresh-fab" bindtap="onRefresh">↻</view>

@@ -18,6 +18,12 @@ Page({
     this.loadData()
   },
 
+  // 手动刷新
+  onRefresh() {
+    this.setData({ page: 1, hasMore: true, list: [] })
+    this.loadData()
+  },
+
   onPullDownRefresh() {
     this.setData({ page: 1, hasMore: true })
     this.loadData().then(() => {

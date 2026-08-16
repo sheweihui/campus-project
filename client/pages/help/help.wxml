@@ -106,3 +106,5 @@
     </view>
   </view>
 </view>
+
+<view class="refresh-fab" bindtap="onRefresh">↻</view>

@@ -32,6 +32,11 @@ Page({
     this.loadData()
   },
 
+  // 手动刷新
+  onRefresh() {
+    this.loadData()
+  },
+
   async loadData() {
     showLoading()
     try {

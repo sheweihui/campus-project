@@ -42,6 +42,16 @@ Page({
     }
   },
 
+  // 手动刷新
+  onRefresh() {
+    this.setData({ page: 1, hasMore: true, list: [] })
+    if (this.data.keyword) {
+      this.searchData()
+    } else {
+      this.loadData()
+    }
+  },
+
   onPullDownRefresh() {
     this.setData({ page: 1, hasMore: true })
     const task = this.data.keyword ? this.searchData() : this.loadData()
