@@ -62,6 +62,7 @@ exports.main = async (event, context) => {
     }
 
     const buyerNickName = await getNickName(paymentRecord.buyerOpenid)
+    const sellerNickName = await getNickName(itemPre.data.openid || '')
 
     // ============ 事务：标记预支付（资金托管在平台，等确认完成后释放） ============
     const transaction = await db.startTransaction()
@@ -114,6 +115,30 @@ exports.main = async (event, context) => {
           payTime: db.serverDate()
         }
       })
+
+      // 二手商品：支付成功即生成订单记录，便于商家端订单管理（help 类在确认完成时生成）
+      if (itemType === 'market') {
+        const orderId = `ord_${outTradeNo}`
+        await transaction.collection('orders').doc(orderId).set({
+          data: {
+            type: 'market',
+            itemId,
+            buyerOpenid: paymentRecord.buyerOpenid,
+            sellerOpenid: tItem.data.openid || '',
+            buyerNickName: buyerNickName || '',
+            sellerNickName: sellerNickName || '',
+            amount,
+            commission,
+            sellerAmount,
+            paymentStatus: 'paid',
+            orderStatus: 'completed',
+            outTradeNo,
+            createTime: db.serverDate(),
+            payTime: db.serverDate(),
+            completeTime: db.serverDate()
+          }
+        })
+      }
 
       await transaction.commit()
     } catch (e) {
