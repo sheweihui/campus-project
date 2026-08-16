@@ -512,12 +512,14 @@ page .bar-btn.primary:active {
 
 /* 详情页底部按钮统一漫画风（覆盖旧的灰色胶囊样式，避免与 primary 混搭） */
 page .bottom-bar .bar-btn {
-  flex: 1;
+  flex: 0 0 auto;
+  min-width: 140rpx;
   text-align: center;
-  padding: 20rpx 0;
+  padding: 18rpx 32rpx;
   margin: 0 10rpx;
   border-radius: 12rpx;
   font-size: 28rpx;
+  box-sizing: border-box;
   background: #faf8f3;
   color: #1a1a1a;
   border: 3rpx solid #1a1a1a;
