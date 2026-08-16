@@ -1,11 +1,6 @@
 Page({
   data: {
-    loading: false,
-    step: 'phone',       // 'phone' | 'profile'
-    avatarUrl: '',       // 微信头像临时路径
-    name: '',            // 真实姓名
-    stuId: '',           // 学号
-    phone: ''            // 已获取的手机号
+    loading: false
   },
 
   onLoad() {
@@ -26,7 +21,7 @@ Page({
     }
   },
 
-  // Step 1: 微信手机号授权
+  // 微信手机号一键登录
   onGetPhoneNumber(e) {
     if (this.data.loading) return
 
@@ -84,118 +79,7 @@ Page({
     })
   },
 
-  // Step 2: 选择微信头像
-  onChooseAvatar(e) {
-    const { avatarUrl } = e.detail
-    if (avatarUrl) {
-      this.setData({ avatarUrl })
-    }
-  },
-
-  // Step 2: 输入姓名/学号
-  onInput(e) {
-    const field = e.currentTarget.dataset.field
-    this.setData({ [field]: e.detail.value })
-  },
-
-  // Step 2: 提交完善资料
-  async submitProfile() {
-    const { name, stuId, avatarUrl, phone } = this.data
-
-    // 姓名/学号为选填（微信手机号登录，不强制学号），可稍后在"我的"中完善
-    const finalName = name.trim()
-    const finalStuId = stuId.trim()
-
-    this.setData({ loading: true })
-
-    try {
-      let finalAvatarUrl = ''
-
-      // 上传头像到云存储（如果有选择头像）
-      if (avatarUrl) {
-        try {
-          const cloudPath = `avatars/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.jpg`
-          const uploadRes = await wx.cloud.uploadFile({
-            cloudPath,
-            filePath: avatarUrl
-          })
-          finalAvatarUrl = uploadRes.fileID
-        } catch (uploadErr) {
-          console.error('头像上传失败:', uploadErr)
-          // 头像上传失败不阻塞注册流程
-        }
-      }
-
-      // 保存到数据库
-      const { result } = await wx.cloud.callFunction({
-        name: 'user',
-        data: {
-          action: 'update',
-          data: {
-            name: finalName,
-            stuId: finalStuId,
-            phone,
-            avatarUrl: finalAvatarUrl || undefined
-          }
-        }
-      })
-
-      if (result.code !== 0) {
-        wx.showToast({ title: result.msg || '保存失败', icon: 'none' })
-        this.setData({ loading: false })
-        return
-      }
-
-      // 更新本地存储
-      const userInfo = {
-        name: finalName,
-        stuId: finalStuId,
-        phone,
-        nickName: finalName || '微信用户',
-        avatarUrl: finalAvatarUrl
-      }
-      wx.setStorageSync('userInfo', userInfo)
-
-      wx.showToast({ title: '注册成功', icon: 'success' })
-      setTimeout(() => {
-        wx.switchTab({ url: '/pages/index/index' })
-      }, 800)
-    } catch (error) {
-      console.error('完善资料失败:', error)
-      wx.showToast({ title: '保存失败，请重试', icon: 'none' })
-    } finally {
-      this.setData({ loading: false })
-    }
-  },
-
-  // 跳过完善资料
-  skipProfile() {
-    const { phone } = this.data
-    const userInfo = {
-      phone,
-      nickName: '微信用户',
-      name: '',
-      stuId: '',
-      avatarUrl: ''
-    }
-    wx.setStorageSync('userInfo', userInfo)
-    wx.showToast({ title: '可稍后在"我的"中完善', icon: 'none' })
-    setTimeout(() => {
-      wx.switchTab({ url: '/pages/index/index' })
-    }, 800)
-  },
-
-  // 返回手机号授权步骤
-  goBackToPhone() {
-    this.setData({
-      step: 'phone',
-      avatarUrl: '',
-      name: '',
-      stuId: '',
-      loading: false
-    })
-  },
-
+  // 游客登录
   guestLogin() {
     if (this.data.loading) return
     this.setData({ loading: true })
