@@ -177,6 +177,11 @@ async function deleteMarket({ id }, openid) {
     return { code: -1, msg: '无权限删除' }
   }
 
+  // 交易中/已售出禁止删除，避免资金记录与商品状态脱节
+  if (item.data.status === 'paying' || item.data.status === 'sold') {
+    return { code: -1, msg: '商品交易中或已售出，不能删除' }
+  }
+
   await db.collection('market').doc(id).remove()
   return { code: 0, msg: '删除成功' }
 }

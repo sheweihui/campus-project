@@ -155,6 +155,12 @@ async function deleteHelp({ type, id }, openid) {
     return { code: -1, msg: '无权限删除' }
   }
 
+  // 涉及资金的发布禁止删除（预付/支付中/已接单/已支付），避免资金记录脱节
+  const lockedStatus = ['paying', 'prepaid', 'accepted', 'paid']
+  if (lockedStatus.includes(item.data.status)) {
+    return { code: -1, msg: '该需求已支付或已接单，不能删除' }
+  }
+
   await db.collection(collection).doc(id).remove()
   return { code: 0, msg: '删除成功' }
 }
