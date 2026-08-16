@@ -95,7 +95,7 @@
           <view class="mission-thumb">{{helpIconMap[item.type]}}</view>
           <view class="mission-body">
             <view class="mission-title">{{item.title || (item.type === 'express' ? item.pickupLocation || '代取快递' : (item.type === 'partner' ? item.description : (item.from + ' → ' + item.to)))}}</view>
-            <view class="mission-meta">🕐 {{item.date || item.time}} {{item.timeSlot || ''}}</view>
+            <view class="mission-meta"><text class="list-price" wx:if="{{item.reward}}">¥{{item.reward}}</text> 🕐 {{item.date || item.time}} {{item.timeSlot || ''}}</view>
           </view>
           <view class="mission-action">></view>
         </view>
