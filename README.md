@@ -146,3 +146,19 @@ campus-service-circle/
 - 银行卡号仅存于云数据库 `finance` 集合（完整卡号仅供商家端管理员审批打款使用）。
 - 用户端与商家端界面展示均为脱敏格式（`6222 **** **** 1234`），用户端接口返回的卡号同样脱敏。
 - 建议将数据库权限设置为「所有用户不可读写，仅云函数（管理端）可读写」，客户端全部读写均通过云函数完成。
+## 数据库索引建议（云开发控制台创建）
+
+数据量增大后，以下组合查询建议创建复合索引，否则查询会变慢或失败：
+
+| 集合 | 索引字段（按顺序） | 用途 |
+| --- | --- | --- |
+| messages | toOpenid + isRead + createTime(降序) | 未读数、消息列表分页 |
+| chats | senderId + receiverId + relatedId + createTime(升序) | 会话消息查询 |
+| orders | createTime(降序) + paymentStatus + type | 商家端订单筛选 |
+| market | status + category + createTime(降序) | 商品列表筛选 |
+| lostfound | type + createTime(降序) | 失物列表 |
+| help-express 等 | status + createTime(降序) | 互助列表 |
+| users | openid | 登录与用户查询 |
+| finance | openid | 余额与提现查询 |
+
+创建路径：云开发控制台 → 数据库 → 对应集合 → 索引管理 → 新建索引。
