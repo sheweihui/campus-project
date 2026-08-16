@@ -50,6 +50,13 @@ exports.main = async (event, context) => {
       return { errcode: 0 }
     }
 
+    // 校验回调金额与订单金额一致（分），防止金额不一致被误标记成功
+    const expectCents = Math.round(amount * 100)
+    if (totalFee !== expectCents) {
+      console.error('回调金额与订单金额不一致:', outTradeNo, '回调=', totalFee, '订单=', expectCents)
+      return { errcode: 0 }
+    }
+
     const commissionRate = 0.15
     const commission = parseFloat((amount * commissionRate).toFixed(2))
     const sellerAmount = parseFloat((amount - commission).toFixed(2))
