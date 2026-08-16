@@ -20,7 +20,12 @@ App({
   },
   
   startPolling: function() {
-    // 每10秒检查一次未读消息
+    // 防止重复创建定时器
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer)
+      this.pollTimer = null
+    }
+    // 仅前台每10秒检查一次未读消息
     this.pollTimer = setInterval(() => {
       this.checkUnreadMessages()
     }, 10000)
@@ -31,6 +36,18 @@ App({
       clearInterval(this.pollTimer)
       this.pollTimer = null
     }
+  },
+
+  // 小程序进入前台：恢复未读轮询
+  onShow: function() {
+    if (this.globalData.openid || wx.getStorageSync('openid')) {
+      this.startPolling()
+    }
+  },
+
+  // 小程序进入后台：暂停轮询，节省资源
+  onHide: function() {
+    this.stopPolling()
   },
 
   checkUnreadMessages: async function() {
