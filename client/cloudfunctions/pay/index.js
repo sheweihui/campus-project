@@ -97,6 +97,8 @@ async function unifiedOrder(data, openid) {
   const outTradeNo = `${Date.now()}_${openid.slice(-8)}_${Math.random().toString(36).slice(2, 8)}`
 
   try {
+    // 自愈式清理：超时未支付的残留记录（释放商品占用 + 取消支付记录）
+    await cleanupStalePayments()
     // 支付必须完成微信登录并绑定手机号（拦截游客）
     if (!(await requirePhone(openid))) {
       return { code: -1, msg: '请先完成微信登录并绑定手机号后再支付' }
@@ -311,6 +313,32 @@ async function releaseClaim(itemType, itemId, outTradeNo) {
       })
   } catch (e) {
     console.error('释放商品占用失败:', e)
+  }
+}
+
+// 清理超时未支付的残留记录：释放商品占用并取消支付记录
+async function cleanupStalePayments() {
+  try {
+    const deadline = new Date(Date.now() - CLAIM_TIMEOUT_MS)
+    const res = await db.collection('payments')
+      .where({
+        status: 'pending',
+        createTime: _.lte(deadline)
+      })
+      .limit(100)
+      .get()
+
+    for (const pay of res.data) {
+      await releaseClaim(pay.itemType, pay.itemId, pay.outTradeNo)
+      await db.collection('payments').doc(pay._id).update({
+        data: { status: 'cancelled', cancelReason: '超时未支付自动清理' }
+      })
+    }
+    if (res.data.length > 0) {
+      console.log('清理超时支付记录:', res.data.length)
+    }
+  } catch (e) {
+    console.error('清理超时支付记录失败:', e)
   }
 }
 
