@@ -282,8 +282,8 @@ async function completeWithRelease(collection, item, id, type) {
       const f = tFinance.data
       await transaction.collection('finance').doc(financeDoc._id).update({
         data: {
-          totalCommission: (f.totalCommission || 0) + commission,
-          availableAmount: (f.availableAmount || 0) + sellerAmount,
+          totalCommission: Math.round(((f.totalCommission || 0) + commission) * 100) / 100,
+          availableAmount: Math.round(((f.availableAmount || 0) + sellerAmount) * 100) / 100,
           updateTime: db.serverDate()
         }
       })
@@ -296,8 +296,8 @@ async function completeWithRelease(collection, item, id, type) {
         const f = tFinance.data
         await transaction.collection('finance').doc(newFinanceId).update({
           data: {
-            totalCommission: (f.totalCommission || 0) + commission,
-            availableAmount: (f.availableAmount || 0) + sellerAmount,
+            totalCommission: Math.round(((f.totalCommission || 0) + commission) * 100) / 100,
+            availableAmount: Math.round(((f.availableAmount || 0) + sellerAmount) * 100) / 100,
             updateTime: db.serverDate()
           }
         })

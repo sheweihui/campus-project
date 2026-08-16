@@ -1,15 +1,17 @@
+<wxs src="/utils/util.wxs" module="util" />
+
 <view class="container">
   <view class="card">
     <view class="section-title">我的财务</view>
-    
+
     <view class="finance-overview">
       <view class="overview-item">
         <text class="overview-label">可提现金额</text>
-        <text class="overview-value available">¥{{finance.availableAmount || 0}}</text>
+        <text class="overview-value available">{{util.formatAmount(finance.availableAmount)}}</text>
       </view>
       <view class="overview-item">
         <text class="overview-label">已提现金额</text>
-        <text class="overview-value withdrawn">¥{{finance.withdrawAmount || 0}}</text>
+        <text class="overview-value withdrawn">{{util.formatAmount(finance.withdrawAmount)}}</text>
       </view>
     </view>
 
@@ -28,7 +30,7 @@
     <view class="record-list">
       <view class="record-item" wx:for="{{finance.withdrawRecords}}" wx:key="index">
         <view class="record-info">
-          <view class="record-amount">-¥{{item.amount}}</view>
+          <view class="record-amount">-{{util.formatAmount(item.amount)}}</view>
           <view class="record-status {{item.status}}">{{withdrawStatusMap[item.status]}}</view>
           <view class="record-time">{{item.time}}</view>
         </view>
@@ -44,8 +46,8 @@
     <view class="withdraw-tips">
       <view class="tips-item">1. 最低提现金额：¥1</view>
       <view class="tips-item">2. 提现手续费：免费</view>
-      <view class="tips-item">3. 提现到账时间：1-3个工作日</view>
-      <view class="tips-item">4. 提现方式：微信转账</view>
+      <view class="tips-item">3. 提现到账时间：1-3个工作日（人工打款）</view>
+      <view class="tips-item">4. 提现方式：人工打款到银行卡</view>
     </view>
   </view>
 </view>

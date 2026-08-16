@@ -28,32 +28,37 @@ Page({
 
   async loadDocs(type) {
     showLoading('加载中...')
+    let result
     try {
-      const { result } = await wx.cloud.callFunction({
+      const res = await wx.cloud.callFunction({
         name: 'docs',
         data: { action: 'list', data: { type, keyword: this.data.keyword } }
       })
-      if (result.code === 0) {
-        const groups = []
-        const map = {}
-        result.data.forEach(item => {
-          if (!map[item.category]) {
-            map[item.category] = { category: item.category, items: [] }
-            groups.push(map[item.category])
-          }
-          map[item.category].items.push(item)
-        })
-        this.setData({ groups, loading: false })
-      } else {
-        showToast(result.msg || '加载失败')
-        this.setData({ loading: false })
-      }
+      result = res && res.result
     } catch (error) {
       console.error('加载文档失败:', error)
+      hideLoading()
       showToast('加载失败')
       this.setData({ loading: false })
-    } finally {
-      hideLoading()
+      return
+    }
+    hideLoading()
+    console.log('[docs] list 返回:', JSON.stringify(result))
+
+    if (result && result.code === 0) {
+      const groups = []
+      const map = {}
+      ;(result.data || []).forEach(item => {
+        if (!map[item.category]) {
+          map[item.category] = { category: item.category, items: [] }
+          groups.push(map[item.category])
+        }
+        map[item.category].items.push(item)
+      })
+      this.setData({ groups, loading: false })
+    } else {
+      showToast((result && result.msg) || '加载失败')
+      this.setData({ loading: false })
     }
   },
 

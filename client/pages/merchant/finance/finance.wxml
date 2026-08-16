@@ -62,7 +62,7 @@
     <view class="finance-list" wx:else>
       <view class="finance-item" wx:for="{{userFinanceList}}" wx:key="openid">
         <view class="fi-left">
-          <view class="fi-id">{{item.stuId || '未绑定'}}</view>
+          <view class="fi-id">{{item.name || item.stuId || '未绑定'}}</view>
           <view class="fi-openid">{{item.openid ? item.openid.slice(0, 8) + '...' : ''}}</view>
         </view>
         <view class="fi-right">

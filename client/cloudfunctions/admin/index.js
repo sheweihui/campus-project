@@ -639,6 +639,17 @@ async function getFinanceOverview(data) {
     const allWithdraws = []
     const userFinanceDetails = []
 
+    // 查用户真实姓名，用于余额排行展示（优先姓名，其次昵称）
+    const financeOpenids = [...new Set(financeList.map(f => f.openid).filter(Boolean))]
+    const nameMap = {}
+    for (let i = 0; i < financeOpenids.length; i += 100) {
+      const batch = financeOpenids.slice(i, i + 100)
+      const users = await db.collection('users').where({ openid: _.in(batch) }).get()
+      users.data.forEach(u => {
+        nameMap[u.openid] = u.name || u.nickName || ''
+      })
+    }
+
     financeList.forEach(f => {
       totalCommission += f.totalCommission || 0
       availableBalance += f.availableAmount || 0
@@ -659,6 +670,7 @@ async function getFinanceOverview(data) {
       userFinanceDetails.push({
         openid: f.openid,
         stuId: f.stuId || '',
+        name: nameMap[f.openid] || '',
         totalCommission: f.totalCommission || 0,
         availableAmount: f.availableAmount || 0,
         withdrawAmount: f.withdrawAmount || 0,
@@ -803,8 +815,8 @@ async function processWithdraw(data) {
     }
 
     if (processAction === 'reject' && record.status === 'pending') {
-      updateData.availableAmount = _.inc(record.amount)
-      updateData.withdrawAmount = _.inc(-record.amount)
+      updateData.availableAmount = Math.round(((finance.data.availableAmount || 0) + record.amount) * 100) / 100
+      updateData.withdrawAmount = Math.round(((finance.data.withdrawAmount || 0) - record.amount) * 100) / 100
     }
 
     await db.collection('finance').doc(financeId).update({ data: updateData })

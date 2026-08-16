@@ -91,8 +91,8 @@ async function doTransfer(data, openid) {
 
     await transaction.collection('finance').doc(finance._id).update({
       data: {
-        availableAmount: (current.availableAmount || 0) - finalAmount,
-        withdrawAmount: (current.withdrawAmount || 0) + finalAmount,
+        availableAmount: Math.round(((current.availableAmount || 0) - finalAmount) * 100) / 100,
+        withdrawAmount: Math.round(((current.withdrawAmount || 0) + finalAmount) * 100) / 100,
         withdrawRecords: newRecords,
         updateTime: new Date()
       }
