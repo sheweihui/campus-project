@@ -90,6 +90,7 @@
 
     <!-- 互助信息 -->
     <view class="tab-content" wx:if="{{activeTab === 'help'}}">
+      <view class="publish-entry" bindtap="goToPublishHelp">＋ 发布互助信息</view>
       <view class="empty-state" wx:if="{{helpPosts.length === 0}}">
         <text class="empty-text">暂无互助信息</text>
       </view>

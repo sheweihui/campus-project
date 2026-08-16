@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, showToast, navigateTo, navigateBack } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateTo, navigateBack, requireLogin } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -51,6 +51,19 @@ Page({
   switchTab(e) {
     const tab = e.currentTarget.dataset.tab
     this.setData({ activeTab: tab })
+  },
+
+  // 发布互助信息：先选类型再进入对应发布页
+  goToPublishHelp() {
+    if (!requireLogin()) return
+
+    wx.showActionSheet({
+      itemList: ['拼车出行', '代取快递', '找搭子', '其他互助'],
+      success: (res) => {
+        const types = ['carpool', 'express', 'partner', 'other']
+        navigateTo(`/pages/help/publish?type=${types[res.tapIndex]}`)
+      }
+    })
   },
 
   async loadAllPosts() {

@@ -173,3 +173,19 @@
   background: #ffebee;
   color: #d32f2f;
 }
+
+.publish-entry {
+  margin-bottom: 20rpx;
+  text-align: center;
+  padding: 20rpx 0;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 700;
+  border-radius: 14rpx;
+  border: 3rpx solid #1a1a1a;
+  box-shadow: 0 6rpx 0 rgba(26, 26, 26, 0.15);
+}
+.publish-entry:active {
+  transform: scale(0.98);
+}
