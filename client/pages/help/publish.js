@@ -429,15 +429,26 @@ Page({
       })
 
       if (result.code === 0) {
-        showToast(this.data.id ? '修改成功' : '发布成功', 'success')
-        
         if ((data.type === 'express' || data.type === 'other') && !this.data.id) {
+          // 新发布的付费互助：需先支付才能被接单
           this.requestSubscribeMessage()
+          const { confirm } = await wx.showModal({
+            title: '发布成功',
+            content: '需先支付后才可被接单，是否立即支付？',
+            confirmText: '去支付',
+            cancelText: '稍后'
+          })
+          if (confirm) {
+            wx.redirectTo({ url: `/pages/help/detail?type=${data.type}&id=${result.data}` })
+          } else {
+            navigateBack()
+          }
+        } else {
+          showToast(this.data.id ? '修改成功' : '发布成功', 'success')
+          setTimeout(() => {
+            navigateBack()
+          }, 1500)
         }
-        
-        setTimeout(() => {
-          navigateBack()
-        }, 1500)
       } else {
         showToast(result.msg || (this.data.id ? '修改失败' : '发布失败'))
       }
