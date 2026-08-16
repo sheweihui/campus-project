@@ -206,10 +206,12 @@
 
 .quick-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 16rpx;
 }
 .quick-action {
-  flex: 1;
+  flex: 0 0 calc(50% - 8rpx);
+  box-sizing: border-box;
   text-align: center;
   padding: 22rpx 0;
   background: #faf8f3;

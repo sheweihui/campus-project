@@ -86,6 +86,14 @@ exports.main = async (event, context) => {
         return await sendUserMessage(data)
       case 'broadcastMessage':
         return await broadcastMessage(data)
+      case 'listPosts':
+        return await listPosts(data)
+      case 'updatePost':
+        return await updatePost(data)
+      case 'deletePost':
+        return await deletePost(data)
+      case 'remarkPost':
+        return await remarkPost(data)
       case 'getCategoryStats':
         return await getCategoryStats(data)
       case 'getRecentTransactions':
@@ -942,6 +950,163 @@ async function getUserList(data) {
     }
   } catch (e) {
     console.error('getUserList error:', e)
+    return { code: -1, msg: e.message }
+  }
+}
+
+// ============ 发布管理（商家端管理用户发布） ============
+
+const POST_COLLECTIONS = {
+  market: ['market'],
+  help: ['help-carpool', 'help-express', 'help-partner', 'help-other'],
+  lostfound: ['lostfound']
+}
+
+// 各类型发布允许编辑的字段白名单
+const POST_EDIT_FIELDS = {
+  market: ['title', 'price', 'originalPrice', 'category', 'condition', 'description', 'contact', 'status'],
+  'help-carpool': ['from', 'to', 'time', 'people', 'contact', 'remark', 'status'],
+  'help-express': ['pickupLocation', 'pickupCode', 'recipient', 'address', 'reward', 'deadline', 'contact', 'remark', 'status'],
+  'help-partner': ['partnerType', 'time', 'location', 'people', 'contact', 'description', 'status'],
+  'help-other': ['title', 'time', 'location', 'reward', 'contact', 'description', 'status'],
+  lostfound: ['title', 'description', 'location', 'time', 'contact', 'type', 'status']
+}
+
+function resolvePostCollection(type, collection) {
+  const list = POST_COLLECTIONS[type]
+  if (!list) return ''
+  if (collection && list.includes(collection)) return collection
+  return list[0]
+}
+
+// 分页拉取用户发布（type: market/help/lostfound）
+async function listPosts(data) {
+  const { type = 'market', keyword = '', status = '', page = 1, pageSize = 10 } = data || {}
+  const collections = POST_COLLECTIONS[type]
+  if (!collections) return { code: -1, msg: '无效的发布类型' }
+
+  try {
+    let all = []
+    for (const col of collections) {
+      let query = db.collection(col)
+      const where = {}
+      if (status && status !== 'all') where.status = status
+      if (keyword) {
+        const reg = db.RegExp({ regexp: keyword, options: 'i' })
+        where.$or = [
+          { title: reg },
+          { description: reg },
+          { from: reg },
+          { to: reg },
+          { pickupLocation: reg }
+        ]
+      }
+      if (Object.keys(where).length > 0) query = query.where(where)
+      const res = await query.orderBy('createTime', 'desc').limit(100).get()
+      res.data.forEach(d => all.push({ ...d, postType: type, collection: col }))
+    }
+
+    // 按时间倒序 + 分页
+    all.sort((a, b) => new Date(b.createTime || 0) - new Date(a.createTime || 0))
+    const total = all.length
+    const start = (page - 1) * pageSize
+    const list = all.slice(start, start + pageSize)
+
+    // 补充发布者昵称
+    const users = await getAll(db.collection('users')).catch(() => [])
+    const nickMap = {}
+    users.forEach(u => { if (u.openid) nickMap[u.openid] = u.nickName || (u.phone ? '用户' + u.phone.slice(-4) : '') })
+
+    return {
+      code: 0,
+      data: {
+        list: list.map(item => ({
+          _id: item._id,
+          postType: item.postType,
+          collection: item.collection,
+          title: item.title || item.from + ' → ' + item.to || item.pickupLocation || '',
+          price: item.price,
+          reward: item.reward,
+          status: item.status,
+          images: item.images || [],
+          createTime: item.createTime,
+          publisherNickName: nickMap[item.openid] || '未知用户',
+          adminRemark: item.adminRemark || ''
+        })),
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize)
+      }
+    }
+  } catch (e) {
+    console.error('listPosts error:', e)
+    return { code: -1, msg: e.message }
+  }
+}
+
+// 商家端修改用户发布（白名单字段 + 金额校验）
+async function updatePost(data) {
+  const { type, id, collection, update } = data || {}
+  const col = resolvePostCollection(type, collection)
+  if (!col || !id) return { code: -1, msg: '参数不完整' }
+
+  const allowed = POST_EDIT_FIELDS[col] || []
+  const clean = {}
+  Object.keys(update || {}).forEach(k => {
+    if (allowed.includes(k)) clean[k] = update[k]
+  })
+
+  // 金额校验：price / reward 必须为正数且最多两位小数
+  if (clean.price !== undefined && !isValidAmount(clean.price)) {
+    return { code: -1, msg: '价格必须是大于 0 且最多两位小数的金额' }
+  }
+  if (clean.reward !== undefined && !isValidAmount(clean.reward)) {
+    return { code: -1, msg: '酬金必须是大于 0 且最多两位小数的金额' }
+  }
+
+  clean.updateTime = db.serverDate()
+
+  try {
+    await db.collection(col).doc(id).update({ data: clean })
+    return { code: 0, msg: '修改成功' }
+  } catch (e) {
+    console.error('updatePost error:', e)
+    return { code: -1, msg: e.message }
+  }
+}
+
+// 商家端删除用户发布
+async function deletePost(data) {
+  const { type, id, collection } = data || {}
+  const col = resolvePostCollection(type, collection)
+  if (!col || !id) return { code: -1, msg: '参数不完整' }
+
+  try {
+    await db.collection(col).doc(id).remove()
+    return { code: 0, msg: '删除成功' }
+  } catch (e) {
+    console.error('deletePost error:', e)
+    return { code: -1, msg: e.message }
+  }
+}
+
+// 商家端给用户发布添加/更新备注（存 adminRemark，不影响用户展示字段）
+async function remarkPost(data) {
+  const { type, id, collection, remark } = data || {}
+  const col = resolvePostCollection(type, collection)
+  if (!col || !id) return { code: -1, msg: '参数不完整' }
+
+  try {
+    await db.collection(col).doc(id).update({
+      data: {
+        adminRemark: String(remark || '').trim().slice(0, 200),
+        updateTime: db.serverDate()
+      }
+    })
+    return { code: 0, msg: '备注已保存' }
+  } catch (e) {
+    console.error('remarkPost error:', e)
     return { code: -1, msg: e.message }
   }
 }

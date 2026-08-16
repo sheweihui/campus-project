@@ -1,0 +1,105 @@
+<view class="page-posts">
+  <!-- 类型切换 -->
+  <scroll-view class="tab-scroll" scroll-x>
+    <view class="tabs">
+      <view class="tab-item {{currentType === item.key ? 'active' : ''}}"
+        wx:for="{{typeTabs}}" wx:key="key"
+        data-key="{{item.key}}" bindtap="switchType"
+      >{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 搜索 -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索标题/描述" value="{{keyword}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="onSearch" />
+    <view class="search-btn" bindtap="onSearch">搜索</view>
+  </view>
+
+  <!-- 状态筛选 -->
+  <scroll-view class="tab-scroll" scroll-x>
+    <view class="tabs tabs-status">
+      <view class="tab-item-sm {{statusFilter === item.key ? 'active' : ''}}"
+        wx:for="{{statusOptions[currentType]}}" wx:key="key"
+        data-key="{{item.key}}" bindtap="switchStatus"
+      >{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 汇总 -->
+  <view class="summary-bar">
+    <text>共 {{total}} 条发布</text>
+  </view>
+
+  <!-- 列表 -->
+  <view wx:if="{{list.length === 0 && !loading}}" class="empty-state">
+    <text class="icon">📋</text>
+    <text>暂无发布数据</text>
+  </view>
+
+  <view class="post-list" wx:else>
+    <view class="post-card card" wx:for="{{list}}" wx:key="_id">
+      <view class="pc-header flex-between">
+        <view class="pc-title">{{item.title || '无标题'}}</view>
+        <text class="tag {{item.status === 'completed' || item.status === 'sold' ? 'tag-success' : 'tag-warning'}}">{{item.status}}</text>
+      </view>
+      <view class="pc-meta">
+        <text class="pc-amount">{{item.price ? '¥' + item.price : (item.reward ? '酬金 ¥' + item.reward : '')}}</text>
+        <text class="pc-user">{{item.publisherNickName}}</text>
+      </view>
+      <view class="pc-remark" wx:if="{{item.adminRemark}}">
+        <text class="pc-remark-label">备注：</text>{{item.adminRemark}}
+      </view>
+      <view class="pc-actions">
+        <view class="btn-outline btn-sm" bindtap="openEdit" data-item="{{item}}">编辑</view>
+        <view class="btn-outline btn-sm" bindtap="openRemark" data-item="{{item}}">备注</view>
+        <view class="btn-danger btn-sm" bindtap="deletePost" data-item="{{item}}">删除</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="load-more" wx:if="{{loading}}">加载中...</view>
+  <view class="load-more" wx:elif="{{!hasMore && list.length > 0}}">— 已加载全部 —</view>
+
+  <!-- 编辑弹层 -->
+  <view class="overlay" wx:if="{{showEdit}}" bindtap="closeEdit">
+    <view class="overlay-panel" catchtap="noop">
+      <view class="overlay-title">编辑发布</view>
+      <view class="form-item">
+        <text class="form-label">标题</text>
+        <input class="form-input" placeholder="标题" value="{{editForm.title}}" bindinput="onEditInput" data-field="title" />
+      </view>
+      <view class="form-item" wx:if="{{editForm.price !== undefined}}">
+        <text class="form-label">价格</text>
+        <input class="form-input" type="digit" placeholder="价格" value="{{editForm.price}}" bindinput="onEditInput" data-field="price" />
+      </view>
+      <view class="form-item" wx:if="{{editForm.reward !== undefined}}">
+        <text class="form-label">酬金</text>
+        <input class="form-input" type="digit" placeholder="酬金" value="{{editForm.reward}}" bindinput="onEditInput" data-field="reward" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">状态</text>
+        <picker bindchange="onEditStatusChange" value="{{editStatusIndex}}" range="{{editStatusOptions}}" range-key="label">
+          <view class="form-input picker-value">{{editStatusOptions[editStatusIndex].label}}</view>
+        </picker>
+      </view>
+      <view class="overlay-actions">
+        <view class="btn-outline btn-sm" bindtap="closeEdit">取消</view>
+        <view class="btn-primary btn-sm" bindtap="saveEdit">保存</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 备注弹层 -->
+  <view class="overlay" wx:if="{{showRemark}}" bindtap="closeRemark">
+    <view class="overlay-panel" catchtap="noop">
+      <view class="overlay-title">备注发布</view>
+      <view class="form-item">
+        <textarea class="form-textarea" placeholder="内部管理备注（用户不可见）" value="{{remarkText}}" bindinput="onRemarkInput" maxlength="200" />
+      </view>
+      <view class="overlay-actions">
+        <view class="btn-outline btn-sm" bindtap="closeRemark">取消</view>
+        <view class="btn-primary btn-sm" bindtap="saveRemark">保存</view>
+      </view>
+    </view>
+  </view>
+</view>

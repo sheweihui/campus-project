@@ -116,6 +116,11 @@ Page({
     this.setData({ chartData, chartMax: maxAmount })
   },
 
+  // 跳转到发布管理
+  goToPosts() {
+    wx.navigateTo({ url: '/pages/merchant/posts/posts' })
+  },
+
   // 跳转到群发消息
   goToBroadcast() {
     wx.navigateTo({ url: '/pages/merchant/broadcast/broadcast' })
