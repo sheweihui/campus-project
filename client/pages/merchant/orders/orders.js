@@ -26,6 +26,14 @@ Page({
       { key: 'confirmed', label: '已确认' }
     ],
 
+    // 订单状态（进行中/已完成/已取消）
+    orderStatusTabs: [
+      { key: 'all', label: '全部状态' },
+      { key: 'pending', label: '进行中' },
+      { key: 'completed', label: '已完成' },
+      { key: 'cancelled', label: '已取消' }
+    ],
+
     // 订单列表
     orders: [],
     page: 1,
@@ -117,6 +125,13 @@ Page({
   onTypeChange(e) {
     const type = e.currentTarget.dataset.key
     this.setData({ typeFilter: type, page: 1, orders: [], hasMore: true })
+    this.loadOrders()
+  },
+
+  // 切换订单状态筛选
+  onOrderStatusChange(e) {
+    const status = e.currentTarget.dataset.key
+    this.setData({ orderStatusFilter: status, page: 1, orders: [], hasMore: true })
     this.loadOrders()
   },
 

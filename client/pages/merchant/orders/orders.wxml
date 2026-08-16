@@ -39,6 +39,17 @@
     </view>
   </scroll-view>
 
+  <!-- 订单状态标签 -->
+  <scroll-view class="tab-scroll" scroll-x>
+    <view class="tabs tabs-status">
+      <view class="tab-item-sm {{orderStatusFilter === item.key ? 'active' : ''}}"
+        wx:for="{{orderStatusTabs}}" wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="onOrderStatusChange"
+      >{{item.label}}</view>
+    </view>
+  </scroll-view>
+
   <!-- 筛选面板 -->
   <view class="filter-panel" wx:if="{{showFilterPanel}}">
     <view class="filter-row">
@@ -95,6 +106,7 @@
             <text class="people-label">卖家：</text>{{item.sellerNickName || '匿名用户'}}
           </view>
         </view>
+        <view class="order-remark" wx:if="{{item.remark}}">备注：{{item.remark}}</view>
         <view class="order-footer flex-between">
           <text class="order-time">{{util.formatTime(item.createTime)}}</text>
           <text wx:if="{{item.commission}}" class="order-commission">
