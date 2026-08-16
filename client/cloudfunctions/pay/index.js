@@ -3,6 +3,7 @@ const ENV_ID = 'cloudbase-d6gny18wlbad9e070'
 cloud.init({ env: ENV_ID })
 
 const db = cloud.database()
+const _ = db.command
 const MERCHANT_ID = '1115083816'
 
 // 商品被占位（已下单未支付）超过该时长后允许重新下单
