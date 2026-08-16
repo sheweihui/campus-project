@@ -207,13 +207,14 @@
 .quick-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  justify-content: space-between;
+  row-gap: 20rpx;
 }
 .quick-action {
-  flex: 0 0 calc(50% - 8rpx);
+  width: 48%;
   box-sizing: border-box;
   text-align: center;
-  padding: 22rpx 0;
+  padding: 24rpx 0;
   background: #faf8f3;
   border: 2rpx solid #1a1a1a;
   border-radius: 14rpx;
