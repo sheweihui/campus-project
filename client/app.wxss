@@ -509,3 +509,35 @@ page .bar-btn.primary:active {
   box-shadow: 1rpx 1rpx 0 #ffe66d;
   transform: translate(3rpx, 3rpx);
 }
+
+/* 详情页底部按钮统一漫画风（覆盖旧的灰色胶囊样式，避免与 primary 混搭） */
+page .bottom-bar .bar-btn {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  margin: 0 10rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  background: #faf8f3;
+  color: #1a1a1a;
+  border: 3rpx solid #1a1a1a;
+  box-shadow: 4rpx 4rpx 0 rgba(26, 26, 26, 0.18);
+}
+
+page .bottom-bar .bar-btn.primary {
+  background: #1a1a1a;
+  color: #ffffff;
+  box-shadow: 4rpx 4rpx 0 #ffe66d;
+}
+
+page .bottom-bar .bar-btn.delete {
+  background: #ffebee;
+  color: #f44336;
+}
+
+page .bottom-bar .bar-btn.disabled {
+  background: #e8e8e8;
+  color: #999999;
+  border-color: #cccccc;
+  box-shadow: none;
+}
