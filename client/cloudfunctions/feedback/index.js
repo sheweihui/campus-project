@@ -20,6 +20,12 @@ exports.main = async (event, context) => {
   if (!content) {
     return { code: -1, msg: '反馈内容不能为空' }
   }
+  if (content.length > 1000) {
+    return { code: -1, msg: '反馈内容最多 1000 字' }
+  }
+  if (String(data.contact || '').length > 50) {
+    return { code: -1, msg: '联系方式最多 50 字' }
+  }
 
   try {
     await ensureCollection('feedback')

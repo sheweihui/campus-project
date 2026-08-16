@@ -55,6 +55,19 @@ async function addMarket(data, openid) {
       return { code: -1, msg: '原价必须是大于等于 0 且最多两位小数的金额' }
     }
   }
+  // 字段长度/数量限制
+  if (String(restData.title || '').length > 50) {
+    return { code: -1, msg: '标题最多 50 字' }
+  }
+  if (String(restData.description || '').length > 1000) {
+    return { code: -1, msg: '描述最多 1000 字' }
+  }
+  if (String(restData.contact || '').length > 50) {
+    return { code: -1, msg: '联系方式最多 50 字' }
+  }
+  if (!Array.isArray(restData.images) || restData.images.length > 6) {
+    return { code: -1, msg: '图片最多 6 张' }
+  }
 
   const result = await db.collection('market').add({
     data: {
@@ -133,6 +146,19 @@ async function updateMarket(data, openid) {
     } else if (!isValidNonNegativeAmount(updateData.originalPrice)) {
       return { code: -1, msg: '原价必须是大于等于 0 且最多两位小数的金额' }
     }
+  }
+  // 字段长度限制
+  if (updateData.title !== undefined && String(updateData.title || '').length > 50) {
+    return { code: -1, msg: '标题最多 50 字' }
+  }
+  if (updateData.description !== undefined && String(updateData.description || '').length > 1000) {
+    return { code: -1, msg: '描述最多 1000 字' }
+  }
+  if (updateData.contact !== undefined && String(updateData.contact || '').length > 50) {
+    return { code: -1, msg: '联系方式最多 50 字' }
+  }
+  if (updateData.images !== undefined && (!Array.isArray(updateData.images) || updateData.images.length > 6)) {
+    return { code: -1, msg: '图片最多 6 张' }
   }
 
   await db.collection('market').doc(id).update({

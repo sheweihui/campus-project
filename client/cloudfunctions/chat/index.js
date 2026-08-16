@@ -34,6 +34,9 @@ async function sendMessage(data, openid) {
   if (!receiverId || !content) {
     return { code: -1, msg: '参数不完整' }
   }
+  if (String(content).length > 500) {
+    return { code: -1, msg: '消息内容最多 500 字' }
+  }
 
   const result = await db.collection('chats').add({
     data: {

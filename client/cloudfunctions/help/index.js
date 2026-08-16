@@ -51,9 +51,16 @@ async function addHelp(data, openid) {
     }
   }
 
-  // 学号由服务端解析，忽略客户端传入的 stuId，防止冒用他人学号
-  const { stuId: clientStuId, ...cleanData } = data
+  // 字段长度限制
+  const lenErr = checkFieldLength(cleanData)
+  if (lenErr) {
+    return { code: -1, msg: lenErr }
+  }
 
+  // 学号由服务端解析，忽略客户端传入的 stuId，防止冒用他人学号
+  const { stuId: clientStuId, ...cleanData2 } = data
+
+  const cleanData = cleanData2
   const result = await db.collection(collection).add({
     data: {
       ...cleanData,
@@ -113,6 +120,12 @@ async function updateHelp(data, openid) {
   ;['openid', 'status', 'createTime', 'updateTime', 'acceptorOpenid', 'acceptorStuId', 'acceptTime', 'payTime', 'payOrderNo', 'payClaimTime'].forEach(k => {
     delete updateData[k]
   })
+
+  // 字段长度限制
+  const lenErr = checkFieldLength(updateData)
+  if (lenErr) {
+    return { code: -1, msg: lenErr }
+  }
 
   // 酬金校验：必须为合法正数且最多两位小数；已被接单/预付/支付后锁定
   if (updateData.reward !== undefined) {
@@ -467,6 +480,33 @@ async function getPhoneByOpenid(openid) {
   } catch (e) {
     return ''
   }
+}
+
+// 互助字段长度校验
+function checkFieldLength(data) {
+  const rules = {
+    title: 50,
+    description: 500,
+    remark: 500,
+    contact: 50,
+    pickupLocation: 100,
+    address: 200,
+    location: 100,
+    from: 50,
+    to: 50,
+    recipient: 50
+  }
+  for (const key of Object.keys(rules)) {
+    if (data[key] !== undefined && String(data[key] || '').length > rules[key]) {
+      const labels = {
+        title: '标题', description: '描述', remark: '备注', contact: '联系方式',
+        pickupLocation: '取件地点', address: '收件地址', location: '地点',
+        from: '出发地', to: '目的地', recipient: '收件人'
+      }
+      return `${labels[key] || key}最多 ${rules[key]} 字`
+    }
+  }
+  return ''
 }
 
 // 金额校验：合法正数且最多两位小数

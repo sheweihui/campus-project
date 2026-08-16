@@ -43,6 +43,22 @@ async function addLostFound(data, openid) {
   // 忽略客户端传入的 stuId
   const { stuId: clientStuId, ...cleanData } = data
 
+  if (String(cleanData.title || '').length > 50) {
+    return { code: -1, msg: '标题最多 50 字' }
+  }
+  if (String(cleanData.description || '').length > 1000) {
+    return { code: -1, msg: '描述最多 1000 字' }
+  }
+  if (String(cleanData.location || '').length > 100) {
+    return { code: -1, msg: '地点最多 100 字' }
+  }
+  if (String(cleanData.contact || '').length > 50) {
+    return { code: -1, msg: '联系方式最多 50 字' }
+  }
+  if (!Array.isArray(cleanData.images) || cleanData.images.length > 6) {
+    return { code: -1, msg: '图片最多 6 张' }
+  }
+
   const result = await db.collection('lostfound').add({
     data: {
       ...cleanData,
@@ -89,6 +105,19 @@ async function updateLostFound(data, openid) {
     delete updateData[k]
   })
 
+  if (updateData.title !== undefined && String(updateData.title || '').length > 50) {
+    return { code: -1, msg: '标题最多 50 字' }
+  }
+  if (updateData.description !== undefined && String(updateData.description || '').length > 1000) {
+    return { code: -1, msg: '描述最多 1000 字' }
+  }
+  if (updateData.contact !== undefined && String(updateData.contact || '').length > 50) {
+    return { code: -1, msg: '联系方式最多 50 字' }
+  }
+  if (updateData.images !== undefined && (!Array.isArray(updateData.images) || updateData.images.length > 6)) {
+    return { code: -1, msg: '图片最多 6 张' }
+  }
+
   await db.collection('lostfound').doc(id).update({
     data: {
       ...updateData,
@@ -130,6 +159,19 @@ async function updateStatus({ id, status }, openid) {
   
   if (item.data.openid !== openid) {
     return { code: -1, msg: '无权限修改' }
+  }
+
+  if (updateData.title !== undefined && String(updateData.title || '').length > 50) {
+    return { code: -1, msg: '标题最多 50 字' }
+  }
+  if (updateData.description !== undefined && String(updateData.description || '').length > 1000) {
+    return { code: -1, msg: '描述最多 1000 字' }
+  }
+  if (updateData.contact !== undefined && String(updateData.contact || '').length > 50) {
+    return { code: -1, msg: '联系方式最多 50 字' }
+  }
+  if (updateData.images !== undefined && (!Array.isArray(updateData.images) || updateData.images.length > 6)) {
+    return { code: -1, msg: '图片最多 6 张' }
   }
 
   await db.collection('lostfound').doc(id).update({
