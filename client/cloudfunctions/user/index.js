@@ -245,5 +245,14 @@ async function getWithdrawRecords(openid, data) {
     records = records.filter(record => record.status === status)
   }
 
+  // 隐私保护：返回给用户的银行卡号脱敏（完整卡号仅商家端管理员可见）
+  records = records.map(r => {
+    if (r.bankCard) {
+      const card = String(r.bankCard)
+      return { ...r, bankCard: card.length > 8 ? card.slice(0, 4) + ' **** **** ' + card.slice(-4) : '****' + card.slice(-4) }
+    }
+    return r
+  })
+
   return { code: 0, data: records }
 }

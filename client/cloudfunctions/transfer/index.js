@@ -83,6 +83,7 @@ async function doTransfer(data, openid) {
       partnerTradeNo,
       realName: cleanName,
       bankCard: cleanBankCard,
+      bankCardTail: cleanBankCard.length > 4 ? cleanBankCard.slice(-4) : cleanBankCard,
       remark: remark || '',
       status: 'pending',
       source: 'manual',
