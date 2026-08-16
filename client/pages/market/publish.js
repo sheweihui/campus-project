@@ -164,6 +164,22 @@ Page({
       showToast('请输入价格')
       return
     }
+
+    // 金额校验：必须为正数且最多两位小数（价格）
+    const priceText = price.trim()
+    if (!/^\d+(\.\d{1,2})?$/.test(priceText) || Number(priceText) <= 0) {
+      showToast('价格必须是大于0的数字，最多两位小数')
+      return
+    }
+
+    // 金额校验：原价（选填）同样最多两位小数且不能为负
+    if (originalPrice && originalPrice.trim()) {
+      const originalText = originalPrice.trim()
+      if (!/^\d+(\.\d{1,2})?$/.test(originalText) || Number(originalText) < 0) {
+        showToast('原价必须是数字，最多两位小数')
+        return
+      }
+    }
     
     if (!category) {
       showToast('请选择分类')

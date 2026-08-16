@@ -45,9 +45,15 @@ async function addMarket(data, openid) {
   // 忽略客户端传入的 stuId
   const { _id, id, stuId: clientStuId, ...restData } = data
 
-  // 服务端价格校验：必须为合法正数
+  // 服务端价格校验：必须为合法正数且最多两位小数
   if (!isValidAmount(restData.price)) {
     return { code: -1, msg: '价格必须是大于 0 且最多两位小数的金额' }
+  }
+  // 原价（选填）：必须为非负数且最多两位小数
+  if (restData.originalPrice !== undefined && restData.originalPrice !== null && restData.originalPrice !== '') {
+    if (!isValidNonNegativeAmount(restData.originalPrice)) {
+      return { code: -1, msg: '原价必须是大于等于 0 且最多两位小数的金额' }
+    }
   }
 
   const result = await db.collection('market').add({
@@ -117,6 +123,15 @@ async function updateMarket(data, openid) {
     // 交易中/已售出禁止改价，避免实付与展示不一致
     if (item.data.status === 'paying' || item.data.status === 'sold') {
       return { code: -1, msg: '商品交易中或已售出，不能修改价格' }
+    }
+  }
+
+  // 原价（选填）：必须为非负数且最多两位小数
+  if (updateData.originalPrice !== undefined) {
+    if (updateData.originalPrice === null || updateData.originalPrice === '') {
+      updateData.originalPrice = null
+    } else if (!isValidNonNegativeAmount(updateData.originalPrice)) {
+      return { code: -1, msg: '原价必须是大于等于 0 且最多两位小数的金额' }
     }
   }
 
@@ -210,5 +225,12 @@ async function getPhoneByOpenid(openid) {
 function isValidAmount(value) {
   const num = Number(value)
   if (!Number.isFinite(num) || num <= 0) return false
+  return Math.abs(num * 100 - Math.round(num * 100)) <= 0.001
+}
+
+// 金额校验：合法非负数且最多两位小数（用于原价等选填金额）
+function isValidNonNegativeAmount(value) {
+  const num = Number(value)
+  if (!Number.isFinite(num) || num < 0) return false
   return Math.abs(num * 100 - Math.round(num * 100)) <= 0.001
 }
