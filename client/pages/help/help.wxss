@@ -151,3 +151,18 @@
 .refresh-fab:active {
   transform: scale(0.92);
 }
+.publish-entry {
+  margin-top: 24rpx;
+  text-align: center;
+  padding: 22rpx 0;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 700;
+  border-radius: 14rpx;
+  border: 3rpx solid #1a1a1a;
+  box-shadow: 0 6rpx 0 rgba(26, 26, 26, 0.15);
+}
+.publish-entry:active {
+  transform: scale(0.98);
+}

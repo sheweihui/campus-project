@@ -37,6 +37,19 @@ Page({
     this.loadData()
   },
 
+  // 发布互助：先选类型再进入对应发布页
+  goToPublish() {
+    if (!requireLogin()) return
+
+    wx.showActionSheet({
+      itemList: ['拼车出行', '代取快递', '找搭子', '其他互助'],
+      success: (res) => {
+        const types = ['carpool', 'express', 'partner', 'other']
+        navigateTo(`/pages/help/publish?type=${types[res.tapIndex]}`)
+      }
+    })
+  },
+
   async loadData() {
     showLoading()
     try {
