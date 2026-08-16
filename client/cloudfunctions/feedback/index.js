@@ -3,6 +3,15 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const db = cloud.database()
 
+// 确保集合存在：不存在时自动创建（已存在会报错，忽略即可）
+async function ensureCollection(name) {
+  try {
+    await db.createCollection(name)
+  } catch (e) {
+    // 集合已存在或其它错误：继续走 add，由 add 暴露真实问题
+  }
+}
+
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   const data = event.data || {}
@@ -13,6 +22,7 @@ exports.main = async (event, context) => {
   }
 
   try {
+    await ensureCollection('feedback')
     await db.collection('feedback').add({
       data: {
         type: data.type || '',

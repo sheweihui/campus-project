@@ -108,7 +108,8 @@ Page({
       }
     } catch (error) {
       console.error('提交反馈失败:', error)
-      showToast('提交失败')
+      const errMsg = (error && (error.errMsg || error.message)) || ''
+      showToast(errMsg ? `提交失败：${errMsg}` : '提交失败，请确认 feedback 云函数已部署')
     } finally {
       hideLoading()
     }
