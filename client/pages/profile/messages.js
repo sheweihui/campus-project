@@ -254,7 +254,7 @@ Page({
       wx.navigateTo({
         url: `/pages/lostfound/detail?id=${relatedId}`
       })
-
+    }
   },
 
   async updateUnreadCount() {
