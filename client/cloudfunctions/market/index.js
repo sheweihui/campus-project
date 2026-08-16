@@ -45,14 +45,14 @@ async function addMarket(data, openid) {
   // 忽略客户端传入的 stuId
   const { _id, id, stuId: clientStuId, ...restData } = data
 
-  // 服务端价格校验：必须为合法正数且最多两位小数
-  if (!isValidAmount(restData.price)) {
-    return { code: -1, msg: '价格必须是大于 0 且最多两位小数的金额' }
+  // 服务端价格校验：必须为合法正数且最多两位小数，且不超过 100 万
+  if (!isValidAmount(restData.price) || Number(restData.price) > 1000000) {
+    return { code: -1, msg: '价格必须大于 0、最多两位小数且不超过 100 万' }
   }
   // 原价（选填）：必须为非负数且最多两位小数
   if (restData.originalPrice !== undefined && restData.originalPrice !== null && restData.originalPrice !== '') {
-    if (!isValidNonNegativeAmount(restData.originalPrice)) {
-      return { code: -1, msg: '原价必须是大于等于 0 且最多两位小数的金额' }
+    if (!isValidNonNegativeAmount(restData.originalPrice) || Number(restData.originalPrice) > 1000000) {
+      return { code: -1, msg: '原价必须小于等于 100 万且最多两位小数' }
     }
   }
   // 字段长度/数量限制
@@ -130,8 +130,8 @@ async function updateMarket(data, openid) {
 
   // 价格校验：必须为合法正数且最多两位小数
   if (updateData.price !== undefined) {
-    if (!isValidAmount(updateData.price)) {
-      return { code: -1, msg: '价格必须是大于 0 且最多两位小数的金额' }
+    if (!isValidAmount(updateData.price) || Number(updateData.price) > 1000000) {
+      return { code: -1, msg: '价格必须大于 0、最多两位小数且不超过 100 万' }
     }
     // 交易中/已售出禁止改价，避免实付与展示不一致
     if (item.data.status === 'paying' || item.data.status === 'sold') {
@@ -143,8 +143,8 @@ async function updateMarket(data, openid) {
   if (updateData.originalPrice !== undefined) {
     if (updateData.originalPrice === null || updateData.originalPrice === '') {
       updateData.originalPrice = null
-    } else if (!isValidNonNegativeAmount(updateData.originalPrice)) {
-      return { code: -1, msg: '原价必须是大于等于 0 且最多两位小数的金额' }
+    } else if (!isValidNonNegativeAmount(updateData.originalPrice) || Number(updateData.originalPrice) > 1000000) {
+      return { code: -1, msg: '原价必须小于等于 100 万且最多两位小数' }
     }
   }
   // 字段长度限制

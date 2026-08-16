@@ -46,8 +46,8 @@ async function addHelp(data, openid) {
 
   // 服务端金额校验：酬金必须是合法正数
   if (data.type === 'express' || data.type === 'other') {
-    if (!isValidAmount(data.reward)) {
-      return { code: -1, msg: '酬金必须是大于 0 且最多两位小数的金额' }
+    if (!isValidAmount(data.reward) || Number(data.reward) > 100000) {
+      return { code: -1, msg: '酬金必须大于 0、最多两位小数且不超过 10 万' }
     }
   }
 
@@ -129,8 +129,8 @@ async function updateHelp(data, openid) {
 
   // 酬金校验：必须为合法正数且最多两位小数；已被接单/预付/支付后锁定
   if (updateData.reward !== undefined) {
-    if (!isValidAmount(updateData.reward)) {
-      return { code: -1, msg: '酬金必须是大于 0 且最多两位小数的金额' }
+    if (!isValidAmount(updateData.reward) || Number(updateData.reward) > 100000) {
+      return { code: -1, msg: '酬金必须大于 0、最多两位小数且不超过 10 万' }
     }
     const cur = item.data.status
     if (cur === 'prepaid' || cur === 'accepted' || cur === 'paying' || cur === 'paid' || cur === 'completed') {
