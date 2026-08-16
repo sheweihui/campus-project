@@ -254,12 +254,7 @@ Page({
       wx.navigateTo({
         url: `/pages/lostfound/detail?id=${relatedId}`
       })
-    } else if (relatedType.includes('chat')) {
-      // 聊天消息，跳转到聊天页面
-      wx.navigateTo({
-        url: `/pages/chat/chat?otherStuId=${relatedId}&relatedType=${relatedType}`
-      })
-    }
+
   },
 
   async updateUnreadCount() {
