@@ -51,16 +51,16 @@ async function addHelp(data, openid) {
     }
   }
 
+  // 学号由服务端解析，忽略客户端传入的 stuId，防止冒用他人学号
+  const { stuId: clientStuId, ...cleanData2 } = data
+
+  const cleanData = cleanData2
   // 字段长度限制
   const lenErr = checkFieldLength(cleanData)
   if (lenErr) {
     return { code: -1, msg: lenErr }
   }
 
-  // 学号由服务端解析，忽略客户端传入的 stuId，防止冒用他人学号
-  const { stuId: clientStuId, ...cleanData2 } = data
-
-  const cleanData = cleanData2
   const result = await db.collection(collection).add({
     data: {
       ...cleanData,
