@@ -136,6 +136,12 @@ async function getBuyerList(data, openid) {
   if (!sellerOpenid || sellerOpenid !== openid) {
     return { code: -1, msg: '无权限查看' }
   }
+  if (!relatedId) {
+    return { code: -1, msg: '参数不完整' }
+  }
+  if (!(await ownsRelatedPost(relatedId, openid))) {
+    return { code: -1, msg: '无权限查看' }
+  }
 
   // 获取所有与该商品相关的消息
   const messages = await getAll(db.collection('chats').where({ relatedId }).orderBy('createTime', 'desc'))
@@ -167,6 +173,21 @@ async function getBuyerList(data, openid) {
   }
 
   return { code: 0, data: buyerList }
+}
+
+async function ownsRelatedPost(relatedId, openid) {
+  const collections = ['market', 'lostfound', 'help-carpool', 'help-express', 'help-partner', 'help-other']
+  for (const collection of collections) {
+    try {
+      const res = await db.collection(collection).doc(relatedId).get()
+      if (res.data) {
+        return res.data.openid === openid
+      }
+    } catch (error) {
+      // Not found in this collection; keep looking.
+    }
+  }
+  return false
 }
 
 // 分批拉取全部数据，绕开单次 100 条上限
