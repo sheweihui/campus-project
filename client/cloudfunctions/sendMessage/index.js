@@ -1,12 +1,43 @@
 const cloud = require('wx-server-sdk')
+
 cloud.init()
 
-// 模板 ID 在 client/config/templateIds.js 填写后同步到这里
-const TEMPLATES = {
-  ORDER_ACCEPT: '',
-  ORDER_PAY: '',
-  ORDER_COMPLETE: '',
-  CHAT_MESSAGE: ''
+const db = cloud.database()
+
+const TEMPLATE_KEYS = ['ORDER_ACCEPT', 'ORDER_PAY', 'ORDER_COMPLETE', 'CHAT_MESSAGE']
+const TEMPLATE_ENV_KEYS = {
+  ORDER_ACCEPT: 'ORDER_ACCEPT_TEMPLATE_ID',
+  ORDER_PAY: 'ORDER_PAY_TEMPLATE_ID',
+  ORDER_COMPLETE: 'ORDER_COMPLETE_TEMPLATE_ID',
+  CHAT_MESSAGE: 'CHAT_MESSAGE_TEMPLATE_ID'
+}
+
+function normalizeTemplateIds(source = {}) {
+  return TEMPLATE_KEYS.reduce((result, key) => {
+    const value = source[key] || source[key.toLowerCase()]
+    result[key] = typeof value === 'string' ? value.trim() : ''
+    return result
+  }, {})
+}
+
+function getEnvTemplateIds() {
+  return TEMPLATE_KEYS.reduce((result, key) => {
+    result[key] = (process.env[TEMPLATE_ENV_KEYS[key]] || '').trim()
+    return result
+  }, {})
+}
+
+async function getTemplateIds() {
+  const envTemplateIds = getEnvTemplateIds()
+
+  try {
+    const { data } = await db.collection('config').doc('templateIds').get()
+    const dbTemplateIds = normalizeTemplateIds(data && (data.templates || data))
+    return { ...envTemplateIds, ...dbTemplateIds }
+  } catch (error) {
+    console.warn('Failed to load subscribe template ids from config/templateIds:', error)
+    return envTemplateIds
+  }
 }
 
 async function sendSubscribeMessage(touser, templateId, page, data) {
@@ -19,126 +50,125 @@ async function sendSubscribeMessage(touser, templateId, page, data) {
     })
     return { success: true, result }
   } catch (error) {
-    console.error('发送订阅消息失败:', error)
+    console.error('Failed to send subscribe message:', error)
     return { success: false, error: error.message }
   }
 }
 
 async function getOpenidByStuId(stuId) {
   try {
-    const db = cloud.database()
     const result = await db.collection('student').where({ stuId }).get()
     if (result.data.length > 0) {
       return result.data[0].openid
     }
     return null
   } catch (error) {
-    console.error('获取openid失败:', error)
+    console.error('Failed to get openid:', error)
     return null
   }
 }
 
-// 优先使用调用方传入的 openid（当前登录体系为微信手机号），兼容旧的按学号查询
 async function resolveOpenid(openid, stuId) {
   if (openid) return openid
   if (stuId) return getOpenidByStuId(stuId)
   return null
 }
 
-exports.main = async (event, context) => {
-  const { action, data } = event
-  
+function missingTemplateResponse() {
+  return { code: -1, msg: '\u672a\u914d\u7f6e\u6a21\u677fID' }
+}
+
+exports.main = async (event = {}, context) => {
+  const { action, data = {} } = event
+
   try {
+    if (action === 'getTemplateIds') {
+      return { code: 0, data: await getTemplateIds() }
+    }
+
+    const templates = await getTemplateIds()
+
     switch (action) {
       case 'send': {
         const { touser, templateId, page, messageData } = data
         const result = await sendSubscribeMessage(touser, templateId, page, messageData)
         return { code: 0, data: result }
       }
-      
+
       case 'orderAccept': {
         const { publisherOpenid, publisherStuId, orderId, title, reward, type = 'other' } = data
         const touser = await resolveOpenid(publisherOpenid, publisherStuId)
         if (!touser) {
-          return { code: -1, msg: '找不到发布者openid' }
+          return { code: -1, msg: '\u627e\u4e0d\u5230\u53d1\u5e03\u8005openid' }
         }
-        
-        const templateId = TEMPLATES.ORDER_ACCEPT
-        if (!templateId) {
-          return { code: -1, msg: '未配置模板ID' }
-        }
-        
+
+        const templateId = templates.ORDER_ACCEPT
+        if (!templateId) return missingTemplateResponse()
+
         const result = await sendSubscribeMessage(touser, templateId, `/pages/help/detail?id=${orderId}&type=${type}`, {
           thing1: { value: title },
-          money2: { value: `¥${reward}` },
-          phrase3: { value: '有人接单' },
+          money2: { value: `\u00a5${reward}` },
+          phrase3: { value: '\u6709\u4eba\u63a5\u5355' },
           time4: { value: new Date().toLocaleString('zh-CN') }
         })
         return { code: 0, data: result }
       }
-      
+
       case 'orderPay': {
         const { acceptorOpenid, acceptorStuId, orderId, title, reward, type = 'other' } = data
         const touser = await resolveOpenid(acceptorOpenid, acceptorStuId)
         if (!touser) {
-          return { code: -1, msg: '找不到接单者openid' }
+          return { code: -1, msg: '\u627e\u4e0d\u5230\u63a5\u5355\u8005openid' }
         }
-        
-        const templateId = TEMPLATES.ORDER_PAY
-        if (!templateId) {
-          return { code: -1, msg: '未配置模板ID' }
-        }
-        
+
+        const templateId = templates.ORDER_PAY
+        if (!templateId) return missingTemplateResponse()
+
         const result = await sendSubscribeMessage(touser, templateId, `/pages/help/detail?id=${orderId}&type=${type}`, {
           thing1: { value: title },
-          money2: { value: `¥${reward}` },
-          phrase3: { value: '酬金已支付' },
+          money2: { value: `\u00a5${reward}` },
+          phrase3: { value: '\u916c\u91d1\u5df2\u652f\u4ed8' },
           time4: { value: new Date().toLocaleString('zh-CN') }
         })
         return { code: 0, data: result }
       }
-      
+
       case 'orderComplete': {
-        // 发布者确认完成后，通知接单者任务已完成
         const { acceptorOpenid, acceptorStuId, orderId, title, type = 'other' } = data
         const touser = await resolveOpenid(acceptorOpenid, acceptorStuId)
         if (!touser) {
-          return { code: -1, msg: '找不到接单者openid' }
+          return { code: -1, msg: '\u627e\u4e0d\u5230\u63a5\u5355\u8005openid' }
         }
-        
-        const templateId = TEMPLATES.ORDER_COMPLETE
-        if (!templateId) {
-          return { code: -1, msg: '未配置模板ID' }
-        }
-        
+
+        const templateId = templates.ORDER_COMPLETE
+        if (!templateId) return missingTemplateResponse()
+
         const result = await sendSubscribeMessage(touser, templateId, `/pages/help/detail?id=${orderId}&type=${type}`, {
           thing1: { value: title },
-          phrase3: { value: '任务已完成' },
+          phrase3: { value: '\u4efb\u52a1\u5df2\u5b8c\u6210' },
           time4: { value: new Date().toLocaleString('zh-CN') }
         })
         return { code: 0, data: result }
       }
-      
+
       case 'chat': {
         const { touser, fromStuId, content } = data
-        const templateId = TEMPLATES.CHAT_MESSAGE
-        if (!templateId) {
-          return { code: -1, msg: '未配置模板ID' }
-        }
-        
+        const templateId = templates.CHAT_MESSAGE
+        if (!templateId) return missingTemplateResponse()
+
         const result = await sendSubscribeMessage(touser, templateId, '/pages/chat/chat', {
           thing1: { value: `${fromStuId}: ${content}` },
-          phrase2: { value: '收到新消息' },
+          phrase2: { value: '\u6536\u5230\u65b0\u6d88\u606f' },
           time3: { value: new Date().toLocaleString('zh-CN') }
         })
         return { code: 0, data: result }
       }
-      
+
       default:
-        return { code: -1, msg: '未知操作' }
+        return { code: -1, msg: '\u672a\u77e5\u64cd\u4f5c' }
     }
   } catch (error) {
-    console.error('sendMessage云函数错误:', error)
+    console.error('sendMessage cloud function error:', error)
     return { code: -1, msg: error.message }
   }
 }

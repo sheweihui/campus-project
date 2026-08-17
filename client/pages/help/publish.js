@@ -483,8 +483,31 @@ Page({
     }
   },
   
-  requestSubscribeMessage() {
-    const tmplIds = Object.values(TEMPLATES).filter(id => id)
+  async getTemplateIds() {
+    const localTemplateIds = Object.values(TEMPLATES).filter(id => id)
+    if (localTemplateIds.length > 0) return TEMPLATES
+
+    try {
+      const { result } = await wx.cloud.callFunction({
+        name: 'sendMessage',
+        data: {
+          action: 'getTemplateIds',
+          data: {}
+        }
+      })
+      if (result && result.code === 0) {
+        return result.data || {}
+      }
+    } catch (error) {
+      console.log('Failed to load subscribe template ids:', error)
+    }
+
+    return TEMPLATES
+  },
+
+  async requestSubscribeMessage() {
+    const templates = await this.getTemplateIds()
+    const tmplIds = Object.values(templates).filter(id => id)
     if (tmplIds.length === 0) return
     
     wx.requestSubscribeMessage({

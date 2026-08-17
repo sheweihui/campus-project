@@ -370,13 +370,36 @@ Page({
     }
   },
   
-  requestSubscribeMessage(role) {
+  async getTemplateIds() {
+    const localTemplateIds = Object.values(TEMPLATES).filter(id => id)
+    if (localTemplateIds.length > 0) return TEMPLATES
+
+    try {
+      const { result } = await wx.cloud.callFunction({
+        name: 'sendMessage',
+        data: {
+          action: 'getTemplateIds',
+          data: {}
+        }
+      })
+      if (result && result.code === 0) {
+        return result.data || {}
+      }
+    } catch (error) {
+      console.log('Failed to load subscribe template ids:', error)
+    }
+
+    return TEMPLATES
+  },
+
+  async requestSubscribeMessage(role) {
+    const templates = await this.getTemplateIds()
     let tmplIds = []
     if (role === 'acceptor') {
-      if (TEMPLATES.ORDER_PAY) tmplIds.push(TEMPLATES.ORDER_PAY)
+      if (templates.ORDER_PAY) tmplIds.push(templates.ORDER_PAY)
     } else {
-      if (TEMPLATES.ORDER_ACCEPT) tmplIds.push(TEMPLATES.ORDER_ACCEPT)
-      if (TEMPLATES.ORDER_COMPLETE) tmplIds.push(TEMPLATES.ORDER_COMPLETE)
+      if (templates.ORDER_ACCEPT) tmplIds.push(templates.ORDER_ACCEPT)
+      if (templates.ORDER_COMPLETE) tmplIds.push(templates.ORDER_COMPLETE)
     }
     
     if (tmplIds.length === 0) return
