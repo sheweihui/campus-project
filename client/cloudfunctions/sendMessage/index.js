@@ -53,8 +53,9 @@ async function getConfiguredAdminOpenids() {
 
   try {
     const { data } = await db.collection('config').doc(ADMIN_CONFIG_DOC_ID).get()
-    const dbOpenids = Array.isArray(data && data.openids) ? data.openids : []
-    return [...new Set([...envOpenids, ...dbOpenids])]
+    const dbOpenids = data && (data.openidList || data.openids)
+    const configuredOpenids = Array.isArray(dbOpenids) ? dbOpenids : []
+    return [...new Set([...envOpenids, ...configuredOpenids])]
   } catch (error) {
     console.warn('Failed to load admin config:', error)
     return envOpenids

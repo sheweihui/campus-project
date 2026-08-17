@@ -5,19 +5,21 @@ cloud.init({ env: ENV_ID })
 const db = cloud.database()
 const _ = db.command
 
-// 管理员 openid 列表 - 兜底白名单。
-// 优先从 config 集合的 admin 文档（{ _id: 'admin', openidList: ['openid', ...] }）读取，
-// 两者都为空时所有请求都会被拒绝。
-// 测试前请把你的 openid 填到这里，或在云开发控制台 config 集合建 admin 文档。
-const ADMIN_LIST = ['oqfU73aKz53RErVbMk2c1fMprXjc', 'oqfU73fMYpw6k8jvZsVR_YHP44qE']
+function getEnvAdminOpenids() {
+  return (process.env.ADMIN_OPENIDS || '')
+    .split(',')
+    .map(openid => openid.trim())
+    .filter(Boolean)
+}
 
-// 校验调用者是否为管理员
 async function isAdmin(openid) {
   if (!openid) return false
-  if (ADMIN_LIST.includes(openid)) return true
+  const envOpenids = getEnvAdminOpenids()
+  if (envOpenids.includes(openid)) return true
+
   try {
     const adminDoc = await db.collection('config').doc('admin').get()
-    const list = adminDoc.data && adminDoc.data.openidList
+    const list = adminDoc.data && (adminDoc.data.openidList || adminDoc.data.openids)
     return Array.isArray(list) && list.includes(openid)
   } catch (e) {
     return false
