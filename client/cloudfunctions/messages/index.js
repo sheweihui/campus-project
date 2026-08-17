@@ -41,7 +41,6 @@ async function markAllRead(data, myOpenid) {
   while (true) {
     const messages = await db.collection('messages')
       .where({ toOpenid: openid, isRead: false })
-      .skip(total)
       .limit(100)
       .get()
 
