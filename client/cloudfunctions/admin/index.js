@@ -798,6 +798,9 @@ async function processWithdraw(data) {
     }
 
     const record = records[idx]
+    if (!['approve', 'reject'].includes(processAction)) {
+      return { code: -1, msg: '无效的处理动作' }
+    }
 
     // 系统自动转账的提现记录：不允许盲批/盲拒，但提供“核实落定”兜底
     if (record.source === 'auto') {
@@ -805,6 +808,9 @@ async function processWithdraw(data) {
         return { code: -1, msg: '该提现已由系统自动处理' }
       }
       return await verifyAutoWithdraw(finance, idx, record)
+    }
+    if (record.status !== 'pending') {
+      return { code: -1, msg: '该提现记录已处理，不能重复操作' }
     }
 
     const newStatus = processAction === 'approve' ? 'completed' : 'failed'
