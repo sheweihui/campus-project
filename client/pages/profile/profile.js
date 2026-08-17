@@ -45,6 +45,39 @@ Page({
     await this.loadUserInfo()
     await this.loadStats()
     await this.checkUnreadMessages()
+    this.startUnreadSync()
+  },
+
+  onHide() {
+    this.stopUnreadSync()
+  },
+
+  onUnload() {
+    this.stopUnreadSync()
+  },
+
+  // 与底部 tab 角标同源：定时读取本地缓存 unreadCount（app.js 每 10 秒写入真实值），
+  // 保证「消息通知」红点与「我的」tab 角标同步出现/消失，而不是只在 onShow 刷新一次
+  startUnreadSync() {
+    this.stopUnreadSync()
+    this.syncUnreadFromCache()
+    this._unreadTimer = setInterval(() => {
+      this.syncUnreadFromCache()
+    }, 3000)
+  },
+
+  stopUnreadSync() {
+    if (this._unreadTimer) {
+      clearInterval(this._unreadTimer)
+      this._unreadTimer = null
+    }
+  },
+
+  syncUnreadFromCache() {
+    const count = Math.max(0, Number(wx.getStorageSync('unreadCount')) || 0)
+    if (count !== this.data.stats.unreadMessages) {
+      this.setData({ 'stats.unreadMessages': count })
+    }
   },
 
   async checkUnreadMessages() {
