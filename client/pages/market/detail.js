@@ -204,6 +204,7 @@ Page({
     if (!confirm) return
 
     showLoading('支付中...')
+    let outTradeNo = ''
     try {
       const description = `二手商品购买 ¥${detail.price}`
       
@@ -230,7 +231,7 @@ Page({
       }
 
       const paymentParams = result.data.payment
-      const outTradeNo = result.data.outTradeNo
+      outTradeNo = result.data.outTradeNo
       
       console.log('支付参数:', JSON.stringify(paymentParams, null, 2))
       
