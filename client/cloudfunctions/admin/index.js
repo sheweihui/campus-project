@@ -377,7 +377,7 @@ async function getPaymentStats(dateFilter) {
     let pendingCount = 0
 
     payments.forEach(p => {
-      if (p.status === 'paid' || p.status === 'success') {
+      if (p.status === 'paid' || p.status === 'success' || p.status === 'prepaid') {
         successCount++
         totalAmount += p.amount || 0
       }
