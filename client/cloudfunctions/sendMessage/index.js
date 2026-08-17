@@ -11,6 +11,7 @@ const TEMPLATE_ENV_KEYS = {
   ORDER_COMPLETE: 'ORDER_COMPLETE_TEMPLATE_ID',
   CHAT_MESSAGE: 'CHAT_MESSAGE_TEMPLATE_ID'
 }
+const ADMIN_CONFIG_DOC_ID = 'admin'
 
 function normalizeTemplateIds(source = {}) {
   return TEMPLATE_KEYS.reduce((result, key) => {
@@ -38,6 +39,32 @@ async function getTemplateIds() {
     console.warn('Failed to load subscribe template ids from config/templateIds:', error)
     return envTemplateIds
   }
+}
+
+function getEnvAdminOpenids() {
+  return (process.env.ADMIN_OPENIDS || '')
+    .split(',')
+    .map(openid => openid.trim())
+    .filter(Boolean)
+}
+
+async function getConfiguredAdminOpenids() {
+  const envOpenids = getEnvAdminOpenids()
+
+  try {
+    const { data } = await db.collection('config').doc(ADMIN_CONFIG_DOC_ID).get()
+    const dbOpenids = Array.isArray(data && data.openids) ? data.openids : []
+    return [...new Set([...envOpenids, ...dbOpenids])]
+  } catch (error) {
+    console.warn('Failed to load admin config:', error)
+    return envOpenids
+  }
+}
+
+async function isAdmin(openid) {
+  if (!openid) return false
+  const adminOpenids = await getConfiguredAdminOpenids()
+  return adminOpenids.includes(openid)
 }
 
 async function sendSubscribeMessage(touser, templateId, page, data) {
@@ -80,6 +107,7 @@ function missingTemplateResponse() {
 
 exports.main = async (event = {}, context) => {
   const { action, data = {} } = event
+  const { OPENID } = cloud.getWXContext()
 
   try {
     if (action === 'getTemplateIds') {
@@ -90,8 +118,18 @@ exports.main = async (event = {}, context) => {
 
     switch (action) {
       case 'send': {
-        const { touser, templateId, page, messageData } = data
-        const result = await sendSubscribeMessage(touser, templateId, page, messageData)
+        const allowed = await isAdmin(OPENID)
+        if (!allowed) {
+          return { code: -1, msg: '\u65e0\u6743\u9650\u53d1\u9001\u8ba2\u9605\u6d88\u606f' }
+        }
+
+        const { touser, templateId, templateKey, page, messageData } = data
+        const resolvedTemplateId = templateKey ? templates[templateKey] : templateId
+        if (!touser || !resolvedTemplateId || !page || !messageData) {
+          return { code: -1, msg: '\u53d1\u9001\u53c2\u6570\u4e0d\u5b8c\u6574' }
+        }
+
+        const result = await sendSubscribeMessage(touser, resolvedTemplateId, page, messageData)
         return { code: 0, data: result }
       }
 
