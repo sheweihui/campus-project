@@ -86,7 +86,14 @@ async function addMarket(data, openid) {
   return { code: 0, data: result._id }
 }
 
-async function listMarket({ category, page = 1, pageSize = 10 }) {
+function trimListImages(data) {
+  return data.map(item => ({
+    ...item,
+    images: Array.isArray(item.images) && item.images.length > 0 ? [item.images[0]] : []
+  }))
+}
+
+async function listMarket({ category, page = 1, pageSize = 10, scene = '' }) {
   page = Math.max(1, Number(page) || 1)
   pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
   const where = { status: 'onSale' }
@@ -94,14 +101,29 @@ async function listMarket({ category, page = 1, pageSize = 10 }) {
     where.category = category
   }
   
-  const result = await db.collection('market')
+  let query = db.collection('market')
     .where(where)
+
+  if (scene === 'home' || scene === 'list') {
+    query = query.field({
+      _id: true,
+      title: true,
+      price: true,
+      category: true,
+      condition: true,
+      images: true,
+      viewCount: true,
+      createTime: true
+    })
+  }
+
+  const result = await query
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .get()
   
-  return { code: 0, data: result.data }
+  return { code: 0, data: trimListImages(result.data) }
 }
 
 async function getHomeList({ pageSize = 4 } = {}) {
@@ -120,12 +142,7 @@ async function getHomeList({ pageSize = 4 } = {}) {
     .limit(pageSize)
     .get()
 
-  const data = result.data.map(item => ({
-    ...item,
-    images: Array.isArray(item.images) && item.images.length > 0 ? [item.images[0]] : []
-  }))
-
-  return { code: 0, data }
+  return { code: 0, data: trimListImages(result.data) }
 }
 
 async function getDetail({ id }) {
@@ -215,6 +232,8 @@ async function deleteMarket({ id }, openid) {
 }
 
 async function getMyList(openid, { status, page = 1, pageSize = 10 }) {
+  page = Math.max(1, Number(page) || 1)
+  pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
   // 只允许查询自己的发布，忽略客户端传入的 stuId
   const where = { openid }
   if (status && status !== 'all') {
@@ -222,12 +241,22 @@ async function getMyList(openid, { status, page = 1, pageSize = 10 }) {
   }
   const result = await db.collection('market')
     .where(where)
+    .field({
+      _id: true,
+      title: true,
+      price: true,
+      category: true,
+      status: true,
+      images: true,
+      viewCount: true,
+      createTime: true
+    })
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .get()
   
-  return { code: 0, data: result.data }
+  return { code: 0, data: trimListImages(result.data) }
 }
 
 async function updateStatus({ id, status }, openid) {
@@ -265,12 +294,22 @@ async function searchMarket({ keyword, page = 1, pageSize = 10 }) {
         options: 'i'
       })
     })
+    .field({
+      _id: true,
+      title: true,
+      price: true,
+      category: true,
+      condition: true,
+      images: true,
+      viewCount: true,
+      createTime: true
+    })
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .get()
   
-  return { code: 0, data: result.data }
+  return { code: 0, data: trimListImages(result.data) }
 }
 
 // 校验调用者是否已绑定学号

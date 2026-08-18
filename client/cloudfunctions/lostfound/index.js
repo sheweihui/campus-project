@@ -75,18 +75,51 @@ async function addLostFound(data, openid) {
   return { code: 0, data: result._id }
 }
 
-async function listLostFound({ type, page = 1, pageSize = 10 }) {
+function trimListImages(data) {
+  return data.map(item => ({
+    ...item,
+    images: Array.isArray(item.images) && item.images.length > 0 ? [item.images[0]] : []
+  }))
+}
+
+async function listLostFound({ type, page = 1, pageSize = 10, scene = '' }) {
   page = Math.max(1, Number(page) || 1)
   pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
   const where = type ? { type } : {}
-  const result = await db.collection('lostfound')
+
+  let query = db.collection('lostfound')
     .where(where)
+
+  if (scene === 'home') {
+    query = query.field({
+      _id: true,
+      title: true,
+      type: true,
+      time: true,
+      images: true,
+      createTime: true
+    })
+  } else if (scene === 'list') {
+    query = query.field({
+      _id: true,
+      title: true,
+      description: true,
+      location: true,
+      type: true,
+      status: true,
+      time: true,
+      images: true,
+      createTime: true
+    })
+  }
+
+  const result = await query
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .get()
   
-  return { code: 0, data: result.data }
+  return { code: 0, data: trimListImages(result.data) }
 }
 
 async function getHomeList({ pageSize = 5 } = {}) {
@@ -104,12 +137,7 @@ async function getHomeList({ pageSize = 5 } = {}) {
     .limit(pageSize)
     .get()
 
-  const data = result.data.map(item => ({
-    ...item,
-    images: Array.isArray(item.images) && item.images.length > 0 ? [item.images[0]] : []
-  }))
-
-  return { code: 0, data }
+  return { code: 0, data: trimListImages(result.data) }
 }
 
 async function getDetail({ id }) {
@@ -166,6 +194,8 @@ async function deleteLostFound({ id }, openid) {
 }
 
 async function getMyList(openid, { type, page = 1, pageSize = 10 }) {
+  page = Math.max(1, Number(page) || 1)
+  pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
   // 只允许查询自己的发布，忽略客户端传入的 stuId
   const where = { openid }
   if (type && type !== 'all') {
@@ -173,12 +203,21 @@ async function getMyList(openid, { type, page = 1, pageSize = 10 }) {
   }
   const result = await db.collection('lostfound')
     .where(where)
+    .field({
+      _id: true,
+      title: true,
+      description: true,
+      type: true,
+      status: true,
+      images: true,
+      createTime: true
+    })
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .get()
   
-  return { code: 0, data: result.data }
+  return { code: 0, data: trimListImages(result.data) }
 }
 
 async function updateStatus({ id, status }, openid) {

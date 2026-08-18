@@ -116,7 +116,8 @@ Page({
           data: {
             category,
             page: this.data.page,
-            pageSize: this.data.pageSize
+            pageSize: this.data.pageSize,
+            scene: 'list'
           }
         }
       })

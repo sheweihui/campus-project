@@ -77,7 +77,28 @@ async function addHelp(data, openid) {
   return { code: 0, data: result._id }
 }
 
-async function listHelp({ type, page = 1, pageSize = 10 }) {
+function getHomeListFields(type) {
+  const commonFields = {
+    _id: true,
+    type: true,
+    reward: true,
+    time: true,
+    createTime: true
+  }
+
+  const typeFields = {
+    carpool: { from: true, to: true },
+    express: { pickupLocation: true },
+    partner: { description: true },
+    other: { title: true }
+  }
+
+  return { ...commonFields, ...(typeFields[type] || {}) }
+}
+
+async function listHelp({ type, page = 1, pageSize = 10, scene = '' }) {
+  page = Math.max(1, Number(page) || 1)
+  pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
   const collection = getCollectionByType(type)
   const where = { type }
 
@@ -88,8 +109,14 @@ async function listHelp({ type, page = 1, pageSize = 10 }) {
     where.status = 'active'
   }
 
-  const result = await db.collection(collection)
+  let query = db.collection(collection)
     .where(where)
+
+  if (scene === 'home') {
+    query = query.field(getHomeListFields(type))
+  }
+
+  const result = await query
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)
     .limit(pageSize)

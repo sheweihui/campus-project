@@ -106,24 +106,13 @@ Page({
   },
 
   async loadLostfound() {
-    let { result } = await wx.cloud.callFunction({
+    const { result } = await wx.cloud.callFunction({
       name: 'lostfound',
       data: {
-        action: 'homeList',
-        data: { pageSize: 5 }
+        action: 'list',
+        data: { page: 1, pageSize: 5, scene: 'home' }
       }
     })
-
-    if (this.isUnknownAction(result)) {
-      const fallback = await wx.cloud.callFunction({
-        name: 'lostfound',
-        data: {
-          action: 'list',
-          data: { page: 1, pageSize: 5 }
-        }
-      })
-      result = fallback.result
-    }
     
     if (result.code === 0) {
       this.setData({ lostfoundList: result.data })
@@ -131,24 +120,13 @@ Page({
   },
 
   async loadMarket() {
-    let { result } = await wx.cloud.callFunction({
+    const { result } = await wx.cloud.callFunction({
       name: 'market',
       data: {
-        action: 'homeList',
-        data: { pageSize: 4 }
+        action: 'list',
+        data: { page: 1, pageSize: 4, scene: 'home' }
       }
     })
-
-    if (this.isUnknownAction(result)) {
-      const fallback = await wx.cloud.callFunction({
-        name: 'market',
-        data: {
-          action: 'list',
-          data: { page: 1, pageSize: 4 }
-        }
-      })
-      result = fallback.result
-    }
     
     if (result.code === 0) {
       this.setData({ marketList: result.data })
@@ -156,21 +134,8 @@ Page({
   },
 
   async loadHelp() {
-    let { result } = await wx.cloud.callFunction({
-      name: 'help',
-      data: {
-        action: 'homeList',
-        data: { pageSize: 5 }
-      }
-    })
-
-    if (this.isUnknownAction(result)) {
-      result = { code: 0, data: await this.loadHelpByTypeFallback() }
-    }
-
-    if (result.code !== 0) return
-
-    const helpList = result.data.map(item => {
+    const helpList = await this.loadHelpByType()
+    const formattedList = helpList.map(item => {
       if (item.time) {
         const timeParts = item.time.split(' ')
         if (timeParts.length >= 2) {
@@ -183,21 +148,17 @@ Page({
       }
       return item
     })
-    this.setData({ helpList })
+    this.setData({ helpList: formattedList })
   },
 
-  isUnknownAction(result) {
-    return result && result.code === -1 && result.msg === '未知操作'
-  },
-
-  async loadHelpByTypeFallback() {
+  async loadHelpByType() {
     const types = ['carpool', 'express', 'partner', 'other']
     const results = await Promise.all(types.map(type =>
       wx.cloud.callFunction({
         name: 'help',
         data: {
           action: 'list',
-          data: { type, page: 1, pageSize: 2 }
+          data: { type, page: 1, pageSize: 2, scene: 'home' }
         }
       }).then(({ result }) => ({ type, result })).catch(() => ({ type, result: null }))
     ))
