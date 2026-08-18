@@ -59,8 +59,21 @@
   margin-left: 16rpx;
 }
 
-.message-content {
+.message-body {
+  display: flex;
+  flex-direction: column;
   max-width: 480rpx;
+}
+
+.my-message .message-body {
+  align-items: flex-end;
+}
+
+.other-message .message-body {
+  align-items: flex-start;
+}
+
+.message-content {
   padding: 20rpx 24rpx;
   border-radius: 16rpx;
   font-size: 28rpx;

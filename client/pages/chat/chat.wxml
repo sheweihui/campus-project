@@ -11,7 +11,7 @@
     scroll-with-animation
   >
     <view 
-      class="message-item {{item.senderId === myStuId ? 'my-message' : 'other-message'}}" 
+      class="message-item {{item.senderId === myOpenid ? 'my-message' : 'other-message'}}"
       wx:for="{{messages}}" 
       wx:key="_id"
       id="msg-{{index}}"
@@ -19,10 +19,12 @@
       <view class="message-avatar">
         <text>{{item.senderId === myOpenid ? '我' : (otherUserInfo.nickName || '对方')}}</text>
       </view>
-      <view class="message-content">
-        <text>{{item.content}}</text>
+      <view class="message-body">
+        <view class="message-content">
+          <text>{{item.content}}</text>
+        </view>
+        <view class="message-time">{{item.time}}</view>
       </view>
-      <view class="message-time">{{item.time}}</view>
     </view>
   </scroll-view>
 
