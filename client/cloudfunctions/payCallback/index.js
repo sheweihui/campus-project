@@ -71,6 +71,14 @@ exports.main = async (event, context) => {
     const buyerNickName = await getNickName(paymentRecord.buyerOpenid)
     const sellerNickName = await getNickName(itemPre.data.openid || '')
 
+    // 二手商品：预查卖家财务记录，支付成功后货款立即入账卖家
+    const sellerOpenid = itemPre.data.openid || ''
+    let sellerFinance = null
+    if (itemType === 'market') {
+      const financeRes = await db.collection('finance').where({ openid: sellerOpenid }).get()
+      sellerFinance = financeRes.data.length > 0 ? financeRes.data[0] : null
+    }
+
     // ============ 事务：标记预支付（资金托管在平台，等确认完成后释放） ============
     const transaction = await db.startTransaction()
     try {
@@ -104,13 +112,14 @@ exports.main = async (event, context) => {
         return { errcode: 0 }
       }
 
-      // 标记预支付（资金托管，不创建订单，不入账接单者）
+      // 标记支付结果：二手商品支付成功即放款给卖家；帮助类资金托管，等确认完成后释放
       await transaction.collection('payments').doc(paymentRecord._id).update({
         data: {
-          status: 'prepaid',
+          status: itemType === 'market' ? 'paid' : 'prepaid',
           payTime: db.serverDate(),
           commission,
-          sellerAmount
+          sellerAmount,
+          ...(itemType === 'market' ? { financeCredited: true } : {})
         }
       })
 
@@ -145,6 +154,9 @@ exports.main = async (event, context) => {
             completeTime: db.serverDate()
           }
         })
+
+        // 货款立即入账卖家财务
+        await creditSellerFinance(transaction, sellerOpenid, sellerFinance, commission, sellerAmount)
       }
 
       await transaction.commit()
@@ -154,10 +166,10 @@ exports.main = async (event, context) => {
       return { errcode: -1 }
     }
 
-    // 通知支付者（发布者自己）
+    // 通知支付者（帮助类：发布者自己预付；二手商品：买家支付货款）
     let notifyContent = ''
     if (itemType === 'market') {
-      notifyContent = `您的二手商品已售出，金额：${amount}元`
+      notifyContent = `您已购买二手商品，支付成功 ¥${amount}`
     } else if (itemType === 'express') {
       notifyContent = `代取快递酬金已预付 ¥${amount}，等待他人接单`
     } else {
@@ -172,6 +184,18 @@ exports.main = async (event, context) => {
       relatedId: itemId,
       relatedType: itemType === 'market' ? 'market' : `help-${itemType}`
     })
+
+    // 二手商品：通知卖家货款已到账
+    if (itemType === 'market') {
+      await sendMessage({
+        toOpenid: sellerOpenid,
+        title: '货款到账',
+        content: `您的二手商品已售出，货款 ¥${sellerAmount} 已到账（总¥${amount}，平台服务费¥${commission}）`,
+        type: 'user',
+        relatedId: itemId,
+        relatedType: 'market'
+      })
+    }
 
     return { errcode: 0 }
   } catch (error) {
@@ -204,6 +228,51 @@ async function getNickName(openid) {
     return ''
   }
   return ''
+}
+
+// 卖家入账：累计平台佣金 + 增加可提现金额（无财务记录时新建）
+async function creditSellerFinance(transaction, sellerOpenid, sellerFinance, commission, sellerAmount) {
+  const finId = `fin_${sellerOpenid}`
+  if (sellerFinance) {
+    const tFin = await transaction.collection('finance').doc(sellerFinance._id).get()
+    const f = tFin.data || {}
+    await transaction.collection('finance').doc(sellerFinance._id).update({
+      data: {
+        totalCommission: Math.round(((f.totalCommission || 0) + commission) * 100) / 100,
+        availableAmount: Math.round(((f.availableAmount || 0) + sellerAmount) * 100) / 100,
+        updateTime: db.serverDate()
+      }
+    })
+  } else {
+    let tFin = null
+    try {
+      tFin = await transaction.collection('finance').doc(finId).get()
+    } catch (e) {
+      tFin = null
+    }
+    if (tFin && tFin.data) {
+      const f = tFin.data
+      await transaction.collection('finance').doc(finId).update({
+        data: {
+          totalCommission: Math.round(((f.totalCommission || 0) + commission) * 100) / 100,
+          availableAmount: Math.round(((f.availableAmount || 0) + sellerAmount) * 100) / 100,
+          updateTime: db.serverDate()
+        }
+      })
+    } else {
+      await transaction.collection('finance').doc(finId).set({
+        data: {
+          openid: sellerOpenid,
+          totalCommission: commission,
+          availableAmount: sellerAmount,
+          withdrawAmount: 0,
+          withdrawRecords: [],
+          createTime: db.serverDate(),
+          updateTime: db.serverDate()
+        }
+      })
+    }
+  }
 }
 
 async function sendMessage(messageData) {
