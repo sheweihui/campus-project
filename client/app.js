@@ -1,5 +1,7 @@
 const { refreshUnreadBadge } = require('./utils/util.js')
 
+const UNREAD_POLL_INTERVAL = 30000
+
 App({
   onLaunch: function () {
     if (!wx.cloud) {
@@ -11,10 +13,8 @@ App({
       })
     }
     
-    // 先等待登录完成，再检查未读消息
     this.forceLogin().then(() => {
       this.checkUnreadMessages()
-      // 启动定时轮询（每10秒检查一次）
       this.startPolling()
     })
   },
@@ -25,10 +25,9 @@ App({
       clearInterval(this.pollTimer)
       this.pollTimer = null
     }
-    // 仅前台每10秒检查一次未读消息
     this.pollTimer = setInterval(() => {
       this.checkUnreadMessages()
-    }, 10000)
+    }, UNREAD_POLL_INTERVAL)
   },
   
   stopPolling: function() {
@@ -51,7 +50,10 @@ App({
   },
 
   checkUnreadMessages: async function() {
+    if (this._checkingUnread) return
+
     try {
+      this._checkingUnread = true
       const openid = wx.getStorageSync('openid')
       if (!openid) return
       
@@ -69,6 +71,8 @@ App({
       }
     } catch (error) {
       console.error('检查未读消息失败:', error)
+    } finally {
+      this._checkingUnread = false
     }
   },
 

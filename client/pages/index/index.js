@@ -28,14 +28,18 @@ Page({
   },
 
   onLoad() {
+    this._skipNextShowLoad = true
     this.computeSky()
     this.loadData()
   },
 
   onShow() {
     this.computeSky()
-    this.loadData()
-    this.checkUnreadMessages()
+    if (this._skipNextShowLoad) {
+      this._skipNextShowLoad = false
+    } else {
+      this.loadData()
+    }
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 0 })
     }
@@ -84,6 +88,8 @@ Page({
   },
 
   async loadData() {
+    if (this._loadingData) return
+    this._loadingData = true
     showLoading()
     try {
       await Promise.all([
@@ -95,6 +101,7 @@ Page({
       console.error('加载数据失败:', error)
     } finally {
       hideLoading()
+      this._loadingData = false
     }
   },
 
@@ -127,38 +134,30 @@ Page({
   },
 
   async loadHelp() {
-    const types = ['carpool', 'express', 'partner', 'other']
-    const helpList = []
-    
-    for (const type of types) {
-      const { result } = await wx.cloud.callFunction({
-        name: 'help',
-        data: {
-          action: 'list',
-          data: { type, page: 1, pageSize: 2 }
-        }
-      })
-      
-      if (result.code === 0) {
-        result.data.forEach(item => {
-          item.type = type
-          if (item.time) {
-            const timeParts = item.time.split(' ')
-            if (timeParts.length >= 2) {
-              item.date = timeParts[0]
-              item.timeSlot = timeParts.slice(1).join(' ')
-            } else {
-              item.date = ''
-              item.timeSlot = item.time
-            }
-          }
-          helpList.push(item)
-        })
+    const { result } = await wx.cloud.callFunction({
+      name: 'help',
+      data: {
+        action: 'homeList',
+        data: { pageSize: 5 }
       }
-    }
-    
-    helpList.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
-    this.setData({ helpList: helpList.slice(0, 5) })
+    })
+
+    if (result.code !== 0) return
+
+    const helpList = result.data.map(item => {
+      if (item.time) {
+        const timeParts = item.time.split(' ')
+        if (timeParts.length >= 2) {
+          item.date = timeParts[0]
+          item.timeSlot = timeParts.slice(1).join(' ')
+        } else {
+          item.date = ''
+          item.timeSlot = item.time
+        }
+      }
+      return item
+    })
+    this.setData({ helpList })
   },
 
   navigateTo(e) { 

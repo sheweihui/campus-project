@@ -15,6 +15,8 @@ exports.main = async (event, context) => {
         return await addHelp(data, OPENID)
       case 'list':
         return await listHelp(data)
+      case 'homeList':
+        return await getHomeList(data)
       case 'detail':
         return await getDetail(data)
       case 'update':
@@ -94,6 +96,21 @@ async function listHelp({ type, page = 1, pageSize = 10 }) {
     .get()
 
   return { code: 0, data: result.data }
+}
+
+async function getHomeList({ pageSize = 5 } = {}) {
+  const types = ['carpool', 'express', 'partner', 'other']
+  const perTypeLimit = Math.max(2, Math.ceil(pageSize / types.length) + 2)
+
+  const lists = await Promise.all(types.map(async type => {
+    const { data } = await listHelp({ type, page: 1, pageSize: perTypeLimit })
+    return data.map(item => ({ ...item, type }))
+  }))
+
+  const allItems = lists.flat()
+  allItems.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
+
+  return { code: 0, data: allItems.slice(0, pageSize) }
 }
 
 async function getDetail({ type, id }) {
