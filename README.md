@@ -148,17 +148,25 @@ campus-service-circle/
 - 建议将数据库权限设置为「所有用户不可读写，仅云函数（管理端）可读写」，客户端全部读写均通过云函数完成。
 ## 数据库索引建议（云开发控制台创建）
 
-数据量增大后，以下组合查询建议创建复合索引，否则查询会变慢或失败：
+索引清单已固化在 `client/database-indexes.json`。数据量增大后，以下查询必须优先创建复合索引，否则即使接口使用 `limit`，数据库仍可能为了筛选和排序扫描大量记录。
 
-| 集合 | 索引字段（按顺序） | 用途 |
-| --- | --- | --- |
-| messages | toOpenid + isRead + createTime(降序) | 未读数、消息列表分页 |
-| chats | senderId + receiverId + relatedId + createTime(升序) | 会话消息查询 |
-| orders | createTime(降序) + paymentStatus + type | 商家端订单筛选 |
-| market | status + category + createTime(降序) | 商品列表筛选 |
-| lostfound | type + createTime(降序) | 失物列表 |
-| help-express 等 | status + createTime(降序) | 互助列表 |
-| users | openid | 登录与用户查询 |
-| finance | openid | 余额与提现查询 |
+| 优先级 | 集合 | 索引字段（按顺序） | 用途 |
+| --- | --- | --- | --- |
+| P0 | market | status(升序) + createTime(降序) | 首页二手商品、二手市场默认列表 |
+| P0 | market | status(升序) + category(升序) + createTime(降序) | 二手市场分类筛选 |
+| P0 | lostfound | createTime(降序) | 首页失物招领、失物默认列表 |
+| P0 | lostfound | type(升序) + createTime(降序) | 失物类型筛选 |
+| P0 | help-carpool | status(升序) + createTime(降序) | 首页互助、拼车列表 |
+| P0 | help-express | status(升序) + createTime(降序) | 首页互助、代取快递列表 |
+| P0 | help-partner | status(升序) + createTime(降序) | 首页互助、搭子列表 |
+| P0 | help-other | status(升序) + createTime(降序) | 首页互助、其他互助列表 |
+| P1 | messages | toOpenid(升序) + isRead(升序) + createTime(降序) | 未读数、消息列表分页 |
+| P1 | market | openid(升序) + status(升序) + createTime(降序) | 我的二手商品发布列表 |
+| P1 | lostfound | openid(升序) + type(升序) + createTime(降序) | 我的失物招领发布列表 |
+| P1 | orders | buyerOpenid(升序) + createTime(降序) | 买家订单列表 |
+| P1 | orders | sellerOpenid(升序) + createTime(降序) | 卖家订单列表 |
+| P2 | users | openid(升序) | 登录与用户查询 |
+| P2 | finance | openid(升序) | 余额与提现查询 |
+| P2 | student | stuId(升序) | 学生信息查询 |
 
-创建路径：云开发控制台 → 数据库 → 对应集合 → 索引管理 → 新建索引。
+创建路径：云开发控制台 → 数据库 → 对应集合 → 索引管理 → 新建索引。创建 P0 索引后，首页 `market/lostfound/help` 查询会优先受益。
