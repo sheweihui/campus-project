@@ -109,8 +109,8 @@ Page({
     const { result } = await wx.cloud.callFunction({
       name: 'lostfound',
       data: {
-        action: 'list',
-        data: { page: 1, pageSize: 5 }
+        action: 'homeList',
+        data: { pageSize: 5 }
       }
     })
     
@@ -123,8 +123,8 @@ Page({
     const { result } = await wx.cloud.callFunction({
       name: 'market',
       data: {
-        action: 'list',
-        data: { page: 1, pageSize: 4 }
+        action: 'homeList',
+        data: { pageSize: 4 }
       }
     })
     

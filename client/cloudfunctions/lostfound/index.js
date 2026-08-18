@@ -15,6 +15,8 @@ exports.main = async (event, context) => {
         return await addLostFound(data, OPENID)
       case 'list':
         return await listLostFound(data)
+      case 'homeList':
+        return await getHomeList(data)
       case 'detail':
         return await getDetail(data)
       case 'update':
@@ -74,6 +76,8 @@ async function addLostFound(data, openid) {
 }
 
 async function listLostFound({ type, page = 1, pageSize = 10 }) {
+  page = Math.max(1, Number(page) || 1)
+  pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
   const where = type ? { type } : {}
   const result = await db.collection('lostfound')
     .where(where)
@@ -83,6 +87,29 @@ async function listLostFound({ type, page = 1, pageSize = 10 }) {
     .get()
   
   return { code: 0, data: result.data }
+}
+
+async function getHomeList({ pageSize = 5 } = {}) {
+  pageSize = Math.min(10, Math.max(1, Number(pageSize) || 5))
+  const result = await db.collection('lostfound')
+    .field({
+      _id: true,
+      title: true,
+      type: true,
+      time: true,
+      images: true,
+      createTime: true
+    })
+    .orderBy('createTime', 'desc')
+    .limit(pageSize)
+    .get()
+
+  const data = result.data.map(item => ({
+    ...item,
+    images: Array.isArray(item.images) && item.images.length > 0 ? [item.images[0]] : []
+  }))
+
+  return { code: 0, data }
 }
 
 async function getDetail({ id }) {

@@ -15,6 +15,8 @@ exports.main = async (event, context) => {
         return await addMarket(data, OPENID)
       case 'list':
         return await listMarket(data)
+      case 'homeList':
+        return await getHomeList(data)
       case 'detail':
         return await getDetail(data)
       case 'update':
@@ -85,6 +87,8 @@ async function addMarket(data, openid) {
 }
 
 async function listMarket({ category, page = 1, pageSize = 10 }) {
+  page = Math.max(1, Number(page) || 1)
+  pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
   const where = { status: 'onSale' }
   if (category && category !== 'all') {
     where.category = category
@@ -98,6 +102,30 @@ async function listMarket({ category, page = 1, pageSize = 10 }) {
     .get()
   
   return { code: 0, data: result.data }
+}
+
+async function getHomeList({ pageSize = 4 } = {}) {
+  pageSize = Math.min(10, Math.max(1, Number(pageSize) || 4))
+  const result = await db.collection('market')
+    .where({ status: 'onSale' })
+    .field({
+      _id: true,
+      title: true,
+      price: true,
+      condition: true,
+      images: true,
+      createTime: true
+    })
+    .orderBy('createTime', 'desc')
+    .limit(pageSize)
+    .get()
+
+  const data = result.data.map(item => ({
+    ...item,
+    images: Array.isArray(item.images) && item.images.length > 0 ? [item.images[0]] : []
+  }))
+
+  return { code: 0, data }
 }
 
 async function getDetail({ id }) {
@@ -224,6 +252,11 @@ async function updateStatus({ id, status }, openid) {
 }
 
 async function searchMarket({ keyword, page = 1, pageSize = 10 }) {
+  page = Math.max(1, Number(page) || 1)
+  pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
+  keyword = String(keyword || '').trim().slice(0, 30)
+  if (!keyword) return { code: 0, data: [] }
+
   const result = await db.collection('market')
     .where({
       status: 'onSale',
