@@ -1,0 +1,149 @@
+{
+  "envId": "cloudbase-d6gny18wlbad9e070",
+  "indexes": [
+    {
+      "collection": "market",
+      "name": "idx_status_createTime",
+      "fields": [
+        { "field": "status", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "首页二手商品、二手市场默认列表"
+    },
+    {
+      "collection": "market",
+      "name": "idx_status_category_createTime",
+      "fields": [
+        { "field": "status", "order": "asc" },
+        { "field": "category", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "二手市场分类筛选列表"
+    },
+    {
+      "collection": "market",
+      "name": "idx_openid_status_createTime",
+      "fields": [
+        { "field": "openid", "order": "asc" },
+        { "field": "status", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "我的二手商品发布列表"
+    },
+    {
+      "collection": "lostfound",
+      "name": "idx_createTime",
+      "fields": [
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "首页失物招领、失物招领默认列表"
+    },
+    {
+      "collection": "lostfound",
+      "name": "idx_type_createTime",
+      "fields": [
+        { "field": "type", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "失物招领类型筛选列表"
+    },
+    {
+      "collection": "lostfound",
+      "name": "idx_openid_type_createTime",
+      "fields": [
+        { "field": "openid", "order": "asc" },
+        { "field": "type", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "我的失物招领发布列表"
+    },
+    {
+      "collection": "help-carpool",
+      "name": "idx_status_createTime",
+      "fields": [
+        { "field": "status", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "首页互助、拼车列表"
+    },
+    {
+      "collection": "help-express",
+      "name": "idx_status_createTime",
+      "fields": [
+        { "field": "status", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "首页互助、代取快递列表"
+    },
+    {
+      "collection": "help-partner",
+      "name": "idx_status_createTime",
+      "fields": [
+        { "field": "status", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "首页互助、搭子列表"
+    },
+    {
+      "collection": "help-other",
+      "name": "idx_status_createTime",
+      "fields": [
+        { "field": "status", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "首页互助、其他互助列表"
+    },
+    {
+      "collection": "messages",
+      "name": "idx_toOpenid_isRead_createTime",
+      "fields": [
+        { "field": "toOpenid", "order": "asc" },
+        { "field": "isRead", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "未读消息数量、消息列表"
+    },
+    {
+      "collection": "orders",
+      "name": "idx_buyerOpenid_createTime",
+      "fields": [
+        { "field": "buyerOpenid", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "用户订单列表"
+    },
+    {
+      "collection": "orders",
+      "name": "idx_sellerOpenid_createTime",
+      "fields": [
+        { "field": "sellerOpenid", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "用户订单列表"
+    },
+    {
+      "collection": "finance",
+      "name": "idx_openid",
+      "fields": [
+        { "field": "openid", "order": "asc" }
+      ],
+      "usedBy": "余额与提现查询"
+    },
+    {
+      "collection": "users",
+      "name": "idx_openid",
+      "fields": [
+        { "field": "openid", "order": "asc" }
+      ],
+      "usedBy": "登录、用户信息查询"
+    },
+    {
+      "collection": "student",
+      "name": "idx_stuId",
+      "fields": [
+        { "field": "stuId", "order": "asc" }
+      ],
+      "usedBy": "学生信息查询"
+    }
+  ]
+}
