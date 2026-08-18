@@ -10,10 +10,15 @@ Page({
   },
 
   onLoad() {
+    this._skipNextShowLoad = true
     this.loadData()
   },
 
   onShow() {
+    if (this._skipNextShowLoad) {
+      this._skipNextShowLoad = false
+      return
+    }
     this.loadData()
   },
 

@@ -24,6 +24,7 @@ Page({
   },
 
   onLoad(options) {
+    this._skipNextShowLoad = true
     // 支持从首页搜索框带入 keyword 自动搜索
     if (options && options.keyword) {
       this.setData({ keyword: decodeURIComponent(options.keyword) })
@@ -34,6 +35,10 @@ Page({
   },
 
   onShow() {
+    if (this._skipNextShowLoad) {
+      this._skipNextShowLoad = false
+      return
+    }
     // 若处于搜索态则刷新搜索结果，否则刷新列表
     if (this.data.keyword) {
       this.searchData()
