@@ -123,21 +123,7 @@ async function listLostFound({ type, page = 1, pageSize = 10, scene = '' }) {
 }
 
 async function getHomeList({ pageSize = 5 } = {}) {
-  pageSize = Math.min(10, Math.max(1, Number(pageSize) || 5))
-  const result = await db.collection('lostfound')
-    .field({
-      _id: true,
-      title: true,
-      type: true,
-      time: true,
-      images: true,
-      createTime: true
-    })
-    .orderBy('createTime', 'desc')
-    .limit(pageSize)
-    .get()
-
-  return { code: 0, data: trimListImages(result.data) }
+  return listLostFound({ page: 1, pageSize, scene: 'home' })
 }
 
 async function getDetail({ id }) {

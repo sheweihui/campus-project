@@ -127,22 +127,7 @@ async function listMarket({ category, page = 1, pageSize = 10, scene = '' }) {
 }
 
 async function getHomeList({ pageSize = 4 } = {}) {
-  pageSize = Math.min(10, Math.max(1, Number(pageSize) || 4))
-  const result = await db.collection('market')
-    .where({ status: 'onSale' })
-    .field({
-      _id: true,
-      title: true,
-      price: true,
-      condition: true,
-      images: true,
-      createTime: true
-    })
-    .orderBy('createTime', 'desc')
-    .limit(pageSize)
-    .get()
-
-  return { code: 0, data: trimListImages(result.data) }
+  return listMarket({ page: 1, pageSize, scene: 'home' })
 }
 
 async function getDetail({ id }) {
