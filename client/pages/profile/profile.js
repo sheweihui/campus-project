@@ -14,9 +14,12 @@ Page({
   },
 
   onLoad() {
+    this._skipNextShowRefresh = true
     this.loadUserInfo()
-    this.loadStats()
-    this.checkAdmin()
+    Promise.all([
+      this.loadStats(),
+      this.checkAdmin()
+    ])
   },
 
   // 检查是否商家端管理员
@@ -42,9 +45,19 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 })
     }
-    await this.loadUserInfo()
-    await this.loadStats()
-    await this.checkUnreadMessages()
+
+    if (this._skipNextShowRefresh) {
+      this._skipNextShowRefresh = false
+      this.startUnreadSync()
+      return
+    }
+
+    this.loadUserInfo()
+    await Promise.all([
+      this.loadStats(),
+      this.checkUnreadMessages(),
+      this.checkAdmin()
+    ])
     this.startUnreadSync()
   },
 
