@@ -106,13 +106,24 @@ Page({
   },
 
   async loadLostfound() {
-    const { result } = await wx.cloud.callFunction({
+    let { result } = await wx.cloud.callFunction({
       name: 'lostfound',
       data: {
         action: 'homeList',
         data: { pageSize: 5 }
       }
     })
+
+    if (this.isUnknownAction(result)) {
+      const fallback = await wx.cloud.callFunction({
+        name: 'lostfound',
+        data: {
+          action: 'list',
+          data: { page: 1, pageSize: 5 }
+        }
+      })
+      result = fallback.result
+    }
     
     if (result.code === 0) {
       this.setData({ lostfoundList: result.data })
@@ -120,13 +131,24 @@ Page({
   },
 
   async loadMarket() {
-    const { result } = await wx.cloud.callFunction({
+    let { result } = await wx.cloud.callFunction({
       name: 'market',
       data: {
         action: 'homeList',
         data: { pageSize: 4 }
       }
     })
+
+    if (this.isUnknownAction(result)) {
+      const fallback = await wx.cloud.callFunction({
+        name: 'market',
+        data: {
+          action: 'list',
+          data: { page: 1, pageSize: 4 }
+        }
+      })
+      result = fallback.result
+    }
     
     if (result.code === 0) {
       this.setData({ marketList: result.data })
@@ -134,13 +156,17 @@ Page({
   },
 
   async loadHelp() {
-    const { result } = await wx.cloud.callFunction({
+    let { result } = await wx.cloud.callFunction({
       name: 'help',
       data: {
         action: 'homeList',
         data: { pageSize: 5 }
       }
     })
+
+    if (this.isUnknownAction(result)) {
+      result = { code: 0, data: await this.loadHelpByTypeFallback() }
+    }
 
     if (result.code !== 0) return
 
@@ -158,6 +184,35 @@ Page({
       return item
     })
     this.setData({ helpList })
+  },
+
+  isUnknownAction(result) {
+    return result && result.code === -1 && result.msg === '未知操作'
+  },
+
+  async loadHelpByTypeFallback() {
+    const types = ['carpool', 'express', 'partner', 'other']
+    const results = await Promise.all(types.map(type =>
+      wx.cloud.callFunction({
+        name: 'help',
+        data: {
+          action: 'list',
+          data: { type, page: 1, pageSize: 2 }
+        }
+      }).then(({ result }) => ({ type, result })).catch(() => ({ type, result: null }))
+    ))
+
+    const helpList = []
+    results.forEach(({ type, result }) => {
+      if (result && result.code === 0) {
+        result.data.forEach(item => {
+          helpList.push({ ...item, type })
+        })
+      }
+    })
+
+    helpList.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
+    return helpList.slice(0, 5)
   },
 
   navigateTo(e) { 
