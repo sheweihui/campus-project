@@ -106,6 +106,29 @@ const hideLoading = () => {
   wx.hideLoading()
 }
 
+const getCache = (key, maxAge = 60000) => {
+  try {
+    const cache = wx.getStorageSync(key)
+    if (!cache || !cache.timestamp) return null
+    if (Date.now() - cache.timestamp > maxAge) return null
+    return cache.data
+  } catch (error) {
+    console.error('读取缓存失败:', error)
+    return null
+  }
+}
+
+const setCache = (key, data) => {
+  try {
+    wx.setStorageSync(key, {
+      data,
+      timestamp: Date.now()
+    })
+  } catch (error) {
+    console.error('写入缓存失败:', error)
+  }
+}
+
 const navigateTo = (url) => {
   wx.navigateTo({ url })
 }
@@ -195,6 +218,8 @@ module.exports = {
   showToast,
   showLoading,
   hideLoading,
+  getCache,
+  setCache,
   navigateTo,
   redirectTo,
   switchTab,

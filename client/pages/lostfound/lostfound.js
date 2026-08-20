@@ -1,4 +1,6 @@
-const { showLoading, hideLoading, navigateTo, requireLogin } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, requireLogin, getCache, setCache } = require('../../utils/util.js')
+
+const LOSTFOUND_CACHE_TTL = 30000
 
 Page({
   data: {
@@ -54,11 +56,30 @@ Page({
     this.loadData()
   },
 
+  getListCacheKey() {
+    if (this.data.page !== 1) return ''
+    return `cache:lostfound:list:${this.data.currentTab}`
+  },
+
+  restoreListCache() {
+    const key = this.getListCacheKey()
+    if (!key) return false
+    const cache = getCache(key, LOSTFOUND_CACHE_TTL)
+    if (!cache) return false
+    this.setData({
+      list: cache.list || [],
+      hasMore: cache.hasMore !== false
+    })
+    return true
+  },
+
   async loadData(isLoadMore = false) {
     if (this.data.isLoading) return
-    
+    const cacheKey = this.getListCacheKey()
+    const hasCache = !isLoadMore && this.restoreListCache()
+
     this.setData({ isLoading: true })
-    showLoading()
+    if (!hasCache) showLoading()
 
     try {
       const type = this.data.currentTab === 'all' ? '' : this.data.currentTab
@@ -81,11 +102,17 @@ Page({
           list: newList,
           hasMore: result.data.length === this.data.pageSize
         })
+        if (cacheKey && !isLoadMore) {
+          setCache(cacheKey, {
+            list: newList,
+            hasMore: result.data.length === this.data.pageSize
+          })
+        }
       }
     } catch (error) {
       console.error('加载失败:', error)
     } finally {
-      hideLoading()
+      if (!hasCache) hideLoading()
       this.setData({ isLoading: false })
     }
   },

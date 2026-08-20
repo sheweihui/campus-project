@@ -1,4 +1,7 @@
-const { showLoading, hideLoading, navigateTo, switchTab, refreshUnreadBadge } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, switchTab, refreshUnreadBadge, getCache, setCache } = require('../../utils/util.js')
+
+const HOME_CACHE_KEY = 'cache:home:index'
+const HOME_CACHE_TTL = 60000
 
 Page({
   data: {
@@ -30,7 +33,8 @@ Page({
   onLoad() {
     this._skipNextShowLoad = true
     this.computeSky()
-    this.loadData()
+    const hasCache = this.restoreHomeCache()
+    this.loadData({ silent: hasCache })
   },
 
   onShow() {
@@ -38,7 +42,7 @@ Page({
     if (this._skipNextShowLoad) {
       this._skipNextShowLoad = false
     } else {
-      this.loadData()
+      this.loadData({ silent: true })
     }
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 0 })
@@ -87,20 +91,35 @@ Page({
     })
   },
 
-  async loadData() {
+  restoreHomeCache() {
+    const cache = getCache(HOME_CACHE_KEY, HOME_CACHE_TTL)
+    if (!cache) return false
+    this.setData({
+      lostfoundList: cache.lostfoundList || [],
+      marketList: cache.marketList || [],
+      helpList: cache.helpList || []
+    })
+    return true
+  },
+
+  async loadData(options = {}) {
     if (this._loadingData) return
+    const silent = !!options.silent
     this._loadingData = true
-    showLoading()
+    if (!silent) showLoading()
     try {
-      await Promise.all([
+      const [lostfoundList, marketList, helpList] = await Promise.all([
         this.loadLostfound(),
         this.loadMarket(),
         this.loadHelp()
       ])
+      const nextData = { lostfoundList, marketList, helpList }
+      this.setData(nextData)
+      setCache(HOME_CACHE_KEY, nextData)
     } catch (error) {
       console.error('加载数据失败:', error)
     } finally {
-      hideLoading()
+      if (!silent) hideLoading()
       this._loadingData = false
     }
   },
@@ -115,8 +134,9 @@ Page({
     })
     
     if (result.code === 0) {
-      this.setData({ lostfoundList: result.data })
+      return result.data || []
     }
+    return this.data.lostfoundList
   },
 
   async loadMarket() {
@@ -129,13 +149,14 @@ Page({
     })
     
     if (result.code === 0) {
-      this.setData({ marketList: result.data })
+      return result.data || []
     }
+    return this.data.marketList
   },
 
   async loadHelp() {
     const helpList = await this.loadHelpByType()
-    const formattedList = helpList.map(item => {
+    return helpList.map(item => {
       if (item.time) {
         const timeParts = item.time.split(' ')
         if (timeParts.length >= 2) {
@@ -148,7 +169,6 @@ Page({
       }
       return item
     })
-    this.setData({ helpList: formattedList })
   },
 
   async loadHelpByType() {

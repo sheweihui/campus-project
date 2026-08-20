@@ -1,4 +1,6 @@
-const { showLoading, hideLoading, navigateTo, requireLogin } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, requireLogin, getCache, setCache } = require('../../utils/util.js')
+
+const MARKET_CACHE_TTL = 30000
 
 Page({
   data: {
@@ -101,11 +103,34 @@ Page({
     this.searchData()
   },
 
+  getListCacheKey(type) {
+    const page = this.data.page
+    if (page !== 1) return ''
+    if (type === 'search') {
+      return `cache:market:search:${this.data.keyword.trim()}`
+    }
+    return `cache:market:list:${this.data.currentCategory}`
+  },
+
+  restoreListCache(type) {
+    const key = this.getListCacheKey(type)
+    if (!key) return false
+    const cache = getCache(key, MARKET_CACHE_TTL)
+    if (!cache) return false
+    this.setData({
+      list: cache.list || [],
+      hasMore: cache.hasMore !== false
+    })
+    return true
+  },
+
   async loadData(isLoadMore = false) {
     if (this.data.isLoading) return
-    
+    const cacheKey = this.getListCacheKey('list')
+    const hasCache = !isLoadMore && this.restoreListCache('list')
+
     this.setData({ isLoading: true })
-    showLoading()
+    if (!hasCache) showLoading()
 
     try {
       const category = this.data.currentCategory === 'all' ? '' : this.data.currentCategory
@@ -128,11 +153,17 @@ Page({
           list: newList,
           hasMore: result.data.length === this.data.pageSize
         })
+        if (cacheKey && !isLoadMore) {
+          setCache(cacheKey, {
+            list: newList,
+            hasMore: result.data.length === this.data.pageSize
+          })
+        }
       }
     } catch (error) {
       console.error('加载失败:', error)
     } finally {
-      hideLoading()
+      if (!hasCache) hideLoading()
       this.setData({ isLoading: false })
     }
   },
@@ -145,8 +176,11 @@ Page({
 
     if (this.data.isLoading) return
 
+    const cacheKey = this.getListCacheKey('search')
+    const hasCache = !isLoadMore && this.restoreListCache('search')
+
     this.setData({ isLoading: true })
-    showLoading()
+    if (!hasCache) showLoading()
     try {
       const { result } = await wx.cloud.callFunction({
         name: 'market',
@@ -161,15 +195,22 @@ Page({
       })
 
       if (result.code === 0) {
+        const newList = isLoadMore ? [...this.data.list, ...result.data] : result.data
         this.setData({
-          list: isLoadMore ? [...this.data.list, ...result.data] : result.data,
+          list: newList,
           hasMore: result.data.length === this.data.pageSize
         })
+        if (cacheKey && !isLoadMore) {
+          setCache(cacheKey, {
+            list: newList,
+            hasMore: result.data.length === this.data.pageSize
+          })
+        }
       }
     } catch (error) {
       console.error('搜索失败:', error)
     } finally {
-      hideLoading()
+      if (!hasCache) hideLoading()
       this.setData({ isLoading: false })
     }
   },
