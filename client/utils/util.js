@@ -129,6 +129,23 @@ const setCache = (key, data) => {
   }
 }
 
+const callCloudFunction = ({ name, data }, timeout = 8000) => {
+  let timer = null
+  const task = wx.cloud.callFunction({ name, data })
+    .finally(() => {
+      if (timer) clearTimeout(timer)
+    })
+
+  const timeoutTask = new Promise((resolve, reject) => {
+    timer = setTimeout(() => {
+      reject(new Error(`cloud function ${name} timeout`))
+    }, timeout)
+  })
+
+  task.catch(() => {})
+  return Promise.race([task, timeoutTask])
+}
+
 const navigateTo = (url) => {
   wx.navigateTo({ url })
 }
@@ -220,6 +237,7 @@ module.exports = {
   hideLoading,
   getCache,
   setCache,
+  callCloudFunction,
   navigateTo,
   redirectTo,
   switchTab,

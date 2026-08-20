@@ -1,6 +1,7 @@
-const { showLoading, hideLoading, navigateTo, requireLogin, getCache, setCache } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, requireLogin, getCache, setCache, callCloudFunction } = require('../../utils/util.js')
 
-const MARKET_CACHE_TTL = 30000
+const MARKET_CACHE_TTL = 5 * 60 * 1000
+const MARKET_REQUEST_TIMEOUT = 8000
 
 Page({
   data: {
@@ -134,7 +135,7 @@ Page({
 
     try {
       const category = this.data.currentCategory === 'all' ? '' : this.data.currentCategory
-      const { result } = await wx.cloud.callFunction({
+      const { result } = await callCloudFunction({
         name: 'market',
         data: {
           action: 'list',
@@ -145,7 +146,7 @@ Page({
             scene: 'list'
           }
         }
-      })
+      }, MARKET_REQUEST_TIMEOUT)
 
       if (result.code === 0) {
         const newList = isLoadMore ? [...this.data.list, ...result.data] : result.data
@@ -182,7 +183,7 @@ Page({
     this.setData({ isLoading: true })
     if (!hasCache) showLoading()
     try {
-      const { result } = await wx.cloud.callFunction({
+      const { result } = await callCloudFunction({
         name: 'market',
         data: {
           action: 'search',
@@ -192,7 +193,7 @@ Page({
             pageSize: this.data.pageSize
           }
         }
-      })
+      }, MARKET_REQUEST_TIMEOUT)
 
       if (result.code === 0) {
         const newList = isLoadMore ? [...this.data.list, ...result.data] : result.data

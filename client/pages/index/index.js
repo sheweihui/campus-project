@@ -1,7 +1,8 @@
-const { showLoading, hideLoading, navigateTo, switchTab, refreshUnreadBadge, getCache, setCache } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, switchTab, refreshUnreadBadge, getCache, setCache, callCloudFunction } = require('../../utils/util.js')
 
 const HOME_CACHE_KEY = 'cache:home:index'
-const HOME_CACHE_TTL = 60000
+const HOME_CACHE_TTL = 10 * 60 * 1000
+const HOME_REQUEST_TIMEOUT = 5000
 
 Page({
   data: {
@@ -109,9 +110,18 @@ Page({
     if (!silent) showLoading()
     try {
       const [lostfoundList, marketList, helpList] = await Promise.all([
-        this.loadLostfound(),
-        this.loadMarket(),
-        this.loadHelp()
+        this.loadLostfound().catch(error => {
+          console.error('首页失物招领加载失败:', error)
+          return this.data.lostfoundList
+        }),
+        this.loadMarket().catch(error => {
+          console.error('首页二手市场加载失败:', error)
+          return this.data.marketList
+        }),
+        this.loadHelp().catch(error => {
+          console.error('首页互助加载失败:', error)
+          return this.data.helpList
+        })
       ])
       const nextData = { lostfoundList, marketList, helpList }
       this.setData(nextData)
@@ -125,13 +135,13 @@ Page({
   },
 
   async loadLostfound() {
-    const { result } = await wx.cloud.callFunction({
+    const { result } = await callCloudFunction({
       name: 'lostfound',
       data: {
-        action: 'list',
-        data: { page: 1, pageSize: 5, scene: 'home' }
+        action: 'homeList',
+        data: { pageSize: 5 }
       }
-    })
+    }, HOME_REQUEST_TIMEOUT)
     
     if (result.code === 0) {
       return result.data || []
@@ -140,13 +150,13 @@ Page({
   },
 
   async loadMarket() {
-    const { result } = await wx.cloud.callFunction({
+    const { result } = await callCloudFunction({
       name: 'market',
       data: {
-        action: 'list',
-        data: { page: 1, pageSize: 4, scene: 'home' }
+        action: 'homeList',
+        data: { pageSize: 4 }
       }
-    })
+    }, HOME_REQUEST_TIMEOUT)
     
     if (result.code === 0) {
       return result.data || []
@@ -172,28 +182,15 @@ Page({
   },
 
   async loadHelpByType() {
-    const types = ['carpool', 'express', 'partner', 'other']
-    const results = await Promise.all(types.map(type =>
-      wx.cloud.callFunction({
-        name: 'help',
-        data: {
-          action: 'list',
-          data: { type, page: 1, pageSize: 2, scene: 'home' }
-        }
-      }).then(({ result }) => ({ type, result })).catch(() => ({ type, result: null }))
-    ))
-
-    const helpList = []
-    results.forEach(({ type, result }) => {
-      if (result && result.code === 0) {
-        result.data.forEach(item => {
-          helpList.push({ ...item, type })
-        })
+    const { result } = await callCloudFunction({
+      name: 'help',
+      data: {
+        action: 'homeList',
+        data: { pageSize: 5 }
       }
-    })
+    }, HOME_REQUEST_TIMEOUT)
 
-    helpList.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
-    return helpList.slice(0, 5)
+    return result && result.code === 0 ? (result.data || []) : this.data.helpList
   },
 
   navigateTo(e) { 
