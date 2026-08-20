@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "db:indexes": "node scripts/create-database-indexes.js"
+  },
+  "dependencies": {
+    "@cloudbase/manager-node": "^4.0.0"
+  }
+}
