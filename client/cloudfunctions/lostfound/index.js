@@ -4,6 +4,8 @@ cloud.init({ env: ENV_ID })
 
 const db = cloud.database()
 const _ = db.command
+const CACHE_COLLECTION = 'query_cache'
+const CACHE_TTL = 60 * 1000
 
 exports.main = async (event, context) => {
   const { action, data } = event
@@ -32,6 +34,45 @@ exports.main = async (event, context) => {
     }
   } catch (error) {
     return { code: -1, msg: error.message }
+  }
+}
+
+function cacheKey(parts) {
+  return parts.map(part => encodeURIComponent(String(part === undefined || part === null ? '' : part))).join(':')
+}
+
+async function getCache(key) {
+  try {
+    const res = await db.collection(CACHE_COLLECTION).doc(key).get()
+    if (res.data && res.data.expireAt > Date.now()) {
+      return res.data.value
+    }
+  } catch (error) {
+    return null
+  }
+  return null
+}
+
+async function setCache(key, value, group = 'lostfound') {
+  try {
+    await db.collection(CACHE_COLLECTION).doc(key).set({
+      data: {
+        group,
+        value,
+        expireAt: Date.now() + CACHE_TTL,
+        updateTime: db.serverDate()
+      }
+    })
+  } catch (error) {
+    console.error('写入查询缓存失败:', error)
+  }
+}
+
+async function clearCache(group = 'lostfound') {
+  try {
+    await db.collection(CACHE_COLLECTION).where({ group }).remove()
+  } catch (error) {
+    console.error('清理查询缓存失败:', error)
   }
 }
 
@@ -72,6 +113,7 @@ async function addLostFound(data, openid) {
       updateTime: db.serverDate()
     }
   })
+  await clearCache()
   return { code: 0, data: result._id }
 }
 
@@ -85,6 +127,10 @@ function trimListImages(data) {
 async function listLostFound({ type, page = 1, pageSize = 10, scene = '' }) {
   page = Math.max(1, Number(page) || 1)
   pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
+  const key = cacheKey(['lostfound', 'list', type || 'all', page, pageSize, scene || 'default'])
+  const cached = await getCache(key)
+  if (cached) return cached
+
   const where = type ? { type } : {}
 
   let query = db.collection('lostfound')
@@ -119,7 +165,9 @@ async function listLostFound({ type, page = 1, pageSize = 10, scene = '' }) {
     .limit(pageSize)
     .get()
   
-  return { code: 0, data: trimListImages(result.data) }
+  const response = { code: 0, data: trimListImages(result.data) }
+  await setCache(key, response)
+  return response
 }
 
 async function getHomeList({ pageSize = 5 } = {}) {
@@ -165,6 +213,7 @@ async function updateLostFound(data, openid) {
       updateTime: db.serverDate()
     }
   })
+  await clearCache()
   return { code: 0, msg: '更新成功' }
 }
 
@@ -176,6 +225,7 @@ async function deleteLostFound({ id }, openid) {
   }
 
   await db.collection('lostfound').doc(id).remove()
+  await clearCache()
   return { code: 0, msg: '删除成功' }
 }
 
@@ -232,6 +282,7 @@ async function updateStatus({ id, status }, openid) {
       updateTime: db.serverDate()
     }
   })
+  await clearCache()
   return { code: 0, msg: '状态更新成功' }
 }
 

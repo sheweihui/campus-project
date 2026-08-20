@@ -4,6 +4,8 @@ cloud.init({ env: ENV_ID })
 
 const db = cloud.database()
 const _ = db.command
+const CACHE_COLLECTION = 'query_cache'
+const CACHE_TTL = 60 * 1000
 
 exports.main = async (event, context) => {
   const { action, data } = event
@@ -34,6 +36,45 @@ exports.main = async (event, context) => {
     }
   } catch (error) {
     return { code: -1, msg: error.message }
+  }
+}
+
+function cacheKey(parts) {
+  return parts.map(part => encodeURIComponent(String(part === undefined || part === null ? '' : part))).join(':')
+}
+
+async function getCache(key) {
+  try {
+    const res = await db.collection(CACHE_COLLECTION).doc(key).get()
+    if (res.data && res.data.expireAt > Date.now()) {
+      return res.data.value
+    }
+  } catch (error) {
+    return null
+  }
+  return null
+}
+
+async function setCache(key, value, group = 'help') {
+  try {
+    await db.collection(CACHE_COLLECTION).doc(key).set({
+      data: {
+        group,
+        value,
+        expireAt: Date.now() + CACHE_TTL,
+        updateTime: db.serverDate()
+      }
+    })
+  } catch (error) {
+    console.error('写入查询缓存失败:', error)
+  }
+}
+
+async function clearCache(group = 'help') {
+  try {
+    await db.collection(CACHE_COLLECTION).where({ group }).remove()
+  } catch (error) {
+    console.error('清理查询缓存失败:', error)
   }
 }
 
@@ -74,6 +115,7 @@ async function addHelp(data, openid) {
       updateTime: db.serverDate()
     }
   })
+  await clearCache()
   return { code: 0, data: result._id }
 }
 
@@ -99,6 +141,10 @@ function getHomeListFields(type) {
 async function listHelp({ type, page = 1, pageSize = 10, scene = '' }) {
   page = Math.max(1, Number(page) || 1)
   pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
+  const key = cacheKey(['help', 'list', type || 'all', page, pageSize, scene || 'default'])
+  const cached = await getCache(key)
+  if (cached) return cached
+
   const collection = getCollectionByType(type)
   const where = { type }
 
@@ -122,10 +168,17 @@ async function listHelp({ type, page = 1, pageSize = 10, scene = '' }) {
     .limit(pageSize)
     .get()
 
-  return { code: 0, data: result.data }
+  const response = { code: 0, data: result.data }
+  await setCache(key, response)
+  return response
 }
 
 async function getHomeList({ pageSize = 5 } = {}) {
+  pageSize = Math.min(20, Math.max(1, Number(pageSize) || 5))
+  const key = cacheKey(['help', 'homeList', pageSize])
+  const cached = await getCache(key)
+  if (cached) return cached
+
   const types = ['carpool', 'express', 'partner', 'other']
   const perTypeLimit = Math.max(2, Math.ceil(pageSize / types.length) + 2)
 
@@ -137,7 +190,9 @@ async function getHomeList({ pageSize = 5 } = {}) {
   const allItems = lists.flat()
   allItems.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
 
-  return { code: 0, data: allItems.slice(0, pageSize) }
+  const response = { code: 0, data: allItems.slice(0, pageSize) }
+  await setCache(key, response)
+  return response
 }
 
 async function getDetail({ type, id }) {
@@ -188,6 +243,7 @@ async function updateHelp(data, openid) {
       updateTime: db.serverDate()
     }
   })
+  await clearCache()
   return { code: 0, msg: '更新成功' }
 }
 
@@ -206,6 +262,7 @@ async function deleteHelp({ type, id }, openid) {
   }
 
   await db.collection(collection).doc(id).remove()
+  await clearCache()
   return { code: 0, msg: '删除成功' }
 }
 
@@ -260,6 +317,7 @@ async function updateStatus({ type, id, status }, openid) {
       })
     }
 
+    await clearCache()
     return { code: 0, msg: '已完成' }
   }
 
@@ -269,6 +327,7 @@ async function updateStatus({ type, id, status }, openid) {
       updateTime: db.serverDate()
     }
   })
+  await clearCache()
   return { code: 0, msg: '状态更新成功' }
 }
 
@@ -422,6 +481,7 @@ async function completeWithRelease(collection, item, id, type) {
     relatedType: `help-${type}`
   })
 
+  await clearCache()
   return { code: 0, msg: '已完成，酬金已打给接单者' }
 }
 
@@ -518,6 +578,7 @@ async function acceptExpress(data, openid) {
     relatedType: `help-${type}`
   })
 
+  await clearCache()
   return { code: 0, msg: '接单成功' }
 }
 

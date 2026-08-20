@@ -144,6 +144,14 @@
         { "field": "stuId", "order": "asc" }
       ],
       "usedBy": "学生信息查询"
+    },
+    {
+      "collection": "query_cache",
+      "name": "idx_group",
+      "fields": [
+        { "field": "group", "order": "asc" }
+      ],
+      "usedBy": "云函数查询结果缓存失效清理"
     }
   ]
 }
