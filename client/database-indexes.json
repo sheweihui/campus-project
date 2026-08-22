@@ -31,6 +31,15 @@
       "usedBy": "我的二手商品发布列表"
     },
     {
+      "collection": "market",
+      "name": "idx_openid_createTime",
+      "fields": [
+        { "field": "openid", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "我的二手商品发布列表（全部状态）、用户统计"
+    },
+    {
       "collection": "lostfound",
       "name": "idx_createTime",
       "fields": [
@@ -58,6 +67,15 @@
       "usedBy": "我的失物招领发布列表"
     },
     {
+      "collection": "lostfound",
+      "name": "idx_openid_createTime",
+      "fields": [
+        { "field": "openid", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "我的失物招领发布列表（全部类型）、用户统计"
+    },
+    {
       "collection": "help-carpool",
       "name": "idx_status_createTime",
       "fields": [
@@ -65,6 +83,15 @@
         { "field": "createTime", "order": "desc" }
       ],
       "usedBy": "首页互助、拼车列表"
+    },
+    {
+      "collection": "help-carpool",
+      "name": "idx_openid_createTime",
+      "fields": [
+        { "field": "openid", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "我的拼车发布列表、用户统计"
     },
     {
       "collection": "help-express",
@@ -76,6 +103,15 @@
       "usedBy": "首页互助、代取快递列表"
     },
     {
+      "collection": "help-express",
+      "name": "idx_openid_createTime",
+      "fields": [
+        { "field": "openid", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "我的代取快递发布列表、用户统计"
+    },
+    {
       "collection": "help-partner",
       "name": "idx_status_createTime",
       "fields": [
@@ -85,6 +121,15 @@
       "usedBy": "首页互助、搭子列表"
     },
     {
+      "collection": "help-partner",
+      "name": "idx_openid_createTime",
+      "fields": [
+        { "field": "openid", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "我的搭子发布列表、用户统计"
+    },
+    {
       "collection": "help-other",
       "name": "idx_status_createTime",
       "fields": [
@@ -92,6 +137,15 @@
         { "field": "createTime", "order": "desc" }
       ],
       "usedBy": "首页互助、其他互助列表"
+    },
+    {
+      "collection": "help-other",
+      "name": "idx_openid_createTime",
+      "fields": [
+        { "field": "openid", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "我的其他互助发布列表、用户统计"
     },
     {
       "collection": "messages",
@@ -122,6 +176,88 @@
       "usedBy": "用户订单列表"
     },
     {
+      "collection": "orders",
+      "name": "idx_itemId_type",
+      "fields": [
+        { "field": "itemId", "order": "asc" },
+        { "field": "type", "order": "asc" }
+      ],
+      "usedBy": "互助完成时更新关联订单"
+    },
+    {
+      "collection": "orders",
+      "name": "idx_createTime",
+      "fields": [
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "后台订单统计、按日期导出"
+    },
+    {
+      "collection": "payments",
+      "name": "idx_outTradeNo",
+      "fields": [
+        { "field": "outTradeNo", "order": "asc" }
+      ],
+      "usedBy": "支付查询、回调、取消订单"
+    },
+    {
+      "collection": "payments",
+      "name": "idx_outTradeNo_status",
+      "fields": [
+        { "field": "outTradeNo", "order": "asc" },
+        { "field": "status", "order": "asc" }
+      ],
+      "usedBy": "互助确认完成时查询预付支付记录"
+    },
+    {
+      "collection": "payments",
+      "name": "idx_status_createTime",
+      "fields": [
+        { "field": "status", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "清理超时未支付记录、后台支付统计"
+    },
+    {
+      "collection": "payments",
+      "name": "idx_createTime",
+      "fields": [
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "后台支付按日期统计"
+    },
+    {
+      "collection": "chats",
+      "name": "idx_sender_receiver_related_createTime",
+      "fields": [
+        { "field": "senderId", "order": "asc" },
+        { "field": "receiverId", "order": "asc" },
+        { "field": "relatedId", "order": "asc" },
+        { "field": "createTime", "order": "asc" }
+      ],
+      "usedBy": "聊天详情消息列表"
+    },
+    {
+      "collection": "chats",
+      "name": "idx_sender_receiver_related_isRead",
+      "fields": [
+        { "field": "senderId", "order": "asc" },
+        { "field": "receiverId", "order": "asc" },
+        { "field": "relatedId", "order": "asc" },
+        { "field": "isRead", "order": "asc" }
+      ],
+      "usedBy": "聊天详情标记对方消息已读"
+    },
+    {
+      "collection": "chats",
+      "name": "idx_relatedId_createTime",
+      "fields": [
+        { "field": "relatedId", "order": "asc" },
+        { "field": "createTime", "order": "desc" }
+      ],
+      "usedBy": "卖家买家聊天列表"
+    },
+    {
       "collection": "finance",
       "name": "idx_openid",
       "fields": [
@@ -144,6 +280,14 @@
         { "field": "stuId", "order": "asc" }
       ],
       "usedBy": "学生信息查询"
+    },
+    {
+      "collection": "student",
+      "name": "idx_openid",
+      "fields": [
+        { "field": "openid", "order": "asc" }
+      ],
+      "usedBy": "学生绑定状态查询"
     },
     {
       "collection": "query_cache",
