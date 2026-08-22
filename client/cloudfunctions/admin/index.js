@@ -450,6 +450,24 @@ async function getOrders(data) {
     const [ordersRes, countRes] = await Promise.all([
       db.collection('orders')
         .where(where)
+        .field({
+          _id: true,
+          type: true,
+          itemId: true,
+          buyerOpenid: true,
+          sellerOpenid: true,
+          buyerNickName: true,
+          sellerNickName: true,
+          amount: true,
+          commission: true,
+          sellerAmount: true,
+          paymentStatus: true,
+          orderStatus: true,
+          outTradeNo: true,
+          createTime: true,
+          payTime: true,
+          completeTime: true
+        })
         .orderBy('createTime', 'desc')
         .skip((page - 1) * pageSize)
         .limit(pageSize)
@@ -899,9 +917,27 @@ async function getUserList(data) {
   try {
     // 以 users 表为主（微信登录 + 手机号），student 仅作学号补充
     const [users, students, financeList] = await Promise.all([
-      getAll(db.collection('users')).catch(() => []),
-      getAll(db.collection('student')).catch(() => []),
-      getAll(db.collection('finance')).catch(() => [])
+      getAll(db.collection('users').field({
+        openid: true,
+        stuId: true,
+        phone: true,
+        avatarUrl: true,
+        name: true,
+        nickName: true,
+        createTime: true
+      })).catch(() => []),
+      getAll(db.collection('student').field({
+        openid: true,
+        stuId: true
+      })).catch(() => []),
+      getAll(db.collection('finance').field({
+        openid: true,
+        stuId: true,
+        totalCommission: true,
+        availableAmount: true,
+        withdrawAmount: true,
+        withdrawRecords: true
+      })).catch(() => [])
     ])
 
     // 合并用户信息
@@ -1271,6 +1307,17 @@ async function getRecentTransactions(data) {
       .where({
         paymentStatus: _.in(['paid', 'confirmed'])
       })
+      .field({
+        _id: true,
+        type: true,
+        amount: true,
+        buyerOpenid: true,
+        sellerOpenid: true,
+        buyerNickName: true,
+        sellerNickName: true,
+        paymentStatus: true,
+        createTime: true
+      })
       .orderBy('createTime', 'desc')
       .limit(limit)
       .get()
@@ -1286,6 +1333,11 @@ async function getRecentTransactions(data) {
     if (openids.size > 0) {
       const users = await db.collection('users')
         .where({ openid: _.in([...openids]) })
+        .field({
+          openid: true,
+          name: true,
+          nickName: true
+        })
         .get()
       users.data.forEach(u => {
         nameMap[u.openid] = u.name || u.nickName || ''
