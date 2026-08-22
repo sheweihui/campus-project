@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, navigateTo, switchTab, refreshUnreadBadge, getCache, setCache, callCloudFunction } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, switchTab, refreshUnreadBadge, getCache, isCacheFresh, setCache, callCloudFunction } = require('../../utils/util.js')
 
 const HOME_CACHE_KEY = 'cache:home:index'
 const HOME_CACHE_TTL = 10 * 60 * 1000
@@ -35,14 +35,16 @@ Page({
     this._skipNextShowLoad = true
     this.computeSky()
     const hasCache = this.restoreHomeCache()
-    this.loadData({ silent: hasCache })
+    if (!hasCache) {
+      this.loadData()
+    }
   },
 
   onShow() {
     this.computeSky()
     if (this._skipNextShowLoad) {
       this._skipNextShowLoad = false
-    } else {
+    } else if (!isCacheFresh(HOME_CACHE_KEY, HOME_CACHE_TTL)) {
       this.loadData({ silent: true })
     }
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
@@ -87,7 +89,7 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.loadData().then(() => {
+    this.loadData({ force: true }).then(() => {
       wx.stopPullDownRefresh()
     })
   },
@@ -106,6 +108,8 @@ Page({
   async loadData(options = {}) {
     if (this._loadingData) return
     const silent = !!options.silent
+    const force = !!options.force
+    if (!force && isCacheFresh(HOME_CACHE_KEY, HOME_CACHE_TTL)) return
     this._loadingData = true
     if (!silent) showLoading()
     try {

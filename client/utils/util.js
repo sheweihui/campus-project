@@ -118,6 +118,16 @@ const getCache = (key, maxAge = 60000) => {
   }
 }
 
+const isCacheFresh = (key, maxAge = 60000) => {
+  try {
+    const cache = wx.getStorageSync(key)
+    return !!(cache && cache.timestamp && Date.now() - cache.timestamp <= maxAge)
+  } catch (error) {
+    console.error('检查缓存失败:', error)
+    return false
+  }
+}
+
 const setCache = (key, data) => {
   try {
     wx.setStorageSync(key, {
@@ -236,6 +246,7 @@ module.exports = {
   showLoading,
   hideLoading,
   getCache,
+  isCacheFresh,
   setCache,
   callCloudFunction,
   navigateTo,
