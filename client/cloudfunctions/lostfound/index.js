@@ -6,6 +6,8 @@ const db = cloud.database()
 const _ = db.command
 const CACHE_COLLECTION = 'query_cache'
 const CACHE_TTL = 60 * 1000
+const PHONE_CACHE_TTL = 5 * 60 * 1000
+const phoneCache = {}
 
 exports.main = async (event, context) => {
   const { action, data } = event
@@ -289,9 +291,21 @@ async function updateStatus({ id, status }, openid) {
 // 通过 openid 查询绑定的手机号
 async function getPhoneByOpenid(openid) {
   if (!openid) return ''
+  const cached = phoneCache[openid]
+  if (cached && cached.expireAt > Date.now()) {
+    return cached.phone
+  }
   try {
-    const res = await db.collection('users').where({ openid }).get()
-    return res.data.length > 0 ? (res.data[0].phone || '') : ''
+    const res = await db.collection('users')
+      .where({ openid })
+      .field({ phone: true })
+      .get()
+    const phone = res.data.length > 0 ? (res.data[0].phone || '') : ''
+    phoneCache[openid] = {
+      phone,
+      expireAt: Date.now() + PHONE_CACHE_TTL
+    }
+    return phone
   } catch (e) {
     return ''
   }

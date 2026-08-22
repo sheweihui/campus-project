@@ -36,27 +36,18 @@ async function markAllRead(data, myOpenid) {
     return { code: -1, msg: '无权限操作' }
   }
 
-  // 分批取完所有未读消息（单次 get 上限 100 条）
-  let total = 0
-  while (true) {
-    const messages = await db.collection('messages')
-      .where({ toOpenid: openid, isRead: false })
-      .limit(100)
-      .get()
-
-    if (messages.data.length === 0) break
-
-    await Promise.all(messages.data.map(msg =>
-      db.collection('messages').doc(msg._id).update({
-        data: { isRead: true }
-      })
-    ))
-
-    total += messages.data.length
-    if (messages.data.length < 100) break
+  const where = { toOpenid: openid, isRead: false }
+  const countRes = await db.collection('messages').where(where).count()
+  if (countRes.total > 0) {
+    await db.collection('messages').where(where).update({
+      data: {
+        isRead: true,
+        readTime: db.serverDate()
+      }
+    })
   }
 
-  return { code: 0, msg: '标记成功', data: { count: total } }
+  return { code: 0, msg: '标记成功', data: { count: countRes.total } }
 }
 
 async function markRead(data, myOpenid) {
@@ -69,20 +60,27 @@ async function markRead(data, myOpenid) {
   }
 
   try {
-    const msg = await db.collection('messages').doc(messageId).get()
-    if (!msg.data) {
-      return { code: -1, msg: '消息不存在' }
+    const res = await db.collection('messages')
+      .where({ _id: messageId, toOpenid: openid })
+      .update({
+        data: {
+          isRead: true,
+          readTime: db.serverDate()
+        }
+      })
+    if (!res.stats || res.stats.updated === 0) {
+      return { code: -1, msg: '消息不存在或无权限操作' }
     }
-    // 只能标记发给自己的消息
-    if (msg.data.toOpenid !== openid) {
-      return { code: -1, msg: '无权限操作' }
-    }
-    await db.collection('messages').doc(messageId).update({
-      data: { isRead: true }
-    })
     return { code: 0, msg: '已读' }
   } catch (error) {
     return { code: -1, msg: error.message }
+  }
+}
+
+function normalizePage(page, pageSize) {
+  return {
+    page: Math.max(1, Number(page) || 1),
+    pageSize: Math.min(50, Math.max(1, Number(pageSize) || 10))
   }
 }
 
@@ -100,7 +98,8 @@ async function getUnreadCount(data, myOpenid) {
 }
 
 async function listMessages(data, myOpenid) {
-  const { openid, tab, page = 1, pageSize = 10 } = data
+  const { openid, tab } = data
+  const { page, pageSize } = normalizePage(data.page, data.pageSize)
   if (!checkAccess(openid, myOpenid)) {
     return { code: -1, msg: '无权限操作' }
   }
@@ -115,6 +114,19 @@ async function listMessages(data, myOpenid) {
 
   const result = await db.collection('messages')
     .where(where)
+    .field({
+      _id: true,
+      toOpenid: true,
+      fromOpenid: true,
+      title: true,
+      content: true,
+      type: true,
+      relatedId: true,
+      relatedType: true,
+      isRead: true,
+      createTime: true,
+      readTime: true
+    })
     .orderBy('createTime', 'desc')
     .skip((page - 1) * pageSize)
     .limit(pageSize)

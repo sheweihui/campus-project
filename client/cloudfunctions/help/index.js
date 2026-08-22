@@ -6,6 +6,8 @@ const db = cloud.database()
 const _ = db.command
 const CACHE_COLLECTION = 'query_cache'
 const CACHE_TTL = 60 * 1000
+const PHONE_CACHE_TTL = 5 * 60 * 1000
+const phoneCache = {}
 
 exports.main = async (event, context) => {
   const { action, data } = event
@@ -546,11 +548,17 @@ async function acceptExpress(data, openid) {
   const item = await db.collection(collection).doc(id).get()
 
   // 获取接单者信息
-  const acceptorInfo = await db.collection('users').where({ openid }).get()
+  const [acceptorInfo, publisherInfo] = await Promise.all([
+    db.collection('users')
+      .where({ openid })
+      .field({ nickName: true })
+      .get(),
+    db.collection('users')
+      .where({ openid: item.data.openid })
+      .field({ nickName: true })
+      .get()
+  ])
   const acceptorNickName = acceptorInfo.data[0]?.nickName || '接单用户'
-
-  // 获取发布者信息
-  const publisherInfo = await db.collection('users').where({ openid: item.data.openid }).get()
   const publisherNickName = publisherInfo.data[0]?.nickName || '用户'
 
   // 给发布者发送消息通知（钱已预付，只需通知有人接单）
@@ -585,9 +593,21 @@ async function acceptExpress(data, openid) {
 // 通过 openid 查询绑定的手机号
 async function getPhoneByOpenid(openid) {
   if (!openid) return ''
+  const cached = phoneCache[openid]
+  if (cached && cached.expireAt > Date.now()) {
+    return cached.phone
+  }
   try {
-    const res = await db.collection('users').where({ openid }).get()
-    return res.data.length > 0 ? (res.data[0].phone || '') : ''
+    const res = await db.collection('users')
+      .where({ openid })
+      .field({ phone: true })
+      .get()
+    const phone = res.data.length > 0 ? (res.data[0].phone || '') : ''
+    phoneCache[openid] = {
+      phone,
+      expireAt: Date.now() + PHONE_CACHE_TTL
+    }
+    return phone
   } catch (e) {
     return ''
   }
@@ -631,7 +651,10 @@ function isValidAmount(value) {
 async function getNickName(openid) {
   if (!openid) return ''
   try {
-    const userRes = await db.collection('users').where({ openid }).get()
+    const userRes = await db.collection('users')
+      .where({ openid })
+      .field({ name: true, nickName: true })
+      .get()
     if (userRes.data.length > 0) {
       const u = userRes.data[0]
       if (u.name) return u.name

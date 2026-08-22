@@ -59,7 +59,10 @@ async function sendMessage(data, openid) {
 async function sendMessageNotification(senderId, receiverId, content, relatedType, relatedId) {
   try {
     // 获取发送者信息
-    const senderRes = await db.collection('users').where({ openid: senderId }).get()
+    const senderRes = await db.collection('users')
+      .where({ openid: senderId })
+      .field({ name: true, nickName: true })
+      .get()
     const senderName = senderRes.data.length > 0 ? (senderRes.data[0].name || senderRes.data[0].nickName || '用户') : '用户'
 
     // 判断消息类型
@@ -111,6 +114,16 @@ async function listMessages(data, openid) {
         relatedId
       }
     ]))
+    .field({
+      _id: true,
+      senderId: true,
+      receiverId: true,
+      content: true,
+      relatedId: true,
+      relatedType: true,
+      isRead: true,
+      createTime: true
+    })
     .orderBy('createTime', 'asc')
     .get()
 
@@ -144,7 +157,14 @@ async function getBuyerList(data, openid) {
   }
 
   // 获取所有与该商品相关的消息
-  const messages = await getAll(db.collection('chats').where({ relatedId }).orderBy('createTime', 'desc'))
+  const messages = await getAll(db.collection('chats')
+    .where({ relatedId })
+    .field({
+      senderId: true,
+      content: true,
+      createTime: true
+    })
+    .orderBy('createTime', 'desc'))
 
   // 提取所有买家（发送者不是卖家的人）
   const buyerMap = {}
@@ -160,34 +180,56 @@ async function getBuyerList(data, openid) {
 
   // 获取买家信息
   const buyerList = Object.values(buyerMap)
-  for (let buyer of buyerList) {
-    const userRes = await db.collection('users').where({ openid: buyer.openid }).get()
-    if (userRes.data.length > 0) {
-      buyer.nickName = userRes.data[0].name || userRes.data[0].nickName || '用户'
-      buyer.phoneMask = userRes.data[0].phone
-        ? `${userRes.data[0].phone.slice(0, 3)}****${userRes.data[0].phone.slice(-4)}`
+  const buyerOpenids = buyerList.map(buyer => buyer.openid)
+  const users = await getUsersByOpenids(buyerOpenids)
+  buyerList.forEach(buyer => {
+    const user = users[buyer.openid]
+    if (user) {
+      buyer.nickName = user.name || user.nickName || '用户'
+      buyer.phoneMask = user.phone
+        ? `${user.phone.slice(0, 3)}****${user.phone.slice(-4)}`
         : ''
     } else {
       buyer.nickName = '用户'
     }
-  }
+  })
 
   return { code: 0, data: buyerList }
 }
 
 async function ownsRelatedPost(relatedId, openid) {
   const collections = ['market', 'lostfound', 'help-carpool', 'help-express', 'help-partner', 'help-other']
-  for (const collection of collections) {
+  const results = await Promise.all(collections.map(async collection => {
     try {
-      const res = await db.collection(collection).doc(relatedId).get()
-      if (res.data) {
-        return res.data.openid === openid
-      }
+      const res = await db.collection(collection).doc(relatedId).field({ openid: true }).get()
+      return !!(res.data && res.data.openid === openid)
     } catch (error) {
-      // Not found in this collection; keep looking.
+      return false
     }
+  }))
+  return results.some(Boolean)
+}
+
+async function getUsersByOpenids(openids) {
+  if (openids.length === 0) return {}
+  const users = {}
+  const batchSize = 20
+  for (let i = 0; i < openids.length; i += batchSize) {
+    const batch = openids.slice(i, i + batchSize)
+    const res = await db.collection('users')
+      .where({ openid: _.in(batch) })
+      .field({
+        openid: true,
+        name: true,
+        nickName: true,
+        phone: true
+      })
+      .get()
+    res.data.forEach(user => {
+      users[user.openid] = user
+    })
   }
-  return false
+  return users
 }
 
 // 分批拉取全部数据，绕开单次 100 条上限

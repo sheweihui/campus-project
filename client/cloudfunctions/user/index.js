@@ -174,22 +174,26 @@ async function updateUser(openid, data) {
 }
 
 async function getUserStats(openid, data) {
-  const lostfoundCount = await safeCount(db.collection('lostfound').where({ openid }))
-  const marketCount = await safeCount(db.collection('market').where({ openid }))
-  const carpoolCount = await safeCount(db.collection('help-carpool').where({ openid }))
-  const expressCount = await safeCount(db.collection('help-express').where({ openid }))
-  const partnerCount = await safeCount(db.collection('help-partner').where({ openid }))
-  const otherCount = await safeCount(db.collection('help-other').where({ openid }))
-
-  let unreadMessages = 0
-  try {
-    unreadMessages = await safeCount(db.collection('messages').where({
+  const [
+    lostfoundCount,
+    marketCount,
+    carpoolCount,
+    expressCount,
+    partnerCount,
+    otherCount,
+    unreadMessages
+  ] = await Promise.all([
+    safeCount(db.collection('lostfound').where({ openid })),
+    safeCount(db.collection('market').where({ openid })),
+    safeCount(db.collection('help-carpool').where({ openid })),
+    safeCount(db.collection('help-express').where({ openid })),
+    safeCount(db.collection('help-partner').where({ openid })),
+    safeCount(db.collection('help-other').where({ openid })),
+    safeCount(db.collection('messages').where({
       toOpenid: openid,
       isRead: false
     }))
-  } catch (error) {
-    console.error('获取未读消息数失败:', error)
-  }
+  ])
 
   return {
     code: 0,
@@ -213,7 +217,20 @@ async function safeCount(query) {
 }
 
 async function getFinance(openid, data) {
-  const finance = await db.collection('finance').where({ openid }).get()
+  const finance = await db.collection('finance')
+    .where({ openid })
+    .field({
+      openid: true,
+      totalCommission: true,
+      availableAmount: true,
+      withdrawAmount: true,
+      withdrawRecords: true,
+      balance: true,
+      totalIncome: true,
+      totalWithdraw: true,
+      updateTime: true
+    })
+    .get()
 
   if (finance.data.length === 0) {
     return {
@@ -232,7 +249,10 @@ async function getFinance(openid, data) {
 
 async function getWithdrawRecords(openid, data) {
   const { status } = data || {}
-  const finance = await db.collection('finance').where({ openid }).get()
+  const finance = await db.collection('finance')
+    .where({ openid })
+    .field({ withdrawRecords: true })
+    .get()
 
   if (finance.data.length === 0) {
     return { code: 0, data: [] }
