@@ -6,6 +6,7 @@ const db = cloud.database()
 const _ = db.command
 const CACHE_COLLECTION = 'query_cache'
 const CACHE_TTL = 60 * 1000
+const memoryCache = {}
 
 exports.main = async (event, context) => {
   const { action, data } = event
@@ -44,9 +45,13 @@ function cacheKey(parts) {
 }
 
 async function getCache(key) {
+  const cached = getMemoryCache(key)
+  if (cached) return cached
+
   try {
     const res = await db.collection(CACHE_COLLECTION).doc(key).get()
     if (res.data && res.data.expireAt > Date.now()) {
+      setMemoryCache(key, res.data.value)
       return res.data.value
     }
   } catch (error) {
@@ -55,7 +60,24 @@ async function getCache(key) {
   return null
 }
 
+function getMemoryCache(key) {
+  const cache = memoryCache[key]
+  if (!cache || cache.expireAt <= Date.now()) {
+    delete memoryCache[key]
+    return null
+  }
+  return cache.value
+}
+
+function setMemoryCache(key, value) {
+  memoryCache[key] = {
+    value,
+    expireAt: Date.now() + CACHE_TTL
+  }
+}
+
 async function setCache(key, value, group = 'market') {
+  setMemoryCache(key, value)
   try {
     await db.collection(CACHE_COLLECTION).doc(key).set({
       data: {
@@ -71,6 +93,9 @@ async function setCache(key, value, group = 'market') {
 }
 
 async function clearCache(group = 'market') {
+  Object.keys(memoryCache).forEach(key => {
+    delete memoryCache[key]
+  })
   try {
     await db.collection(CACHE_COLLECTION).where({ group }).remove()
   } catch (error) {
@@ -170,7 +195,9 @@ async function listMarket({ category, page = 1, pageSize = 10, scene = '' }) {
     .get()
   
   const response = { code: 0, data: trimListImages(result.data) }
-  await setCache(key, response)
+  setCache(key, response).catch(error => {
+    console.error('异步写入市场列表缓存失败:', error)
+  })
   return response
 }
 
@@ -349,7 +376,9 @@ async function searchMarket({ keyword, page = 1, pageSize = 10 }) {
     .get()
   
   const response = { code: 0, data: trimListImages(result.data) }
-  await setCache(key, response)
+  setCache(key, response).catch(error => {
+    console.error('异步写入市场搜索缓存失败:', error)
+  })
   return response
 }
 
