@@ -73,7 +73,36 @@ async function cancelOrder(data, openid) {
   return { code: 0, msg: '订单已取消' }
 }
 
+function normalizePage(page, pageSize) {
+  return {
+    page: Math.max(1, Number(page) || 1),
+    pageSize: Math.min(50, Math.max(1, Number(pageSize) || 10))
+  }
+}
+
+function orderListFields() {
+  return {
+    _id: true,
+    type: true,
+    itemId: true,
+    buyerOpenid: true,
+    sellerOpenid: true,
+    buyerNickName: true,
+    sellerNickName: true,
+    amount: true,
+    commission: true,
+    sellerAmount: true,
+    paymentStatus: true,
+    orderStatus: true,
+    outTradeNo: true,
+    createTime: true,
+    payTime: true,
+    completeTime: true
+  }
+}
+
 async function listOrders(openid, { page = 1, pageSize = 10 }) {
+  const paging = normalizePage(page, pageSize)
   // 只返回调用者作为买家或卖家的订单，避免任何人拉取全量订单
   const result = await db.collection('orders')
     .where(_.and([
@@ -83,9 +112,10 @@ async function listOrders(openid, { page = 1, pageSize = 10 }) {
         { sellerOpenid: openid }
       ])
     ]))
+    .field(orderListFields())
     .orderBy('createTime', 'desc')
-    .skip((page - 1) * pageSize)
-    .limit(pageSize)
+    .skip((paging.page - 1) * paging.pageSize)
+    .limit(paging.pageSize)
     .get()
 
   return { code: 0, data: result.data }
@@ -104,14 +134,16 @@ async function getOrderDetail({ orderId }, openid) {
 }
 
 async function getMyOrders(openid, { page = 1, pageSize = 10 }) {
+  const paging = normalizePage(page, pageSize)
   const result = await db.collection('orders')
     .where(_.or([
       { buyerOpenid: openid },
       { sellerOpenid: openid }
     ]))
+    .field(orderListFields())
     .orderBy('createTime', 'desc')
-    .skip((page - 1) * pageSize)
-    .limit(pageSize)
+    .skip((paging.page - 1) * paging.pageSize)
+    .limit(paging.pageSize)
     .get()
   
   return { code: 0, data: result.data }

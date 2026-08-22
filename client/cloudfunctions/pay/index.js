@@ -34,7 +34,17 @@ async function validateItem(itemType, itemId, amount, openid) {
     return { ok: false, msg: '支付金额不合法' }
   }
 
-  const itemRes = await db.collection(collection).doc(itemId).get()
+  const itemRes = await db.collection(collection)
+    .doc(itemId)
+    .field({
+      openid: true,
+      status: true,
+      price: true,
+      reward: true,
+      payOrderNo: true,
+      payClaimTime: true
+    })
+    .get()
   if (!itemRes.data) {
     return { ok: false, msg: itemType === 'market' ? '商品不存在' : '需求不存在' }
   }
@@ -183,7 +193,10 @@ async function unifiedOrder(data, openid) {
 // 校验调用者是否已绑定手机号
 async function requirePhone(openid) {
   try {
-    const res = await db.collection('users').where({ openid }).get()
+    const res = await db.collection('users')
+      .where({ openid })
+      .field({ phone: true })
+      .get()
     return res.data.length > 0 && !!res.data[0].phone
   } catch (e) {
     return false
@@ -211,7 +224,14 @@ async function claimItem(itemType, itemId, outTradeNo, openid) {
     }
 
     // 占位失败：检查当前状态，决定是否允许重试/抢占
-    const itemRes = await db.collection(collection).doc(itemId).get()
+    const itemRes = await db.collection(collection)
+      .doc(itemId)
+      .field({
+        status: true,
+        payOrderNo: true,
+        payClaimTime: true
+      })
+      .get()
     const item = itemRes.data
     if (!item) {
       return { ok: false, msg: itemType === 'market' ? '商品不存在' : '需求不存在' }
@@ -226,6 +246,7 @@ async function claimItem(itemType, itemId, outTradeNo, openid) {
       // 该占用是否属于当前用户（重复下单）：释放旧占用
       const oldPayment = await db.collection('payments')
         .where({ outTradeNo: item.payOrderNo })
+        .field({ buyerOpenid: true })
         .get()
       if (oldPayment.data.length > 0 && oldPayment.data[0].buyerOpenid === openid) {
         await db.collection(collection)
@@ -326,6 +347,11 @@ async function cleanupStalePayments() {
         status: 'pending',
         createTime: _.lte(deadline)
       })
+      .field({
+        itemType: true,
+        itemId: true,
+        outTradeNo: true
+      })
       .limit(100)
       .get()
 
@@ -356,7 +382,14 @@ async function closeOrder(data) {
 
   try {
     // 查询支付记录，释放商品占用
-    const payRes = await db.collection('payments').where({ outTradeNo }).get()
+    const payRes = await db.collection('payments')
+      .where({ outTradeNo })
+      .field({
+        status: true,
+        itemType: true,
+        itemId: true
+      })
+      .get()
     if (payRes.data.length > 0) {
       const pay = payRes.data[0]
       if (pay.status === 'pending') {

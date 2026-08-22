@@ -51,7 +51,14 @@ async function doTransfer(data, openid) {
     return { code: -1, msg: '请填写银行卡号' }
   }
 
-  const financeRes = await db.collection('finance').where({ openid }).get()
+  const financeRes = await db.collection('finance')
+    .where({ openid })
+    .field({
+      availableAmount: true,
+      withdrawAmount: true,
+      withdrawRecords: true
+    })
+    .get()
   if (financeRes.data.length === 0) {
     return { code: -1, msg: '财务信息不存在' }
   }

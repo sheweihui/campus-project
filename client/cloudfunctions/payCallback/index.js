@@ -25,7 +25,17 @@ exports.main = async (event, context) => {
 
     console.log('支付成功:', { outTradeNo, totalFee })
 
-    const payment = await db.collection('payments').where({ outTradeNo }).get()
+    const payment = await db.collection('payments')
+      .where({ outTradeNo })
+      .field({
+        outTradeNo: true,
+        itemId: true,
+        itemType: true,
+        buyerOpenid: true,
+        amount: true,
+        status: true
+      })
+      .get()
     if (payment.data.length === 0) {
       console.error('支付记录不存在:', outTradeNo)
       return { errcode: 0 }
@@ -62,20 +72,36 @@ exports.main = async (event, context) => {
     const sellerAmount = parseFloat((amount - commission).toFixed(2))
 
     // 预取商品信息确认存在
-    const itemPre = await db.collection(collection).doc(itemId).get()
+    const itemPre = await db.collection(collection)
+      .doc(itemId)
+      .field({
+        openid: true,
+        status: true,
+        payOrderNo: true
+      })
+      .get()
     if (!itemPre.data) {
       console.error('商品不存在:', itemId)
       return { errcode: 0 }
     }
 
-    const buyerNickName = await getNickName(paymentRecord.buyerOpenid)
-    const sellerNickName = await getNickName(itemPre.data.openid || '')
+    const [buyerNickName, sellerNickName] = await Promise.all([
+      getNickName(paymentRecord.buyerOpenid),
+      getNickName(itemPre.data.openid || '')
+    ])
 
     // 二手商品：预查卖家财务记录，支付成功后货款立即入账卖家
     const sellerOpenid = itemPre.data.openid || ''
     let sellerFinance = null
     if (itemType === 'market') {
-      const financeRes = await db.collection('finance').where({ openid: sellerOpenid }).get()
+      const financeRes = await db.collection('finance')
+        .where({ openid: sellerOpenid })
+        .field({
+          openid: true,
+          totalCommission: true,
+          availableAmount: true
+        })
+        .get()
       sellerFinance = financeRes.data.length > 0 ? financeRes.data[0] : null
     }
 
@@ -218,7 +244,10 @@ function getCollectionByType(type) {
 async function getNickName(openid) {
   if (!openid) return ''
   try {
-    const userRes = await db.collection('users').where({ openid }).get()
+    const userRes = await db.collection('users')
+      .where({ openid })
+      .field({ name: true, nickName: true })
+      .get()
     if (userRes.data.length > 0) {
       const u = userRes.data[0]
       if (u.name) return u.name
