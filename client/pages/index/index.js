@@ -135,30 +135,52 @@ Page({
   },
 
   async loadLostfound() {
-    const { result } = await callCloudFunction({
+    let { result } = await callCloudFunction({
       name: 'lostfound',
       data: {
         action: 'homeList',
         data: { pageSize: 5 }
       }
     }, HOME_REQUEST_TIMEOUT)
+
+    if (!result || result.code !== 0) {
+      const fallback = await callCloudFunction({
+        name: 'lostfound',
+        data: {
+          action: 'list',
+          data: { page: 1, pageSize: 5, scene: 'home' }
+        }
+      }, HOME_REQUEST_TIMEOUT)
+      result = fallback.result
+    }
     
-    if (result.code === 0) {
+    if (result && result.code === 0) {
       return result.data || []
     }
     return this.data.lostfoundList
   },
 
   async loadMarket() {
-    const { result } = await callCloudFunction({
+    let { result } = await callCloudFunction({
       name: 'market',
       data: {
         action: 'homeList',
         data: { pageSize: 4 }
       }
     }, HOME_REQUEST_TIMEOUT)
+
+    if (!result || result.code !== 0) {
+      const fallback = await callCloudFunction({
+        name: 'market',
+        data: {
+          action: 'list',
+          data: { page: 1, pageSize: 4, scene: 'home' }
+        }
+      }, HOME_REQUEST_TIMEOUT)
+      result = fallback.result
+    }
     
-    if (result.code === 0) {
+    if (result && result.code === 0) {
       return result.data || []
     }
     return this.data.marketList
