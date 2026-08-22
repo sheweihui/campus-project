@@ -41,6 +41,13 @@ async function studentLogin(OPENID, data) {
       .where({
         stuId: stuId
       })
+      .field({
+        stuId: true,
+        name: true,
+        phone: true,
+        pwd: true,
+        openid: true
+      })
       .get()
 
     // 2. 学号不存在
@@ -175,6 +182,12 @@ async function getStudentInfo(OPENID, data) {
   try {
     const result = await db.collection('student')
       .where({ stuId })
+      .field({
+        stuId: true,
+        name: true,
+        phone: true,
+        openid: true
+      })
       .get()
 
     if (result.data.length === 0) {
@@ -187,7 +200,10 @@ async function getStudentInfo(OPENID, data) {
     let isSelf = false
     if (OPENID) {
       try {
-        const me = await db.collection('student').where({ openid: OPENID }).get()
+        const me = await db.collection('student')
+          .where({ openid: OPENID })
+          .field({ stuId: true })
+          .get()
         isSelf = me.data.length > 0 && me.data[0].stuId === stuId
       } catch (e) {
         isSelf = false

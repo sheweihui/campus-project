@@ -66,7 +66,19 @@ exports.main = async (event, context) => {
       }
 
       const list = await getAll(
-        db.collection(collection).where(where).orderBy('category', 'asc').orderBy('title', 'asc')
+        db.collection(collection)
+          .where(where)
+          .field({
+            _id: true,
+            title: true,
+            fileName: true,
+            category: true,
+            fileID: true,
+            url: true,
+            createTime: true
+          })
+          .orderBy('category', 'asc')
+          .orderBy('title', 'asc')
       )
       return { code: 0, data: list }
     }

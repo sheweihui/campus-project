@@ -19,6 +19,18 @@ exports.main = async () => {
   while (true) {
     const res = await db.collection('market')
       .where(where)
+      .field({
+        _id: true,
+        title: true,
+        price: true,
+        originalPrice: true,
+        condition: true,
+        status: true,
+        category: true,
+        description: true,
+        images: true,
+        createTime: true
+      })
       .orderBy('createTime', 'desc')
       .skip(skip)
       .limit(100)

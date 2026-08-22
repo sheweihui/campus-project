@@ -9,13 +9,19 @@ const https = require('https')
 
 const API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
 const MODEL = 'glm-4.6v-flash'
+const CONFIG_CACHE_TTL = 5 * 60 * 1000
+const configCache = {}
 
 // 读取 API Key：优先环境变量 ZHIPU_API_KEY，其次 config 集合 vision 文档 { apiKey: 'xxx' }
 async function getApiKey() {
   if (process.env.ZHIPU_API_KEY) return process.env.ZHIPU_API_KEY
+  const cached = getConfigCache('apiKey')
+  if (cached) return cached
   try {
     const doc = await db.collection('config').doc('vision').get()
-    return (doc.data && doc.data.apiKey) || ''
+    const apiKey = (doc.data && doc.data.apiKey) || ''
+    if (apiKey) setConfigCache('apiKey', apiKey)
+    return apiKey
   } catch (e) {
     return ''
   }
@@ -24,12 +30,31 @@ async function getApiKey() {
 // 校验调用者是否为管理员（与 admin 云函数同一套白名单）
 async function isAdmin(openid) {
   if (!openid) return false
+  const cached = getConfigCache('adminOpenids')
+  if (cached) return cached.includes(openid)
   try {
     const doc = await db.collection('config').doc('admin').get()
     const list = doc.data && doc.data.openidList
+    setConfigCache('adminOpenids', Array.isArray(list) ? list : [])
     return Array.isArray(list) && list.includes(openid)
   } catch (e) {
     return false
+  }
+}
+
+function getConfigCache(key) {
+  const cache = configCache[key]
+  if (!cache || cache.expireAt <= Date.now()) {
+    delete configCache[key]
+    return null
+  }
+  return cache.value
+}
+
+function setConfigCache(key, value) {
+  configCache[key] = {
+    value,
+    expireAt: Date.now() + CONFIG_CACHE_TTL
   }
 }
 

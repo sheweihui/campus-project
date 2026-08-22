@@ -1,6 +1,8 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
+const CONFIG_CACHE_TTL = 5 * 60 * 1000
+const configCache = {}
 
 function getEnvAdminOpenids() {
   return (process.env.ADMIN_OPENIDS || '')
@@ -13,10 +15,13 @@ async function isAdmin(openid) {
   if (!openid) return false
   const envOpenids = getEnvAdminOpenids()
   if (envOpenids.includes(openid)) return true
+  const cached = getConfigCache('adminOpenids')
+  if (cached) return cached.includes(openid)
 
   try {
     const adminDoc = await db.collection('config').doc('admin').get()
     const list = adminDoc.data && (adminDoc.data.openidList || adminDoc.data.openids)
+    setConfigCache('adminOpenids', Array.isArray(list) ? list : [])
     return Array.isArray(list) && list.includes(openid)
   } catch (e) {
     return false
@@ -24,13 +29,18 @@ async function isAdmin(openid) {
 }
 
 async function getHomeConfig() {
+  const cached = getConfigCache('homeConfig')
+  if (cached) return { code: 0, data: cached }
+
   try {
     const config = await db.collection('configs').doc('homeConfig').get()
+    setConfigCache('homeConfig', config.data)
     return { code: 0, data: config.data }
   } catch (error) {
     if (error.errCode === -502005) {
       try {
         const config2 = await db.collection('config').doc('homeConfig').get()
+        setConfigCache('homeConfig', config2.data)
         return { code: 0, data: config2.data }
       } catch (error2) {
         if (error2.errCode === -502005) {
@@ -57,10 +67,27 @@ async function updateHomeConfig(data, openid) {
         updateTime: db.serverDate()
       }
     })
+    delete configCache.homeConfig
     return { code: 0, msg: '更新成功' }
   } catch (error) {
     console.error('更新配置失败:', error)
     return { code: -1, msg: '更新失败: ' + error.message }
+  }
+}
+
+function getConfigCache(key) {
+  const cache = configCache[key]
+  if (!cache || cache.expireAt <= Date.now()) {
+    delete configCache[key]
+    return null
+  }
+  return cache.value
+}
+
+function setConfigCache(key, value) {
+  configCache[key] = {
+    value,
+    expireAt: Date.now() + CONFIG_CACHE_TTL
   }
 }
 

@@ -2,14 +2,17 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const db = cloud.database()
+let feedbackCollectionReady = false
 
 // 确保集合存在：不存在时自动创建（已存在会报错，忽略即可）
 async function ensureCollection(name) {
+  if (feedbackCollectionReady) return
   try {
     await db.createCollection(name)
   } catch (e) {
     // 集合已存在或其它错误：继续走 add，由 add 暴露真实问题
   }
+  feedbackCollectionReady = true
 }
 
 exports.main = async (event, context) => {

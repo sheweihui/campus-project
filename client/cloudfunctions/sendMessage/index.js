@@ -3,6 +3,8 @@ const cloud = require('wx-server-sdk')
 cloud.init()
 
 const db = cloud.database()
+const CONFIG_CACHE_TTL = 5 * 60 * 1000
+const configCache = {}
 
 const TEMPLATE_KEYS = ['ORDER_ACCEPT', 'ORDER_PAY', 'ORDER_COMPLETE', 'CHAT_MESSAGE']
 const TEMPLATE_ENV_KEYS = {
@@ -30,10 +32,13 @@ function getEnvTemplateIds() {
 
 async function getTemplateIds() {
   const envTemplateIds = getEnvTemplateIds()
+  const cached = getConfigCache('templateIds')
+  if (cached) return { ...envTemplateIds, ...cached }
 
   try {
     const { data } = await db.collection('config').doc('templateIds').get()
     const dbTemplateIds = normalizeTemplateIds(data && (data.templates || data))
+    setConfigCache('templateIds', dbTemplateIds)
     return { ...envTemplateIds, ...dbTemplateIds }
   } catch (error) {
     console.warn('Failed to load subscribe template ids from config/templateIds:', error)
@@ -50,11 +55,14 @@ function getEnvAdminOpenids() {
 
 async function getConfiguredAdminOpenids() {
   const envOpenids = getEnvAdminOpenids()
+  const cached = getConfigCache('adminOpenids')
+  if (cached) return [...new Set([...envOpenids, ...cached])]
 
   try {
     const { data } = await db.collection('config').doc(ADMIN_CONFIG_DOC_ID).get()
     const dbOpenids = data && (data.openidList || data.openids)
     const configuredOpenids = Array.isArray(dbOpenids) ? dbOpenids : []
+    setConfigCache('adminOpenids', configuredOpenids)
     return [...new Set([...envOpenids, ...configuredOpenids])]
   } catch (error) {
     console.warn('Failed to load admin config:', error)
@@ -85,7 +93,10 @@ async function sendSubscribeMessage(touser, templateId, page, data) {
 
 async function getOpenidByStuId(stuId) {
   try {
-    const result = await db.collection('student').where({ stuId }).get()
+    const result = await db.collection('student')
+      .where({ stuId })
+      .field({ openid: true })
+      .get()
     if (result.data.length > 0) {
       return result.data[0].openid
     }
@@ -93,6 +104,22 @@ async function getOpenidByStuId(stuId) {
   } catch (error) {
     console.error('Failed to get openid:', error)
     return null
+  }
+}
+
+function getConfigCache(key) {
+  const cache = configCache[key]
+  if (!cache || cache.expireAt <= Date.now()) {
+    delete configCache[key]
+    return null
+  }
+  return cache.value
+}
+
+function setConfigCache(key, value) {
+  configCache[key] = {
+    value,
+    expireAt: Date.now() + CONFIG_CACHE_TTL
   }
 }
 
