@@ -116,20 +116,28 @@ Page({
       const [lostfoundList, marketList, helpList] = await Promise.all([
         this.loadLostfound().catch(error => {
           console.error('首页失物招领加载失败:', error)
-          return this.data.lostfoundList
+          return null
         }),
         this.loadMarket().catch(error => {
           console.error('首页二手市场加载失败:', error)
-          return this.data.marketList
+          return null
         }),
         this.loadHelp().catch(error => {
           console.error('首页互助加载失败:', error)
-          return this.data.helpList
+          return null
         })
       ])
-      const nextData = { lostfoundList, marketList, helpList }
+      const nextData = {
+        lostfoundList: lostfoundList || [],
+        marketList: marketList || [],
+        helpList: helpList || []
+      }
       this.setData(nextData)
-      setCache(HOME_CACHE_KEY, nextData)
+      // 只有三个模块都加载成功才写入缓存，避免把「失败返回的空结果」缓存住，
+      // 否则缓存有效期内的 isCacheFresh 会跳过刷新，导致一直显示空数据
+      if (lostfoundList && marketList && helpList) {
+        setCache(HOME_CACHE_KEY, nextData)
+      }
     } catch (error) {
       console.error('加载数据失败:', error)
     } finally {
@@ -161,7 +169,7 @@ Page({
     if (result && result.code === 0) {
       return result.data || []
     }
-    return this.data.lostfoundList
+    return null
   },
 
   async loadMarket() {
@@ -187,11 +195,12 @@ Page({
     if (result && result.code === 0) {
       return result.data || []
     }
-    return this.data.marketList
+    return null
   },
 
   async loadHelp() {
     const helpList = await this.loadHelpByType()
+    if (!helpList) return null
     return helpList.map(item => {
       if (item.time) {
         const timeParts = item.time.split(' ')
@@ -216,7 +225,7 @@ Page({
       }
     }, HOME_REQUEST_TIMEOUT)
 
-    return result && result.code === 0 ? (result.data || []) : this.data.helpList
+    return result && result.code === 0 ? (result.data || []) : null
   },
 
   navigateTo(e) { 
