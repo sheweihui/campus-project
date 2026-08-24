@@ -16,6 +16,11 @@ Page({
     navigateTo('/pages/tools/docs?type=training')
   },
 
+  goToTransfer() {
+    // 转专业 = 转专业相关政策、细则与申请表格
+    navigateTo('/pages/tools/docs?type=transfer')
+  },
+
   goToBaoyan() {
     // 保研 = 免试攻读研究生相关官方通知
     navigateTo('/pages/tools/docs?type=baoyan')

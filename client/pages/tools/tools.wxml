@@ -9,6 +9,10 @@
       <view class="grid-icon training">📖</view>
       <text class="grid-text">培养方案</text>
     </view>
+    <view class="grid-item" bindtap="goToTransfer">
+      <view class="grid-icon transfer">🔄</view>
+      <text class="grid-text">转专业</text>
+    </view>
     <view class="grid-item" bindtap="goToBaoyan">
       <view class="grid-icon baoyan">🎓</view>
       <text class="grid-text">保研</text>
