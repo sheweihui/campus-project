@@ -45,6 +45,10 @@
     <view class="form-item">
       <text class="form-label">联系方式</text>
       <input class="form-input" placeholder="请输入手机号或邮箱" value="{{feedback.contact}}" bindinput="onFeedbackInput" data-field="contact" />
+      <view class="phone-suggest" wx:if="{{recommendPhone && feedback.contact !== recommendPhone}}" bindtap="fillPhone">
+        <text class="phone-suggest-icon">📞</text>
+        <text>推荐使用我的手机号：{{recommendPhone}}</text>
+      </view>
     </view>
 
     <!-- 提交按钮 -->

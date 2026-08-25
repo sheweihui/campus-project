@@ -222,6 +222,12 @@ const getOpenid = async () => {
   return result.openid
 }
 
+// 推荐手机号：一键登录绑定的微信手机号
+const getRecommendPhone = () => {
+  const userInfo = wx.getStorageSync('userInfo')
+  return (userInfo && userInfo.phone) || ''
+}
+
 const uploadImage = async (filePath) => {
   const cloudPath = `images/${Date.now()}-${Math.random().toString(36).substr(2)}.jpg`
   const { fileID } = await wx.cloud.uploadFile({
@@ -259,6 +265,7 @@ module.exports = {
   requireLogin,
   refreshUnreadBadge,
   getOpenid,
+  getRecommendPhone,
   uploadImage,
   uploadImages,
   getOrderTypeName,

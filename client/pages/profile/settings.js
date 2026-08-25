@@ -1,8 +1,9 @@
-const { showLoading, hideLoading, showToast, navigateTo } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateTo, getRecommendPhone } = require('../../utils/util.js')
 
 Page({
   data: {
     isAdmin: false,
+    recommendPhone: '',
     settings: {
       messageNotify: true,
       showPhone: false
@@ -17,6 +18,7 @@ Page({
   },
 
   onLoad() {
+    this.setData({ recommendPhone: getRecommendPhone() })
     this.loadSettings()
     this.checkAdmin()
   },
@@ -72,6 +74,14 @@ Page({
     const value = e.detail.value
     this.setData({
       [`feedback.${field}`]: value
+    })
+  },
+
+  // 一键填入推荐手机号
+  fillPhone() {
+    if (!this.data.recommendPhone) return
+    this.setData({
+      'feedback.contact': this.data.recommendPhone
     })
   },
 

@@ -58,6 +58,10 @@
     <view class="form-item">
       <text class="form-label">联系方式 <text class="required">*</text></text>
       <input class="form-input" placeholder="请输入手机号或微信号" value="{{form.contact}}" bindinput="onInput" data-field="contact" />
+      <view class="phone-suggest" wx:if="{{recommendPhone && form.contact !== recommendPhone}}" bindtap="fillPhone" data-field="contact">
+        <text class="phone-suggest-icon">📞</text>
+        <text>推荐使用我的手机号：{{recommendPhone}}</text>
+      </view>
     </view>
 
     <!-- 图片上传 -->

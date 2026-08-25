@@ -1,10 +1,11 @@
-const { showLoading, hideLoading, showToast, navigateBack, requireLogin } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateBack, requireLogin, getRecommendPhone } = require('../../utils/util.js')
 const TEMPLATES = require('../../config/templateIds.js')
 
 Page({
   data: {
     id: '',
     type: '',
+    recommendPhone: '',
     form: {},
     showDateTimePicker: false,
     pickerTab: 'date',
@@ -40,6 +41,7 @@ Page({
     this.setData({
       id: options.id || '',
       type,
+      recommendPhone: getRecommendPhone(),
       form: this.getEmptyForm(type)
     })
     
@@ -191,6 +193,15 @@ Page({
     const value = e.detail.value
     this.setData({
       [`form.${field}`]: value
+    })
+  },
+
+  // 一键填入推荐手机号
+  fillPhone(e) {
+    const field = e.currentTarget.dataset.field || 'contact'
+    if (!this.data.recommendPhone) return
+    this.setData({
+      [`form.${field}`]: this.data.recommendPhone
     })
   },
 

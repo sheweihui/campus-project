@@ -1,7 +1,8 @@
-const { showLoading, hideLoading, showToast, navigateBack, uploadImage } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateBack, uploadImage, getRecommendPhone } = require('../../utils/util.js')
 
 Page({
   data: {
+    recommendPhone: '',
     form: {
       nickName: '',
       phone: '',
@@ -12,6 +13,7 @@ Page({
   onLoad() {
     const userInfo = wx.getStorageSync('userInfo')
     this.setData({
+      recommendPhone: getRecommendPhone(),
       form: {
         nickName: userInfo.nickName || userInfo.name || '',
         phone: userInfo.phone || '',
@@ -25,6 +27,15 @@ Page({
     const value = e.detail.value
     this.setData({
       [`form.${field}`]: value
+    })
+  },
+
+  // 一键填入推荐手机号
+  fillPhone(e) {
+    const field = e.currentTarget.dataset.field || 'phone'
+    if (!this.data.recommendPhone) return
+    this.setData({
+      [`form.${field}`]: this.data.recommendPhone
     })
   },
 

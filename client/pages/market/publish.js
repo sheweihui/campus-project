@@ -1,8 +1,9 @@
-const { showLoading, hideLoading, showToast, navigateBack, uploadImage, requireLogin } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateBack, uploadImage, requireLogin, getRecommendPhone } = require('../../utils/util.js')
 
 Page({
   data: {
     id: '',
+    recommendPhone: '',
     form: {
       title: '',
       price: '',
@@ -44,6 +45,7 @@ Page({
   },
 
   onLoad(options) {
+    this.setData({ recommendPhone: getRecommendPhone() })
     if (options.id) {
       this.setData({ id: options.id })
       this.loadPostData(options.id)
@@ -92,6 +94,15 @@ Page({
     const value = e.detail.value
     this.setData({
       [`form.${field}`]: value
+    })
+  },
+
+  // 一键填入推荐手机号
+  fillPhone(e) {
+    const field = e.currentTarget.dataset.field || 'contact'
+    if (!this.data.recommendPhone) return
+    this.setData({
+      [`form.${field}`]: this.data.recommendPhone
     })
   },
 

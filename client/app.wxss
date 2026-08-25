@@ -90,6 +90,21 @@ page {
   background: #fff;
 }
 
+/* 推荐手机号快捷填充 */
+.phone-suggest {
+  display: flex;
+  align-items: center;
+  margin-top: 14rpx;
+  padding: 14rpx 22rpx;
+  font-size: 24rpx;
+  color: #1a1a1a;
+  background: #fff6e5;
+  border: 2rpx solid #1a1a1a;
+  border-radius: 12rpx;
+  box-shadow: 3rpx 3rpx 0 #ffe66d;
+}
+
+
 /* 列表样式 */
 .list-item {
   background: #fff;
