@@ -1,9 +1,9 @@
-const { showLoading, hideLoading, navigateTo, isGuest, requireLogin, refreshUnreadBadge } = require('../../utils/util.js')
+const { showLoading, hideLoading, navigateTo, isLoggedIn, requireLogin, refreshUnreadBadge } = require('../../utils/util.js')
 
 Page({
   data: {
     userInfo: {},
-    isGuest: false,
+    isLoggedIn: false,
     isAdmin: false,
     stats: {
       lostfound: 0,
@@ -41,7 +41,7 @@ Page({
   },
 
   async onShow() {
-    this.setData({ isGuest: isGuest() })
+    this.setData({ isLoggedIn: isLoggedIn() })
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 })
     }
@@ -133,7 +133,7 @@ Page({
   async loadUserInfo() {
     const userInfo = wx.getStorageSync('userInfo')
     this.setData({
-      userInfo: userInfo || { name: '游客' }
+      userInfo: userInfo || { name: '未登录' }
     })
   },
 
@@ -236,8 +236,6 @@ Page({
   },
 
   goLogin() {
-    // 退出游客模式，前往学号登录
-    wx.removeStorageSync('isGuest')
     navigateTo('/pages/login/login')
   },
 

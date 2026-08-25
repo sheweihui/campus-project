@@ -13,16 +13,15 @@ Page({
 
   checkAutoLogin() {
     const userInfo = wx.getStorageSync('userInfo')
-    const isGuest = wx.getStorageSync('isGuest')
 
-    // 已登录（微信/手机号）或游客都直接进入
-    if (userInfo || isGuest) {
+    // 已登录（绑定手机号）则直接回首页，未登录停在登录页
+    if (userInfo && userInfo.phone) {
       wx.switchTab({ url: '/pages/index/index' })
     }
   },
 
   // 微信手机号一键登录
-  onGetPhoneNumber(e) {
+  getPhoneNumber(e) {
     if (this.data.loading) return
 
     const errMsg = e.detail && e.detail.errMsg
@@ -53,9 +52,8 @@ Page({
         if (result.code === 0) {
           const { openid, phone } = result.data
           wx.setStorageSync('openid', openid)
-          wx.removeStorageSync('isGuest')
 
-          // 手机号登录成功即视为登录完成，直接进入首页（姓名/学号稍后在"我的"中完善）
+          // 手机号登录成功即视为登录完成（姓名/学号稍后在"我的"中完善）
           const userInfo = {
             phone: phone || '',
             nickName: '微信用户',
@@ -66,7 +64,15 @@ Page({
           wx.setStorageSync('userInfo', userInfo)
           this.setData({ loading: false })
           wx.showToast({ title: '登录成功', icon: 'success' })
-          setTimeout(() => wx.switchTab({ url: '/pages/index/index' }), 800)
+          setTimeout(() => {
+            // 返回触发登录的页面继续原操作；无上一页则回首页
+            const pages = getCurrentPages()
+            if (pages.length > 1) {
+              wx.navigateBack()
+            } else {
+              wx.switchTab({ url: '/pages/index/index' })
+            }
+          }, 800)
         } else {
           wx.showToast({ title: result.msg || '登录失败', icon: 'none' })
           this.setData({ loading: false })
@@ -79,30 +85,4 @@ Page({
     })
   },
 
-  // 游客登录
-  guestLogin() {
-    if (this.data.loading) return
-    this.setData({ loading: true })
-
-    // 游客同样尝试获取 openid（用于浏览与支付身份），失败也不阻塞浏览
-    wx.cloud.callFunction({
-      name: 'user',
-      data: { action: 'login', data: {} },
-      success: (res) => {
-        if (res.result && res.result.code === 0 && res.result.data && res.result.data.openid) {
-          wx.setStorageSync('openid', res.result.data.openid)
-        }
-      },
-      fail: (err) => {
-        console.error('游客获取openid失败:', err)
-      },
-      complete: () => {
-        wx.setStorageSync('isGuest', true)
-        wx.setStorageSync('userInfo', { name: '游客', isGuest: true })
-        this.setData({ loading: false })
-        wx.showToast({ title: '游客登录成功', icon: 'success' })
-        setTimeout(() => wx.switchTab({ url: '/pages/index/index' }), 800)
-      }
-    })
-  }
 })

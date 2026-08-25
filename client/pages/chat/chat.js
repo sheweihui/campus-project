@@ -1,4 +1,4 @@
-const { showToast, isGuest } = require('../../utils/util.js')
+const { showToast } = require('../../utils/util.js')
 
 Page({
   data: {
@@ -17,7 +17,7 @@ Page({
     const { otherOpenid, relatedId, relatedType } = options
     const myOpenid = wx.getStorageSync('openid')
     
-    if (isGuest() || !myOpenid) {
+    if (!myOpenid) {
       showToast('请先登录后再聊天')
       setTimeout(() => {
         wx.navigateBack()

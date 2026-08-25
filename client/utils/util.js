@@ -191,20 +191,22 @@ const refreshUnreadBadge = (count) => {
   }
 }
 
-// 是否为游客模式
-const isGuest = () => !!wx.getStorageSync('isGuest')
+// 是否已登录（微信手机号登录并绑定手机号）
+const isLoggedIn = () => {
+  const userInfo = wx.getStorageSync('userInfo')
+  return !!(userInfo && !userInfo.isGuest && userInfo.phone)
+}
 
-// 需要微信登录的功能入口：游客弹窗引导去登录，返回 false 表示已拦截
+// 需要登录的功能入口：未登录弹窗引导去登录，返回 false 表示已拦截
 const requireLogin = () => {
-  if (!isGuest()) return true
+  if (isLoggedIn()) return true
   wx.showModal({
-    title: '需要微信登录',
-    content: '该功能需要微信登录并绑定手机号后才能使用，是否前往登录？',
+    title: '需要登录',
+    content: '该功能需要登录后才能使用，是否前往登录？',
     confirmText: '去登录',
     cancelText: '暂不',
     success: (res) => {
       if (res.confirm) {
-        wx.removeStorageSync('isGuest')
         wx.navigateTo({ url: '/pages/login/login' })
       }
     }
@@ -253,7 +255,7 @@ module.exports = {
   redirectTo,
   switchTab,
   navigateBack,
-  isGuest,
+  isLoggedIn,
   requireLogin,
   refreshUnreadBadge,
   getOpenid,

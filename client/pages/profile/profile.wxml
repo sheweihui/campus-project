@@ -1,7 +1,7 @@
 <view class="container">
-  <!-- 游客模式提示 -->
-  <view class="guest-banner" wx:if="{{isGuest}}">
-    <text class="guest-banner-text">游客模式，仅可浏览</text>
+  <!-- 未登录提示 -->
+  <view class="guest-banner" wx:if="{{!isLoggedIn}}">
+    <text class="guest-banner-text">未登录，仅可浏览</text>
     <view class="guest-login-btn" bindtap="goLogin">去登录</view>
   </view>
 
@@ -15,7 +15,7 @@
     <view class="user-info">
       <view class="user-name">{{userInfo.name || userInfo.nickName || '未设置姓名'}}</view>
       <view class="user-phone" wx:if="{{userInfo.phone}}">手机：{{userInfo.phone}}</view>
-      <view class="user-id" wx:if="{{userInfo.isGuest}}">游客模式</view>
+      <view class="user-id" wx:if="{{!isLoggedIn}}">未登录</view>
     </view>
     <view class="edit-btn" bindtap="goToSettings">设置</view>
   </view>

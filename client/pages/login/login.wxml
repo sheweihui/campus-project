@@ -20,27 +20,11 @@
       <button
         class="weui-btn weui-btn_primary"
         open-type="getPhoneNumber"
-        bindgetphonenumber="onGetPhoneNumber"
+        bindgetphonenumber="getPhoneNumber"
         loading="{{loading}}"
         disabled="{{loading}}"
-      >📱 微信一键登录</button>
+      >一键登录</button>
       <text class="wx-tips">使用微信手机号快捷登录，登录后可发布、交易、聊天</text>
     </view>
-
-    <!-- 分割线 -->
-    <view class="divider">
-      <view class="divider-line"></view>
-      <text class="divider-text">或</text>
-      <view class="divider-line"></view>
-    </view>
-
-    <!-- 游客登录 -->
-    <button
-      class="weui-btn weui-btn_default"
-      type="default"
-      bindtap="guestLogin"
-      loading="{{loading}}"
-      disabled="{{loading}}"
-    >游客登录（仅浏览）</button>
   </view>
 </view>
