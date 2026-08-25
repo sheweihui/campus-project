@@ -162,12 +162,58 @@ function trimListImages(data) {
   }))
 }
 
+function isCloudFileID(url) {
+  return typeof url === 'string' && url.startsWith('cloud://')
+}
+
+async function resolveImageUrls(items) {
+  const list = Array.isArray(items) ? items : [items]
+  const fileIDs = [...new Set(list
+    .flatMap(item => Array.isArray(item.images) ? item.images : [])
+    .filter(isCloudFileID))]
+
+  if (fileIDs.length === 0) {
+    return items
+  }
+
+  try {
+    const res = await cloud.getTempFileURL({ fileList: fileIDs })
+    const urlMap = {}
+    ;(res.fileList || []).forEach(file => {
+      if (file.fileID && file.tempFileURL) {
+        urlMap[file.fileID] = file.tempFileURL
+      }
+    })
+
+    const convert = item => ({
+      ...item,
+      images: Array.isArray(item.images)
+        ? item.images.map(image => urlMap[image] || image)
+        : []
+    })
+    return Array.isArray(items) ? list.map(convert) : convert(items)
+  } catch (error) {
+    console.error('转换商品图片临时链接失败:', error)
+    return items
+  }
+}
+
+async function resolveMarketResponseImages(response) {
+  if (!response || !Array.isArray(response.data)) {
+    return response
+  }
+  return {
+    ...response,
+    data: await resolveImageUrls(response.data)
+  }
+}
+
 async function listMarket({ category, page = 1, pageSize = 10, scene = '' }) {
   page = Math.max(1, Number(page) || 1)
   pageSize = Math.min(20, Math.max(1, Number(pageSize) || 10))
   const key = cacheKey(['market', 'list', category || 'all', page, pageSize, scene || 'default'])
   const cached = await getCache(key)
-  if (cached) return cached
+  if (cached) return await resolveMarketResponseImages(cached)
 
   const where = { status: 'onSale' }
   if (category && category !== 'all') {
@@ -196,7 +242,7 @@ async function listMarket({ category, page = 1, pageSize = 10, scene = '' }) {
     .limit(pageSize)
     .get()
   
-  const response = { code: 0, data: trimListImages(result.data) }
+  const response = { code: 0, data: await resolveImageUrls(trimListImages(result.data)) }
   setCache(key, response).catch(error => {
     console.error('异步写入市场列表缓存失败:', error)
   })
@@ -217,7 +263,7 @@ async function getDetail({ id }) {
     }
   })
   
-  return { code: 0, data: result.data }
+  return { code: 0, data: await resolveImageUrls(result.data) }
 }
 
 async function updateMarket(data, openid) {
@@ -320,7 +366,7 @@ async function getMyList(openid, { status, page = 1, pageSize = 10 }) {
     .limit(pageSize)
     .get()
   
-  return { code: 0, data: trimListImages(result.data) }
+  return { code: 0, data: await resolveImageUrls(trimListImages(result.data)) }
 }
 
 async function updateStatus({ id, status }, openid) {
@@ -352,7 +398,7 @@ async function searchMarket({ keyword, page = 1, pageSize = 10 }) {
   if (!keyword) return { code: 0, data: [] }
   const key = cacheKey(['market', 'search', keyword, page, pageSize])
   const cached = await getCache(key)
-  if (cached) return cached
+  if (cached) return await resolveMarketResponseImages(cached)
 
   const result = await db.collection('market')
     .where({
@@ -377,7 +423,7 @@ async function searchMarket({ keyword, page = 1, pageSize = 10 }) {
     .limit(pageSize)
     .get()
   
-  const response = { code: 0, data: trimListImages(result.data) }
+  const response = { code: 0, data: await resolveImageUrls(trimListImages(result.data)) }
   setCache(key, response).catch(error => {
     console.error('异步写入市场搜索缓存失败:', error)
   })
