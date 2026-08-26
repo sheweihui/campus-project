@@ -536,6 +536,7 @@ async function getOrders(data) {
           _id: true,
           outTradeNo: true,
           itemType: true,
+          type: true,
           itemId: true,
           buyerOpenid: true,
           amount: true,
@@ -551,7 +552,7 @@ async function getOrders(data) {
       .filter(payment => payment.outTradeNo && !orderTradeNos.has(payment.outTradeNo))
       .map(payment => ({
         _id: `pay_${payment._id}`,
-        type: normalizeOrderType(payment.itemType),
+        type: normalizeOrderType(payment.itemType || payment.type),
         itemId: payment.itemId || '',
         buyerOpenid: payment.buyerOpenid || '',
         sellerOpenid: '',
