@@ -51,6 +51,18 @@ function normalizeOrderType(type) {
   return ['carpool', 'express', 'partner', 'other'].includes(type) ? 'help' : (type || 'other')
 }
 
+function normalizePaymentOrderStatus(status) {
+  if (status === 'cancelled' || status === 'failed') return 'cancelled'
+  if (status === 'paid' || status === 'confirmed' || status === 'success' || status === 'prepaid') return 'completed'
+  return 'pending'
+}
+
+function normalizePaymentStatus(status) {
+  if (status === 'success' || status === 'prepaid') return 'paid'
+  if (status === 'confirmed') return 'confirmed'
+  return status || 'pending'
+}
+
 exports.main = async (event, context) => {
   const { action, data } = event
   const { OPENID } = cloud.getWXContext()
@@ -483,42 +495,95 @@ async function getOrders(data) {
   }
 
   try {
-    const [ordersRes, countRes] = await Promise.all([
-      db.collection('orders')
-        .where(where)
+    const orders = await getAll(db.collection('orders')
+      .where(where)
+      .field({
+        _id: true,
+        type: true,
+        itemId: true,
+        buyerOpenid: true,
+        sellerOpenid: true,
+        buyerNickName: true,
+        sellerNickName: true,
+        amount: true,
+        commission: true,
+        sellerAmount: true,
+        paymentStatus: true,
+        orderStatus: true,
+        outTradeNo: true,
+        createTime: true,
+        payTime: true,
+        completeTime: true
+      })
+      .orderBy('createTime', 'desc'))
+
+    let paymentWhere = {}
+    if (type && type !== 'all') {
+      paymentWhere.itemType = type === 'help' ? _.in(['carpool', 'express', 'partner', 'other']) : type
+    }
+    if (paymentStatus && paymentStatus !== 'all') {
+      paymentWhere.status = paymentStatus === 'paid' ? _.in(['paid', 'success', 'prepaid']) : paymentStatus
+    }
+    if (where.createTime) {
+      paymentWhere.createTime = where.createTime
+    }
+
+    let payments = []
+    if (!keyword) {
+      payments = await getAll(db.collection('payments')
+        .where(paymentWhere)
         .field({
           _id: true,
-          type: true,
+          outTradeNo: true,
+          itemType: true,
           itemId: true,
           buyerOpenid: true,
-          sellerOpenid: true,
-          buyerNickName: true,
-          sellerNickName: true,
           amount: true,
-          commission: true,
-          sellerAmount: true,
-          paymentStatus: true,
-          orderStatus: true,
-          outTradeNo: true,
+          status: true,
           createTime: true,
-          payTime: true,
-          completeTime: true
+          payTime: true
         })
-        .orderBy('createTime', 'desc')
-        .skip((page - 1) * pageSize)
-        .limit(pageSize)
-        .get(),
-      db.collection('orders').where(where).count()
-    ])
+        .orderBy('createTime', 'desc'))
+    }
+
+    const orderTradeNos = new Set(orders.map(order => order.outTradeNo).filter(Boolean))
+    const paymentOrders = payments
+      .filter(payment => payment.outTradeNo && !orderTradeNos.has(payment.outTradeNo))
+      .map(payment => ({
+        _id: `pay_${payment._id}`,
+        type: normalizeOrderType(payment.itemType),
+        itemId: payment.itemId || '',
+        buyerOpenid: payment.buyerOpenid || '',
+        sellerOpenid: '',
+        buyerNickName: '',
+        sellerNickName: '',
+        amount: payment.amount || 0,
+        commission: 0,
+        sellerAmount: 0,
+        paymentStatus: normalizePaymentStatus(payment.status),
+        orderStatus: normalizePaymentOrderStatus(payment.status),
+        outTradeNo: payment.outTradeNo,
+        createTime: payment.createTime,
+        payTime: payment.payTime || null,
+        completeTime: null,
+        remark: '支付记录未生成订单'
+      }))
+      .filter(order => !orderStatus || orderStatus === 'all' || order.orderStatus === orderStatus)
+
+    const merged = [...orders, ...paymentOrders]
+      .sort((a, b) => new Date(b.createTime || 0) - new Date(a.createTime || 0))
+
+    const total = merged.length
+    const list = merged.slice((page - 1) * pageSize, page * pageSize)
 
     return {
       code: 0,
       data: {
-        list: ordersRes.data,
-        total: countRes.total,
+        list,
+        total,
         page,
         pageSize,
-        totalPages: Math.ceil(countRes.total / pageSize)
+        totalPages: Math.ceil(total / pageSize)
       }
     }
   } catch (e) {
