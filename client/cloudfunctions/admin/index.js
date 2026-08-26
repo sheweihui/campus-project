@@ -515,7 +515,10 @@ async function getOrders(data) {
         payTime: true,
         completeTime: true
       })
-      .orderBy('createTime', 'desc'))
+      .orderBy('createTime', 'desc')).catch(error => {
+        console.error('getOrders orders query failed:', error)
+        return []
+      })
 
     let paymentWhere = {}
     if (type && type !== 'all') {
@@ -544,12 +547,15 @@ async function getOrders(data) {
           createTime: true,
           payTime: true
         })
-        .orderBy('createTime', 'desc'))
+        .orderBy('createTime', 'desc')).catch(error => {
+          console.error('getOrders payments query failed:', error)
+          return []
+        })
     }
 
     const orderTradeNos = new Set(orders.map(order => order.outTradeNo).filter(Boolean))
     const paymentOrders = payments
-      .filter(payment => payment.outTradeNo && !orderTradeNos.has(payment.outTradeNo))
+      .filter(payment => !payment.outTradeNo || !orderTradeNos.has(payment.outTradeNo))
       .map(payment => ({
         _id: `pay_${payment._id}`,
         type: normalizeOrderType(payment.itemType || payment.type),
