@@ -52,7 +52,11 @@ Page({
     remarkText: ''
   },
 
-  onLoad() {
+  onLoad(options = {}) {
+    const type = options.type
+    if (type && this.data.statusOptions[type]) {
+      this.setData({ currentType: type })
+    }
     this.loadList()
   },
 

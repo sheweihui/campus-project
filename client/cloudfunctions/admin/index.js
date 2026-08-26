@@ -142,7 +142,8 @@ async function getDashboard(data) {
     pendingWithdraws,
     pendingWithdrawAmount,
     payments,
-    todayStats
+    todayStats,
+    postStats
   ] = await Promise.all([
     getOrderStats(dateFilter),
     getFinanceStats(),
@@ -151,7 +152,8 @@ async function getDashboard(data) {
     getPendingWithdrawCount(),
     getPendingWithdrawAmount(),
     getPaymentStats(dateFilter),
-    getTodayStats()
+    getTodayStats(),
+    getPostStats()
   ])
 
   return {
@@ -172,6 +174,7 @@ async function getDashboard(data) {
 
       // 分类统计
       categoryBreakdown: orderStats.categoryBreakdown || {},
+      postStats: postStats || {},
 
       // 支付统计
       paymentStats: payments || {},
@@ -249,6 +252,39 @@ async function getOrderStats(dateFilter) {
   } catch (e) {
     console.error('getOrderStats error:', e)
     return { total: 0, completed: 0, cancelled: 0, pending: 0, paid: 0, confirmed: 0, totalAmount: 0, categoryBreakdown: {} }
+  }
+}
+
+async function getPostStats() {
+  try {
+    const [
+      marketCount,
+      lostfoundCount,
+      carpoolCount,
+      expressCount,
+      partnerCount,
+      otherCount
+    ] = await Promise.all([
+      db.collection('market').count().then(res => res.total).catch(() => 0),
+      db.collection('lostfound').count().then(res => res.total).catch(() => 0),
+      db.collection('help-carpool').count().then(res => res.total).catch(() => 0),
+      db.collection('help-express').count().then(res => res.total).catch(() => 0),
+      db.collection('help-partner').count().then(res => res.total).catch(() => 0),
+      db.collection('help-other').count().then(res => res.total).catch(() => 0)
+    ])
+
+    return {
+      market: { count: marketCount },
+      lostfound: { count: lostfoundCount },
+      help: { count: carpoolCount + expressCount + partnerCount + otherCount }
+    }
+  } catch (e) {
+    console.error('getPostStats error:', e)
+    return {
+      market: { count: 0 },
+      lostfound: { count: 0 },
+      help: { count: 0 }
+    }
   }
 }
 

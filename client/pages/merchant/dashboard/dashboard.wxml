@@ -49,14 +49,14 @@
     <view class="category-list">
       <view class="category-item"
         wx:for="{{categories}}" wx:key="key"
-        bindtap="goToOrders" data-type="{{item.key}}"
+        bindtap="goToPosts" data-type="{{item.key}}"
       >
         <view class="cat-icon">{{item.icon}}</view>
         <view class="cat-info">
           <view class="cat-name">{{item.name}}</view>
-          <view class="cat-count">{{item.count}} 笔订单</view>
+          <view class="cat-count">{{item.postCount}} 条发布</view>
         </view>
-        <view class="cat-amount">{{util.formatAmount(item.amount)}}</view>
+        <view class="cat-amount">查看发布</view>
       </view>
     </view>
   </view>

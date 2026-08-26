@@ -60,6 +60,7 @@ Page({
       if (dashRes.result && dashRes.result.code === 0) {
         const d = dashRes.result.data
         const cats = d.categoryBreakdown || {}
+        const posts = d.postStats || {}
 
         this.setData({
           kpis: {
@@ -76,9 +77,9 @@ Page({
             todayCommission: d.todayCommission || 0
           },
           categories: [
-            { key: 'market', name: '二手市场', icon: '🛒', count: cats.market?.count || 0, amount: cats.market?.amount || 0 },
-            { key: 'lostfound', name: '失物招领', icon: '🔍', count: cats.lostfound?.count || 0, amount: cats.lostfound?.amount || 0 },
-            { key: 'help', name: '校园互助', icon: '🤝', count: cats.help?.count || 0, amount: cats.help?.amount || 0 }
+            { key: 'market', name: '二手市场', icon: '🛒', postCount: posts.market?.count || 0, amount: cats.market?.amount || 0 },
+            { key: 'lostfound', name: '失物招领', icon: '🔍', postCount: posts.lostfound?.count || 0, amount: cats.lostfound?.amount || 0 },
+            { key: 'help', name: '校园互助', icon: '🤝', postCount: posts.help?.count || 0, amount: cats.help?.amount || 0 }
           ],
           loading: false
         })
@@ -117,8 +118,9 @@ Page({
   },
 
   // 跳转到发布管理
-  goToPosts() {
-    wx.navigateTo({ url: '/pages/merchant/posts/posts' })
+  goToPosts(e) {
+    const type = e && e.currentTarget ? e.currentTarget.dataset.type : ''
+    wx.navigateTo({ url: '/pages/merchant/posts/posts' + (type ? '?type=' + type : '') })
   },
 
   // 跳转到群发消息
