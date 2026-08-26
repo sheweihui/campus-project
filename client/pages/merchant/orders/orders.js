@@ -185,7 +185,13 @@ Page({
 
   goToDetail(e) {
     const id = e.currentTarget.dataset.id
-    if (id && !String(id).startsWith('pay_')) {
+    const item = this.data.orders.find(order => order._id === id)
+    if (!item) return
+    if (String(id).startsWith('market_') && item.itemId) {
+      wx.navigateTo({ url: '/pages/market/detail?id=' + item.itemId })
+      return
+    }
+    if (!String(id).startsWith('pay_')) {
       wx.navigateTo({ url: '/pages/merchant/order-detail/order-detail?id=' + id })
     }
   },

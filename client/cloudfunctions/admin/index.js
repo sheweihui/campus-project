@@ -63,6 +63,18 @@ function normalizePaymentStatus(status) {
   return status || 'pending'
 }
 
+function marketToPaymentStatus(status) {
+  if (status === 'sold') return 'paid'
+  if (status === 'off') return 'cancelled'
+  return 'pending'
+}
+
+function marketToOrderStatus(status) {
+  if (status === 'sold') return 'completed'
+  if (status === 'off') return 'cancelled'
+  return 'pending'
+}
+
 exports.main = async (event, context) => {
   const { action, data } = event
   const { OPENID } = cloud.getWXContext()
@@ -577,7 +589,73 @@ async function getOrders(data) {
       }))
       .filter(order => !orderStatus || orderStatus === 'all' || order.orderStatus === orderStatus)
 
-    const merged = [...orders, ...paymentOrders]
+    const existingMarketItemIds = new Set([
+      ...orders,
+      ...paymentOrders
+    ]
+      .filter(order => normalizeOrderType(order.type) === 'market')
+      .map(order => order.itemId)
+      .filter(Boolean))
+
+    let marketOrders = []
+    if (!type || type === 'all' || type === 'market') {
+      const marketWhere = {}
+      if (where.createTime) {
+        marketWhere.createTime = where.createTime
+      }
+      if (keyword) {
+        const reg = db.RegExp({ regexp: keyword, options: 'i' })
+        marketWhere.$or = [
+          { title: reg },
+          { contact: reg }
+        ]
+      }
+
+      const marketItems = await getAll(db.collection('market')
+        .where(marketWhere)
+        .field({
+          _id: true,
+          title: true,
+          price: true,
+          openid: true,
+          contact: true,
+          status: true,
+          payOrderNo: true,
+          createTime: true,
+          payTime: true,
+          updateTime: true
+        })
+        .orderBy('createTime', 'desc')).catch(error => {
+          console.error('getOrders market query failed:', error)
+          return []
+        })
+
+      marketOrders = marketItems
+        .filter(item => !existingMarketItemIds.has(item._id))
+        .map(item => ({
+          _id: `market_${item._id}`,
+          type: 'market',
+          itemId: item._id,
+          buyerOpenid: '',
+          sellerOpenid: item.openid || '',
+          buyerNickName: '',
+          sellerNickName: item.contact || '',
+          amount: item.price || 0,
+          commission: 0,
+          sellerAmount: item.price || 0,
+          paymentStatus: marketToPaymentStatus(item.status),
+          orderStatus: marketToOrderStatus(item.status),
+          outTradeNo: item.payOrderNo || '',
+          createTime: item.createTime,
+          payTime: item.payTime || null,
+          completeTime: item.status === 'sold' ? (item.updateTime || item.payTime || null) : null,
+          remark: item.title || '二手商品'
+        }))
+        .filter(order => !paymentStatus || paymentStatus === 'all' || order.paymentStatus === paymentStatus)
+        .filter(order => !orderStatus || orderStatus === 'all' || order.orderStatus === orderStatus)
+    }
+
+    const merged = [...orders, ...paymentOrders, ...marketOrders]
       .sort((a, b) => new Date(b.createTime || 0) - new Date(a.createTime || 0))
 
     const total = merged.length
