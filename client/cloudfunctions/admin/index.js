@@ -8,7 +8,8 @@ const BUILTIN_ADMIN_OPENIDS = [
   '698a4c596a6b6efe017045e41894fbb8'
 ]
 const BUILTIN_ADMIN_PHONES = [
-  '13276057867'
+  '13276057867',
+  '15940995665'
 ]
 
 function getEnvAdminOpenids() {
