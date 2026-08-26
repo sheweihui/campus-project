@@ -7,6 +7,9 @@ const _ = db.command
 const BUILTIN_ADMIN_OPENIDS = [
   '698a4c596a6b6efe017045e41894fbb8'
 ]
+const BUILTIN_ADMIN_PHONES = [
+  '13276057867'
+]
 
 function getEnvAdminOpenids() {
   return (process.env.ADMIN_OPENIDS || '')
@@ -20,6 +23,17 @@ async function isAdmin(openid) {
   if (BUILTIN_ADMIN_OPENIDS.includes(openid)) return true
   const envOpenids = getEnvAdminOpenids()
   if (envOpenids.includes(openid)) return true
+
+  try {
+    const userRes = await db.collection('users')
+      .where({ openid })
+      .field({ phone: true })
+      .get()
+    const phone = userRes.data && userRes.data[0] && userRes.data[0].phone
+    if (BUILTIN_ADMIN_PHONES.includes(String(phone || ''))) return true
+  } catch (e) {
+    console.error('查询管理员手机号失败:', e)
+  }
 
   try {
     const adminDoc = await db.collection('config').doc('admin').get()
