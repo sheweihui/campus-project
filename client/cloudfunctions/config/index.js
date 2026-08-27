@@ -49,9 +49,6 @@ async function isAdmin(openid) {
 }
 
 async function getHomeConfig() {
-  const cached = getConfigCache('homeConfig')
-  if (cached) return { code: 0, data: cached }
-
   const configs = await Promise.all([
     getHomeConfigFromCollection('config'),
     getHomeConfigFromCollection('configs')
@@ -62,7 +59,6 @@ async function getHomeConfig() {
     return announcement.content && announcement.show !== false
   })
   const config = configWithAnnouncement || validConfigs[0] || { bannerList: [], announcement: { show: false, title: '', content: '' } }
-  setConfigCache('homeConfig', config)
   return { code: 0, data: config }
 }
 

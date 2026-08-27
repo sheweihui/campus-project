@@ -12,8 +12,8 @@
 
     <view class="form-item">
       <text class="form-label">公告内容 <text class="required">*</text></text>
-      <textarea class="form-textarea" placeholder="请输入要展示在首页的公告内容" value="{{content}}" bindinput="onContentInput" maxlength="200" />
-      <text class="form-tip">{{content.length}}/200</text>
+      <textarea class="form-textarea" placeholder="请输入要展示在首页的公告内容" value="{{content}}" bindinput="onContentInput" maxlength="1000" />
+      <text class="form-tip">{{content.length}}/1000</text>
     </view>
   </view>
 
