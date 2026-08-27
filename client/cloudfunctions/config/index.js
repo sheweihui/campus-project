@@ -1,7 +1,6 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const _ = db.command
 const CONFIG_CACHE_TTL = 5 * 60 * 1000
 const configCache = {}
 const ANNOUNCEMENT_USER = {
@@ -81,7 +80,7 @@ async function updateHomeConfig(data, openid) {
 
     await db.collection('users').doc(announcementUser._id).update({
       data: {
-        message: _.set(announcement),
+        message: stringifyAnnouncementMessage(announcement),
         updateTime: db.serverDate()
       }
     })
@@ -104,10 +103,7 @@ async function updateHomeConfig(data, openid) {
 
 async function getAnnouncementUser() {
   const userRes = await db.collection('users')
-    .where({
-      name: ANNOUNCEMENT_USER.name,
-      phone: _.in([ANNOUNCEMENT_USER.phone, Number(ANNOUNCEMENT_USER.phone)])
-    })
+    .where({ name: ANNOUNCEMENT_USER.name })
     .field({
       _id: true,
       name: true,
@@ -123,6 +119,13 @@ async function getAnnouncementUser() {
 function normalizeAnnouncementMessage(message) {
   if (typeof message === 'string') {
     const content = message.trim()
+    if (content.charAt(0) === '{') {
+      try {
+        return normalizeAnnouncementMessage(JSON.parse(content))
+      } catch (error) {
+        console.error('解析公告消息失败:', error)
+      }
+    }
     return {
       show: !!content,
       title: '平台公告',
@@ -138,6 +141,15 @@ function normalizeAnnouncementMessage(message) {
   }
 }
 
+function stringifyAnnouncementMessage(message) {
+  const announcement = normalizeAnnouncementMessage(message)
+  return JSON.stringify({
+    show: announcement.show,
+    title: announcement.title,
+    content: announcement.content
+  })
+}
+
 async function initConfig() {
   try {
     const announcementUser = await getAnnouncementUser()
@@ -148,7 +160,7 @@ async function initConfig() {
     if (!announcementUser.message) {
       await db.collection('users').doc(announcementUser._id).update({
         data: {
-          message: _.set({ show: false, title: '', content: '' }),
+          message: stringifyAnnouncementMessage({ show: false, title: '', content: '' }),
           updateTime: db.serverDate()
         }
       })
