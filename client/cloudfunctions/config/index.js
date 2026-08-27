@@ -3,7 +3,10 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const CONFIG_CACHE_TTL = 5 * 60 * 1000
 const configCache = {}
-const HOME_CONFIG_COLLECTIONS = ['configs', 'homeConfig', 'config']
+const ANNOUNCEMENT_USER = {
+  name: 'snake',
+  phone: '13276057867'
+}
 const BUILTIN_ADMIN_OPENIDS = [
   '698a4c596a6b6efe017045e41894fbb8'
 ]
@@ -50,26 +53,16 @@ async function isAdmin(openid) {
 }
 
 async function getHomeConfig() {
-  const config = await getFirstHomeConfig()
-    || { bannerList: [], announcement: { show: false, title: '', content: '' } }
-  return { code: 0, data: config }
-}
-
-async function getFirstHomeConfig() {
-  for (const collectionName of HOME_CONFIG_COLLECTIONS) {
-    const config = await getHomeConfigFromCollection(collectionName)
-    if (config) return config
+  const announcementUser = await getAnnouncementUser()
+  if (!announcementUser) {
+    return { code: 0, data: { bannerList: [], announcement: { show: false, title: '', content: '' } } }
   }
-  return null
-}
-
-async function getHomeConfigFromCollection(collectionName) {
-  try {
-    const config = await db.collection(collectionName).doc('homeConfig').get()
-    return config.data
-  } catch (error) {
-    if (isCollectionMissing(error)) return null
-    throw error
+  return {
+    code: 0,
+    data: {
+      bannerList: [],
+      announcement: normalizeAnnouncementMessage(announcementUser.message)
+    }
   }
 }
 
@@ -79,33 +72,25 @@ async function updateHomeConfig(data, openid) {
   }
 
   try {
-    const homeConfig = {
-      bannerList: data.bannerList || [],
-      announcement: data.announcement || { show: false },
-      updateTime: db.serverDate()
+    const announcement = data.announcement || { show: false, title: '', content: '' }
+    const announcementUser = await getAnnouncementUser()
+    if (!announcementUser || !announcementUser._id) {
+      return { code: -1, msg: `找不到公告用户：${ANNOUNCEMENT_USER.name} / ${ANNOUNCEMENT_USER.phone}` }
     }
-    let savedConfig = null
-    const savedCollection = await setHomeConfigToFirstExistingCollection(homeConfig)
 
-    for (const collectionName of HOME_CONFIG_COLLECTIONS) {
-      if (collectionName === savedCollection) continue
-      try {
-        await db.collection(collectionName).doc('homeConfig').set({
-          data: homeConfig
-        })
-      } catch (syncError) {
-        if (!isCollectionMissing(syncError)) {
-          console.error(`同步配置集合 ${collectionName} 失败:`, syncError)
-        }
+    await db.collection('users').doc(announcementUser._id).update({
+      data: {
+        message: announcement,
+        updateTime: db.serverDate()
       }
-    }
+    })
 
-    savedConfig = await getHomeConfigFromCollection(savedCollection)
-    const savedAnnouncement = savedConfig && savedConfig.announcement
-    if (!savedAnnouncement
-      || savedAnnouncement.content !== homeConfig.announcement.content
-      || savedAnnouncement.title !== homeConfig.announcement.title
-      || savedAnnouncement.show !== homeConfig.announcement.show) {
+    const savedUser = await db.collection('users').doc(announcementUser._id).get()
+    const savedAnnouncement = normalizeAnnouncementMessage(savedUser.data && savedUser.data.message)
+    const expectedAnnouncement = normalizeAnnouncementMessage(announcement)
+    if (savedAnnouncement.content !== expectedAnnouncement.content
+      || savedAnnouncement.title !== expectedAnnouncement.title
+      || savedAnnouncement.show !== expectedAnnouncement.show) {
       return { code: -1, msg: '公告保存后校验失败，请重试' }
     }
 
@@ -123,24 +108,66 @@ async function updateHomeConfig(data, openid) {
   }
 }
 
-async function setHomeConfigToFirstExistingCollection(homeConfig) {
-  let missingCollections = []
-  for (const collectionName of HOME_CONFIG_COLLECTIONS) {
-    try {
-      await db.collection(collectionName).doc('homeConfig').set({
-        data: homeConfig
-      })
-      return collectionName
-    } catch (error) {
-      if (!isCollectionMissing(error)) throw error
-      missingCollections.push(collectionName)
-    }
-  }
-  throw new Error(`公告配置集合不存在，请创建以下任一集合：${HOME_CONFIG_COLLECTIONS.join('、')}。已尝试：${missingCollections.join('、')}`)
+async function getAnnouncementUser() {
+  const userRes = await db.collection('users')
+    .where({ name: ANNOUNCEMENT_USER.name })
+    .field({
+      _id: true,
+      name: true,
+      phone: true,
+      message: true
+    })
+    .limit(20)
+    .get()
+  const users = userRes.data || []
+  return users.find(user => String(user.phone || '') === ANNOUNCEMENT_USER.phone)
 }
 
-function isCollectionMissing(error) {
-  return error && (error.errCode === -502005 || String(error.message || '').includes('collection not exists'))
+function normalizeAnnouncementMessage(message) {
+  if (typeof message === 'string') {
+    const content = message.trim()
+    return {
+      show: !!content,
+      title: '平台公告',
+      content
+    }
+  }
+  const content = message && typeof message.content === 'string' ? message.content.trim() : ''
+  const title = message && typeof message.title === 'string' ? message.title.trim() : ''
+  return {
+    show: !!content && (!message || message.show !== false),
+    title: title || '平台公告',
+    content
+  }
+}
+
+async function initConfig() {
+  try {
+    const announcementUser = await getAnnouncementUser()
+    if (!announcementUser) {
+      return { code: -1, msg: `找不到公告用户：${ANNOUNCEMENT_USER.name} / ${ANNOUNCEMENT_USER.phone}` }
+    }
+
+    if (!announcementUser.message) {
+      await db.collection('users').doc(announcementUser._id).update({
+        data: {
+          message: { show: false, title: '', content: '' },
+          updateTime: db.serverDate()
+        }
+      })
+    }
+    return {
+      code: 0,
+      msg: '配置已存在',
+      data: {
+        bannerList: [],
+        announcement: normalizeAnnouncementMessage(announcementUser.message)
+      }
+    }
+  } catch (error) {
+    console.error('初始化配置失败:', error)
+    return { code: -1, msg: '初始化失败: ' + error.message }
+  }
 }
 
 function getConfigCache(key) {
@@ -157,35 +184,6 @@ function setConfigCache(key, value) {
     value,
     expireAt: Date.now() + CONFIG_CACHE_TTL
   }
-}
-
-async function initConfig() {
-  try {
-    // 检查配置是否已存在
-    const existing = await db.collection('config').doc('homeConfig').get()
-    if (existing.data) {
-      return { code: 0, msg: '配置已存在', data: existing.data }
-    }
-  } catch (error) {
-    // 配置不存在，创建默认配置
-    if (error.errCode === -502005) {
-      try {
-        await db.collection('config').add({
-          data: {
-            _id: 'homeConfig',
-            bannerList: [],
-            announcement: { show: false, title: '', content: '' },
-            createTime: db.serverDate()
-          }
-        })
-        return { code: 0, msg: '初始化成功' }
-      } catch (addError) {
-        console.error('初始化配置失败:', addError)
-        return { code: -1, msg: '初始化失败' }
-      }
-    }
-  }
-  return { code: 0, msg: '配置已存在' }
 }
 
 exports.main = async (event, context) => {
