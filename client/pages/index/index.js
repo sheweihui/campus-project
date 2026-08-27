@@ -1,6 +1,6 @@
 const { showLoading, hideLoading, navigateTo, switchTab, refreshUnreadBadge, getCache, isCacheFresh, setCache, callCloudFunction } = require('../../utils/util.js')
 
-const HOME_CACHE_KEY = 'cache:home:index'
+const HOME_CACHE_KEY = 'cache:home:index:v2'
 const HOME_CACHE_TTL = 10 * 60 * 1000
 const HOME_REQUEST_TIMEOUT = 5000
 

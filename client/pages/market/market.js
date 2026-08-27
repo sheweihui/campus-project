@@ -1,6 +1,7 @@
 const { showLoading, hideLoading, navigateTo, requireLogin, getCache, setCache, callCloudFunction } = require('../../utils/util.js')
 
-const MARKET_CACHE_TTL = 5 * 60 * 1000
+const MARKET_CACHE_VERSION = 'v2'
+const MARKET_CACHE_TTL = 60 * 1000
 const MARKET_REQUEST_TIMEOUT = 8000
 
 Page({
@@ -108,9 +109,9 @@ Page({
     const page = this.data.page
     if (page !== 1) return ''
     if (type === 'search') {
-      return `cache:market:search:${this.data.keyword.trim()}`
+      return `cache:market:${MARKET_CACHE_VERSION}:search:${this.data.keyword.trim()}`
     }
-    return `cache:market:list:${this.data.currentCategory}`
+    return `cache:market:${MARKET_CACHE_VERSION}:list:${this.data.currentCategory}`
   },
 
   restoreListCache(type) {

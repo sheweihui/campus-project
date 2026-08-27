@@ -242,11 +242,11 @@ async function listMarket({ category, page = 1, pageSize = 10, scene = '' }) {
     .limit(pageSize)
     .get()
   
-  const response = { code: 0, data: await resolveImageUrls(trimListImages(result.data)) }
+  const response = { code: 0, data: trimListImages(result.data) }
   setCache(key, response).catch(error => {
     console.error('异步写入市场列表缓存失败:', error)
   })
-  return response
+  return await resolveMarketResponseImages(response)
 }
 
 async function getHomeList({ pageSize = 4 } = {}) {
@@ -423,11 +423,11 @@ async function searchMarket({ keyword, page = 1, pageSize = 10 }) {
     .limit(pageSize)
     .get()
   
-  const response = { code: 0, data: await resolveImageUrls(trimListImages(result.data)) }
+  const response = { code: 0, data: trimListImages(result.data) }
   setCache(key, response).catch(error => {
     console.error('异步写入市场搜索缓存失败:', error)
   })
-  return response
+  return await resolveMarketResponseImages(response)
 }
 
 // 校验调用者是否已绑定学号
