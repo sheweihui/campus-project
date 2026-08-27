@@ -3,6 +3,7 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const CONFIG_CACHE_TTL = 5 * 60 * 1000
 const configCache = {}
+const HOME_CONFIG_COLLECTIONS = ['configs', 'homeConfig', 'config']
 const BUILTIN_ADMIN_OPENIDS = [
   '698a4c596a6b6efe017045e41894fbb8'
 ]
@@ -49,10 +50,17 @@ async function isAdmin(openid) {
 }
 
 async function getHomeConfig() {
-  const config = await getHomeConfigFromCollection('configs')
-    || await getHomeConfigFromCollection('config')
+  const config = await getFirstHomeConfig()
     || { bannerList: [], announcement: { show: false, title: '', content: '' } }
   return { code: 0, data: config }
+}
+
+async function getFirstHomeConfig() {
+  for (const collectionName of HOME_CONFIG_COLLECTIONS) {
+    const config = await getHomeConfigFromCollection(collectionName)
+    if (config) return config
+  }
+  return null
 }
 
 async function getHomeConfigFromCollection(collectionName) {
@@ -77,30 +85,22 @@ async function updateHomeConfig(data, openid) {
       updateTime: db.serverDate()
     }
     let savedConfig = null
+    const savedCollection = await setHomeConfigToFirstExistingCollection(homeConfig)
 
-    try {
-      await db.collection('configs').doc('homeConfig').set({
-        data: homeConfig
-      })
-      savedConfig = await getHomeConfigFromCollection('configs')
-    } catch (primaryError) {
-      if (!isCollectionMissing(primaryError)) throw primaryError
-      await db.collection('config').doc('homeConfig').set({
-        data: homeConfig
-      })
-      savedConfig = await getHomeConfigFromCollection('config')
-    }
-
-    try {
-      await db.collection('config').doc('homeConfig').set({
-        data: homeConfig
-      })
-    } catch (syncError) {
-      if (!isCollectionMissing(syncError)) {
-        console.error('同步兼容配置集合失败:', syncError)
+    for (const collectionName of HOME_CONFIG_COLLECTIONS) {
+      if (collectionName === savedCollection) continue
+      try {
+        await db.collection(collectionName).doc('homeConfig').set({
+          data: homeConfig
+        })
+      } catch (syncError) {
+        if (!isCollectionMissing(syncError)) {
+          console.error(`同步配置集合 ${collectionName} 失败:`, syncError)
+        }
       }
     }
 
+    savedConfig = await getHomeConfigFromCollection(savedCollection)
     const savedAnnouncement = savedConfig && savedConfig.announcement
     if (!savedAnnouncement
       || savedAnnouncement.content !== homeConfig.announcement.content
@@ -121,6 +121,22 @@ async function updateHomeConfig(data, openid) {
     console.error('更新配置失败:', error)
     return { code: -1, msg: '更新失败: ' + error.message }
   }
+}
+
+async function setHomeConfigToFirstExistingCollection(homeConfig) {
+  let missingCollections = []
+  for (const collectionName of HOME_CONFIG_COLLECTIONS) {
+    try {
+      await db.collection(collectionName).doc('homeConfig').set({
+        data: homeConfig
+      })
+      return collectionName
+    } catch (error) {
+      if (!isCollectionMissing(error)) throw error
+      missingCollections.push(collectionName)
+    }
+  }
+  throw new Error(`公告配置集合不存在，请创建以下任一集合：${HOME_CONFIG_COLLECTIONS.join('、')}。已尝试：${missingCollections.join('、')}`)
 }
 
 function isCollectionMissing(error) {
