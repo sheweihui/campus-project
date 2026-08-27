@@ -49,8 +49,8 @@ async function isAdmin(openid) {
 }
 
 async function getHomeConfig() {
-  const config = await getHomeConfigFromCollection('config')
-    || await getHomeConfigFromCollection('configs')
+  const config = await getHomeConfigFromCollection('configs')
+    || await getHomeConfigFromCollection('config')
     || { bannerList: [], announcement: { show: false, title: '', content: '' } }
   return { code: 0, data: config }
 }
@@ -60,7 +60,7 @@ async function getHomeConfigFromCollection(collectionName) {
     const config = await db.collection(collectionName).doc('homeConfig').get()
     return config.data
   } catch (error) {
-    if (error.errCode === -502005) return null
+    if (isCollectionMissing(error)) return null
     throw error
   }
 }
@@ -76,19 +76,31 @@ async function updateHomeConfig(data, openid) {
       announcement: data.announcement || { show: false },
       updateTime: db.serverDate()
     }
-    await db.collection('config').doc('homeConfig').set({
-      data: homeConfig
-    })
+    let savedConfig = null
 
     try {
       await db.collection('configs').doc('homeConfig').set({
         data: homeConfig
       })
-    } catch (syncError) {
-      console.error('同步历史配置集合失败:', syncError)
+      savedConfig = await getHomeConfigFromCollection('configs')
+    } catch (primaryError) {
+      if (!isCollectionMissing(primaryError)) throw primaryError
+      await db.collection('config').doc('homeConfig').set({
+        data: homeConfig
+      })
+      savedConfig = await getHomeConfigFromCollection('config')
     }
 
-    const savedConfig = await getHomeConfigFromCollection('config')
+    try {
+      await db.collection('config').doc('homeConfig').set({
+        data: homeConfig
+      })
+    } catch (syncError) {
+      if (!isCollectionMissing(syncError)) {
+        console.error('同步兼容配置集合失败:', syncError)
+      }
+    }
+
     const savedAnnouncement = savedConfig && savedConfig.announcement
     if (!savedAnnouncement
       || savedAnnouncement.content !== homeConfig.announcement.content
@@ -109,6 +121,10 @@ async function updateHomeConfig(data, openid) {
     console.error('更新配置失败:', error)
     return { code: -1, msg: '更新失败: ' + error.message }
   }
+}
+
+function isCollectionMissing(error) {
+  return error && (error.errCode === -502005 || String(error.message || '').includes('collection not exists'))
 }
 
 function getConfigCache(key) {
