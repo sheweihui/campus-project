@@ -52,24 +52,27 @@ async function getHomeConfig() {
   const cached = getConfigCache('homeConfig')
   if (cached) return { code: 0, data: cached }
 
+  const configs = await Promise.all([
+    getHomeConfigFromCollection('config'),
+    getHomeConfigFromCollection('configs')
+  ])
+  const validConfigs = configs.filter(Boolean)
+  const configWithAnnouncement = validConfigs.find(config => {
+    const announcement = config.announcement || {}
+    return announcement.content && announcement.show !== false
+  })
+  const config = configWithAnnouncement || validConfigs[0] || { bannerList: [], announcement: { show: false, title: '', content: '' } }
+  setConfigCache('homeConfig', config)
+  return { code: 0, data: config }
+}
+
+async function getHomeConfigFromCollection(collectionName) {
   try {
-    const config = await db.collection('config').doc('homeConfig').get()
-    setConfigCache('homeConfig', config.data)
-    return { code: 0, data: config.data }
+    const config = await db.collection(collectionName).doc('homeConfig').get()
+    return config.data
   } catch (error) {
-    if (error.errCode === -502005) {
-      try {
-        const config2 = await db.collection('configs').doc('homeConfig').get()
-        setConfigCache('homeConfig', config2.data)
-        return { code: 0, data: config2.data }
-      } catch (error2) {
-        if (error2.errCode === -502005) {
-          return { code: 0, data: { bannerList: [], announcement: { show: false } } }
-        }
-        return { code: -1, msg: error2.message }
-      }
-    }
-    return { code: -1, msg: error.message }
+    if (error.errCode === -502005) return null
+    throw error
   }
 }
 

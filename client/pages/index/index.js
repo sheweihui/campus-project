@@ -131,6 +131,10 @@ Page({
         this.loadHelp().catch(error => {
           console.error('首页互助加载失败:', error)
           return null
+        }),
+        this.loadAnnouncement().catch(error => {
+          console.error('首页公告加载失败:', error)
+          return null
         })
       ])
       const nextData = {
@@ -188,9 +192,19 @@ Page({
     }, HOME_REQUEST_TIMEOUT)
 
     if (result && result.code === 0) {
-      return (result.data && result.data.announcement) || { show: false, title: '', content: '' }
+      return this.normalizeAnnouncement(result.data && result.data.announcement)
     }
     return { show: false, title: '', content: '' }
+  },
+
+  normalizeAnnouncement(announcement) {
+    const content = announcement && typeof announcement.content === 'string' ? announcement.content.trim() : ''
+    const title = announcement && typeof announcement.title === 'string' ? announcement.title.trim() : ''
+    return {
+      show: !!content && (!announcement || announcement.show !== false),
+      title: title || '平台公告',
+      content
+    }
   },
 
   async refreshAnnouncement() {
