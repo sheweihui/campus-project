@@ -3,6 +3,13 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const CONFIG_CACHE_TTL = 5 * 60 * 1000
 const configCache = {}
+const BUILTIN_ADMIN_OPENIDS = [
+  '698a4c596a6b6efe017045e41894fbb8'
+]
+const BUILTIN_ADMIN_PHONES = [
+  '13276057867',
+  '15940995665'
+]
 
 function getEnvAdminOpenids() {
   return (process.env.ADMIN_OPENIDS || '')
@@ -13,8 +20,21 @@ function getEnvAdminOpenids() {
 
 async function isAdmin(openid) {
   if (!openid) return false
+  if (BUILTIN_ADMIN_OPENIDS.includes(openid)) return true
   const envOpenids = getEnvAdminOpenids()
   if (envOpenids.includes(openid)) return true
+
+  try {
+    const userRes = await db.collection('users')
+      .where({ openid })
+      .field({ phone: true })
+      .get()
+    const phone = userRes.data && userRes.data[0] && userRes.data[0].phone
+    if (BUILTIN_ADMIN_PHONES.includes(String(phone || ''))) return true
+  } catch (e) {
+    console.error('查询管理员手机号失败:', e)
+  }
+
   const cached = getConfigCache('adminOpenids')
   if (cached) return cached.includes(openid)
 

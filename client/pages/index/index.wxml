@@ -34,7 +34,15 @@
   </view>
 
   <!-- 常用功能 -->
-  <view class="section-title">常用功能</view>
+    <view class="announcement" wx:if="{{announcement && announcement.show && announcement.content}}">
+    <view class="announcement-icon">📢</view>
+    <view class="announcement-content">
+      <text class="announcement-title">{{announcement.title || '平台公告'}}</text>
+      <text class="announcement-text">{{announcement.content}}</text>
+    </view>
+  </view>
+
+<view class="section-title">常用功能</view>
   <view class="func-grid">
     <view class="func-card" bindtap="navigateTo" data-page="lostfound" hover-class="func-card-active">
       <view class="func-icon lf">📋</view>

@@ -128,6 +128,10 @@ Page({
     wx.navigateTo({ url: '/pages/merchant/broadcast/broadcast' })
   },
 
+  goToAnnouncement() {
+    wx.navigateTo({ url: '/pages/merchant/announcement/announcement' })
+  },
+
   // 跳转到订单页
   goToOrders(e) {
     const type = e.currentTarget.dataset.type || ''

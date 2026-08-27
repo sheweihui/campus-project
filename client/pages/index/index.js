@@ -9,6 +9,7 @@ Page({
     lostfoundList: [],
     marketList: [],
     helpList: [],
+    announcement: { show: false, title: '', content: '' },
     activeTab: 'market',
     isNight: true,
     conditionMap: {
@@ -100,7 +101,8 @@ Page({
     this.setData({
       lostfoundList: cache.lostfoundList || [],
       marketList: cache.marketList || [],
-      helpList: cache.helpList || []
+      helpList: cache.helpList || [],
+      announcement: cache.announcement || { show: false, title: '', content: '' }
     })
     return true
   },
@@ -113,7 +115,7 @@ Page({
     this._loadingData = true
     if (!silent) showLoading()
     try {
-      const [lostfoundList, marketList, helpList] = await Promise.all([
+      const [lostfoundList, marketList, helpList, announcement] = await Promise.all([
         this.loadLostfound().catch(error => {
           console.error('首页失物招领加载失败:', error)
           return null
@@ -130,12 +132,13 @@ Page({
       const nextData = {
         lostfoundList: lostfoundList || [],
         marketList: marketList || [],
-        helpList: helpList || []
+        helpList: helpList || [],
+        announcement: announcement || { show: false, title: '', content: '' }
       }
       this.setData(nextData)
       // 只有三个模块都加载成功才写入缓存，避免把「失败返回的空结果」缓存住，
       // 否则缓存有效期内的 isCacheFresh 会跳过刷新，导致一直显示空数据
-      if (lostfoundList && marketList && helpList) {
+      if (lostfoundList && marketList && helpList && announcement) {
         setCache(HOME_CACHE_KEY, nextData)
       }
     } catch (error) {
@@ -170,6 +173,20 @@ Page({
       return result.data || []
     }
     return null
+  },
+
+  async loadAnnouncement() {
+    const { result } = await callCloudFunction({
+      name: 'config',
+      data: {
+        action: 'getHomeConfig'
+      }
+    }, HOME_REQUEST_TIMEOUT)
+
+    if (result && result.code === 0) {
+      return (result.data && result.data.announcement) || { show: false, title: '', content: '' }
+    }
+    return { show: false, title: '', content: '' }
   },
 
   async loadMarket() {

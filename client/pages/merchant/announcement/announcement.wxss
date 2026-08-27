@@ -1,0 +1,104 @@
+.page-announcement {
+  padding: 24rpx;
+}
+
+.form-row,
+.form-item {
+  margin-bottom: 28rpx;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-label {
+  display: block;
+  font-size: 28rpx;
+  color: #1a1a1a;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+
+.required {
+  color: #e64340;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  border: 2rpx solid #1a1a1a;
+  border-radius: 12rpx;
+  padding: 18rpx 20rpx;
+  font-size: 28rpx;
+}
+
+.form-textarea {
+  height: 260rpx;
+}
+
+.form-tip {
+  display: block;
+  text-align: right;
+  font-size: 22rpx;
+  color: #9ca3af;
+  margin-top: 8rpx;
+}
+
+.preview-card {
+  margin-top: 24rpx;
+  margin-bottom: 32rpx;
+}
+
+.preview-title {
+  font-size: 26rpx;
+  color: #6b7280;
+  margin-bottom: 12rpx;
+}
+
+.announcement-preview {
+  display: flex;
+  align-items: flex-start;
+  background: #fdf6ec;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  border-left: 6rpx solid #ff9900;
+}
+
+.announcement-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+
+.announcement-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.announcement-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.announcement-content {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.submit-btn {
+  width: 100%;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 700;
+  border-radius: 14rpx;
+  padding: 22rpx 0;
+  border: 2rpx solid #1a1a1a;
+}

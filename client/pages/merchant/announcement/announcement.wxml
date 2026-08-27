@@ -1,0 +1,32 @@
+<view class="page-announcement">
+  <view class="card">
+    <view class="form-row switch-row">
+      <text class="form-label">首页显示公告</text>
+      <switch checked="{{show}}" bindchange="onShowChange" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">公告标题</text>
+      <input class="form-input" placeholder="默认：平台公告" value="{{title}}" bindinput="onTitleInput" maxlength="30" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">公告内容 <text class="required">*</text></text>
+      <textarea class="form-textarea" placeholder="请输入要展示在首页的公告内容" value="{{content}}" bindinput="onContentInput" maxlength="200" />
+      <text class="form-tip">{{content.length}}/200</text>
+    </view>
+  </view>
+
+  <view class="preview-card" wx:if="{{show && content}}">
+    <view class="preview-title">首页预览</view>
+    <view class="announcement-preview">
+      <text class="announcement-icon">📢</text>
+      <view class="announcement-body">
+        <text class="announcement-title">{{title || '平台公告'}}</text>
+        <text class="announcement-content">{{content}}</text>
+      </view>
+    </view>
+  </view>
+
+  <button class="btn-primary submit-btn" bindtap="submit">发布公告</button>
+</view>
