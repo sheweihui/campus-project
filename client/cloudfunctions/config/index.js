@@ -72,7 +72,6 @@ async function updateHomeConfig(data, openid) {
 
   try {
     const homeConfig = {
-      _id: 'homeConfig',
       bannerList: data.bannerList || [],
       announcement: data.announcement || { show: false },
       updateTime: db.serverDate()
