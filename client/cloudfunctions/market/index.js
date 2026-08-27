@@ -185,12 +185,14 @@ async function resolveImageUrls(items) {
       }
     })
 
-    const convert = item => ({
-      ...item,
-      images: Array.isArray(item.images)
-        ? item.images.map(image => urlMap[image] || image)
-        : []
-    })
+    const convert = item => {
+      const images = Array.isArray(item.images) ? item.images : []
+      return {
+        ...item,
+        images,
+        imageUrls: images.map(image => urlMap[image] || image)
+      }
+    }
     return Array.isArray(items) ? list.map(convert) : convert(items)
   } catch (error) {
     console.error('转换商品图片临时链接失败:', error)

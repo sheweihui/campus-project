@@ -89,7 +89,8 @@
       <view class="mission-list" wx:if="{{activeTab === 'market' && marketList.length > 0}}">
         <view class="mission-item" wx:for="{{marketList}}" wx:key="_id" bindtap="goToDetail" data-type="market" data-id="{{item._id}}" hover-class="mission-item-active">
           <view class="mission-thumb">
-            <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" mode="aspectFill" />
+            <image wx:if="{{item.imageUrls && item.imageUrls.length > 0}}" src="{{item.imageUrls[0]}}" mode="aspectFill" />
+            <image wx:elif="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" mode="aspectFill" />
             <text wx:else>🛒</text>
           </view>
           <view class="mission-body">

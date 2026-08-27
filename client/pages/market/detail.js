@@ -75,7 +75,7 @@ Page({
   previewImage(e) {
     const url = e.currentTarget.dataset.url
     wx.previewImage({
-      urls: this.data.detail.images,
+      urls: this.data.detail.imageUrls || this.data.detail.images,
       current: url
     })
   },

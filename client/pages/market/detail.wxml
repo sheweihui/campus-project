@@ -1,8 +1,8 @@
 <view class="container">
   <view class="card" wx:if="{{detail}}">
     <!-- 图片轮播 -->
-    <swiper class="image-swiper" indicator-dots autoplay circular wx:if="{{detail.images && detail.images.length > 0}}">
-      <swiper-item wx:for="{{detail.images}}" wx:key="index">
+    <swiper class="image-swiper" indicator-dots autoplay circular wx:if="{{detail.imageUrls && detail.imageUrls.length > 0}}">
+      <swiper-item wx:for="{{detail.imageUrls}}" wx:key="index">
         <image src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}" />
       </swiper-item>
     </swiper>

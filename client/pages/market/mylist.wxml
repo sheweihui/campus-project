@@ -10,7 +10,8 @@
   <!-- 列表 -->
   <view class="market-list">
     <view class="market-item" wx:for="{{list}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
-      <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" class="item-image" mode="aspectFill" />
+      <image wx:if="{{item.imageUrls && item.imageUrls.length > 0}}" src="{{item.imageUrls[0]}}" class="item-image" mode="aspectFill" />
+      <image wx:elif="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" class="item-image" mode="aspectFill" />
       <view wx:else class="item-image placeholder">🛒</view>
       <view class="item-info">
         <text class="item-title">{{item.title}}</text>

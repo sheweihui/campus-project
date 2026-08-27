@@ -1,6 +1,6 @@
 const { showLoading, hideLoading, navigateTo, requireLogin, getCache, setCache, callCloudFunction } = require('../../utils/util.js')
 
-const MARKET_CACHE_VERSION = 'v2'
+const MARKET_CACHE_VERSION = 'v3'
 const MARKET_CACHE_TTL = 60 * 1000
 const MARKET_REQUEST_TIMEOUT = 8000
 
