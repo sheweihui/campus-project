@@ -77,7 +77,17 @@ Page({
       })
 
       if (result && result.code === 0) {
-        wx.removeStorageSync('cache:home:index')
+        const homeCache = wx.getStorageSync('cache:home:index')
+        if (homeCache && homeCache.data && result.data && result.data.announcement) {
+          wx.setStorageSync('cache:home:index', {
+            data: Object.assign({}, homeCache.data, {
+              announcement: result.data.announcement
+            }),
+            timestamp: Date.now()
+          })
+        } else {
+          wx.removeStorageSync('cache:home:index')
+        }
         showToast('公告已发布', 'success')
         setTimeout(() => navigateBack(), 1200)
       } else {

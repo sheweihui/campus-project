@@ -78,16 +78,28 @@ async function updateHomeConfig(data, openid) {
   }
 
   try {
-    await db.collection('config').doc('homeConfig').set({
-      data: {
-        _id: 'homeConfig',
-        bannerList: data.bannerList || [],
-        announcement: data.announcement || { show: false },
-        updateTime: db.serverDate()
-      }
-    })
+    const homeConfig = {
+      _id: 'homeConfig',
+      bannerList: data.bannerList || [],
+      announcement: data.announcement || { show: false },
+      updateTime: db.serverDate()
+    }
+    await Promise.all([
+      db.collection('config').doc('homeConfig').set({
+        data: homeConfig
+      }),
+      db.collection('configs').doc('homeConfig').set({
+        data: homeConfig
+      })
+    ])
     delete configCache.homeConfig
-    return { code: 0, msg: '更新成功' }
+    return {
+      code: 0,
+      msg: '更新成功',
+      data: {
+        announcement: homeConfig.announcement
+      }
+    }
   } catch (error) {
     console.error('更新配置失败:', error)
     return { code: -1, msg: '更新失败: ' + error.message }
