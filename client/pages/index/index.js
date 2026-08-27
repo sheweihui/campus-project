@@ -265,6 +265,16 @@ Page({
       } 
   },
 
+  showAnnouncementDetail() {
+    const announcement = this.data.announcement || {}
+    wx.showModal({
+      title: announcement.title || '平台公告',
+      content: announcement.content || '',
+      showCancel: false,
+      confirmText: '知道了'
+    })
+  },
+
   goToDetail(e) {
     const { type, id } = e.currentTarget.dataset
     const pages = {

@@ -33,16 +33,20 @@
     </view>
   </view>
 
-  <!-- 常用功能 -->
-    <view class="announcement" wx:if="{{announcement && announcement.show && announcement.content}}">
+  <view class="announcement-card" wx:if="{{announcement && announcement.show && announcement.content}}">
     <view class="announcement-icon">📢</view>
-    <view class="announcement-content">
-      <text class="announcement-title">{{announcement.title || '平台公告'}}</text>
-      <text class="announcement-text">{{announcement.content}}</text>
+    <view class="announcement-marquee">
+      <view class="announcement-track">
+        <text class="announcement-title">{{announcement.title || '平台公告'}}</text>
+        <text class="announcement-sep">·</text>
+        <text class="announcement-text">{{announcement.content}}</text>
+      </view>
     </view>
+    <view class="announcement-detail-btn" bindtap="showAnnouncementDetail">查看详情</view>
   </view>
 
-<view class="section-title">常用功能</view>
+  <!-- 常用功能 -->
+  <view class="section-title">常用功能</view>
   <view class="func-grid">
     <view class="func-card" bindtap="navigateTo" data-page="lostfound" hover-class="func-card-active">
       <view class="func-icon lf">📋</view>
