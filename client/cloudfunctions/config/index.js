@@ -1,6 +1,7 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
+const _ = db.command
 const CONFIG_CACHE_TTL = 5 * 60 * 1000
 const configCache = {}
 const ANNOUNCEMENT_USER = {
@@ -85,14 +86,7 @@ async function updateHomeConfig(data, openid) {
       }
     })
 
-    const savedUser = await db.collection('users').doc(announcementUser._id).get()
-    const savedAnnouncement = normalizeAnnouncementMessage(savedUser.data && savedUser.data.message)
-    const expectedAnnouncement = normalizeAnnouncementMessage(announcement)
-    if (savedAnnouncement.content !== expectedAnnouncement.content
-      || savedAnnouncement.title !== expectedAnnouncement.title
-      || savedAnnouncement.show !== expectedAnnouncement.show) {
-      return { code: -1, msg: '公告保存后校验失败，请重试' }
-    }
+    const savedAnnouncement = normalizeAnnouncementMessage(announcement)
 
     delete configCache.homeConfig
     return {
@@ -110,7 +104,10 @@ async function updateHomeConfig(data, openid) {
 
 async function getAnnouncementUser() {
   const userRes = await db.collection('users')
-    .where({ name: ANNOUNCEMENT_USER.name })
+    .where({
+      name: ANNOUNCEMENT_USER.name,
+      phone: _.in([ANNOUNCEMENT_USER.phone, Number(ANNOUNCEMENT_USER.phone)])
+    })
     .field({
       _id: true,
       name: true,

@@ -1,4 +1,6 @@
-const { showLoading, hideLoading, showToast, navigateBack } = require('../../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateBack, callCloudFunction } = require('../../../utils/util.js')
+
+const CONFIG_REQUEST_TIMEOUT = 12000
 
 Page({
   data: {
@@ -14,11 +16,14 @@ Page({
 
   async loadConfig() {
     showLoading('加载中...')
+    let loading = true
     try {
-      const { result } = await wx.cloud.callFunction({
+      const { result } = await callCloudFunction({
         name: 'config',
         data: { action: 'getHomeConfig' }
-      })
+      }, CONFIG_REQUEST_TIMEOUT)
+      hideLoading()
+      loading = false
       if (result && result.code === 0) {
         const config = result.data || {}
         const announcement = config.announcement || {}
@@ -33,9 +38,15 @@ Page({
       }
     } catch (error) {
       console.error('加载公告失败:', error)
-      showToast('加载失败')
+      if (loading) {
+        hideLoading()
+        loading = false
+      }
+      showToast(error && error.message && error.message.indexOf('timeout') >= 0 ? '加载超时，请稍后重试' : '加载失败')
     } finally {
-      hideLoading()
+      if (loading) {
+        hideLoading()
+      }
     }
   },
 
@@ -60,8 +71,9 @@ Page({
     }
 
     showLoading('保存中...')
+    let loading = true
     try {
-      const { result } = await wx.cloud.callFunction({
+      const { result } = await callCloudFunction({
         name: 'config',
         data: {
           action: 'updateHomeConfig',
@@ -74,7 +86,10 @@ Page({
             }
           }
         }
-      })
+      }, CONFIG_REQUEST_TIMEOUT)
+
+      hideLoading()
+      loading = false
 
       if (result && result.code === 0) {
         const homeCache = wx.getStorageSync('cache:home:index')
@@ -95,9 +110,15 @@ Page({
       }
     } catch (error) {
       console.error('保存公告失败:', error)
-      showToast('保存失败，请确认 config 云函数已部署')
+      if (loading) {
+        hideLoading()
+        loading = false
+      }
+      showToast(error && error.message && error.message.indexOf('timeout') >= 0 ? '保存超时，请稍后重试' : '保存失败，请确认 config 云函数已部署')
     } finally {
-      hideLoading()
+      if (loading) {
+        hideLoading()
+      }
     }
   }
 })
