@@ -49,16 +49,9 @@ async function isAdmin(openid) {
 }
 
 async function getHomeConfig() {
-  const configs = await Promise.all([
-    getHomeConfigFromCollection('config'),
-    getHomeConfigFromCollection('configs')
-  ])
-  const validConfigs = configs.filter(Boolean)
-  const configWithAnnouncement = validConfigs.find(config => {
-    const announcement = config.announcement || {}
-    return announcement.content && announcement.show !== false
-  })
-  const config = configWithAnnouncement || validConfigs[0] || { bannerList: [], announcement: { show: false, title: '', content: '' } }
+  const config = await getHomeConfigFromCollection('config')
+    || await getHomeConfigFromCollection('configs')
+    || { bannerList: [], announcement: { show: false, title: '', content: '' } }
   return { code: 0, data: config }
 }
 
@@ -84,20 +77,33 @@ async function updateHomeConfig(data, openid) {
       announcement: data.announcement || { show: false },
       updateTime: db.serverDate()
     }
-    await Promise.all([
-      db.collection('config').doc('homeConfig').set({
-        data: homeConfig
-      }),
-      db.collection('configs').doc('homeConfig').set({
+    await db.collection('config').doc('homeConfig').set({
+      data: homeConfig
+    })
+
+    try {
+      await db.collection('configs').doc('homeConfig').set({
         data: homeConfig
       })
-    ])
+    } catch (syncError) {
+      console.error('同步历史配置集合失败:', syncError)
+    }
+
+    const savedConfig = await getHomeConfigFromCollection('config')
+    const savedAnnouncement = savedConfig && savedConfig.announcement
+    if (!savedAnnouncement
+      || savedAnnouncement.content !== homeConfig.announcement.content
+      || savedAnnouncement.title !== homeConfig.announcement.title
+      || savedAnnouncement.show !== homeConfig.announcement.show) {
+      return { code: -1, msg: '公告保存后校验失败，请重试' }
+    }
+
     delete configCache.homeConfig
     return {
       code: 0,
       msg: '更新成功',
       data: {
-        announcement: homeConfig.announcement
+        announcement: savedAnnouncement
       }
     }
   } catch (error) {
