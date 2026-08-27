@@ -53,13 +53,13 @@ async function getHomeConfig() {
   if (cached) return { code: 0, data: cached }
 
   try {
-    const config = await db.collection('configs').doc('homeConfig').get()
+    const config = await db.collection('config').doc('homeConfig').get()
     setConfigCache('homeConfig', config.data)
     return { code: 0, data: config.data }
   } catch (error) {
     if (error.errCode === -502005) {
       try {
-        const config2 = await db.collection('config').doc('homeConfig').get()
+        const config2 = await db.collection('configs').doc('homeConfig').get()
         setConfigCache('homeConfig', config2.data)
         return { code: 0, data: config2.data }
       } catch (error2) {

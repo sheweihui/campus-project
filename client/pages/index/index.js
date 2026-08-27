@@ -38,6 +38,8 @@ Page({
     const hasCache = this.restoreHomeCache()
     if (!hasCache) {
       this.loadData()
+    } else {
+      this.refreshAnnouncement()
     }
   },
 
@@ -47,6 +49,8 @@ Page({
       this._skipNextShowLoad = false
     } else if (!isCacheFresh(HOME_CACHE_KEY, HOME_CACHE_TTL)) {
       this.loadData({ silent: true })
+    } else {
+      this.refreshAnnouncement()
     }
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 0 })
@@ -187,6 +191,19 @@ Page({
       return (result.data && result.data.announcement) || { show: false, title: '', content: '' }
     }
     return { show: false, title: '', content: '' }
+  },
+
+  async refreshAnnouncement() {
+    try {
+      const announcement = await this.loadAnnouncement()
+      this.setData({ announcement })
+      const cache = getCache(HOME_CACHE_KEY, HOME_CACHE_TTL)
+      if (cache) {
+        setCache(HOME_CACHE_KEY, Object.assign({}, cache, { announcement }))
+      }
+    } catch (error) {
+      console.error('首页公告刷新失败:', error)
+    }
   },
 
   async loadMarket() {
