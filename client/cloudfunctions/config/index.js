@@ -81,7 +81,7 @@ async function updateHomeConfig(data, openid) {
 
     await db.collection('users').doc(announcementUser._id).update({
       data: {
-        message: announcement,
+        message: _.set(announcement),
         updateTime: db.serverDate()
       }
     })
@@ -148,7 +148,7 @@ async function initConfig() {
     if (!announcementUser.message) {
       await db.collection('users').doc(announcementUser._id).update({
         data: {
-          message: { show: false, title: '', content: '' },
+          message: _.set({ show: false, title: '', content: '' }),
           updateTime: db.serverDate()
         }
       })
