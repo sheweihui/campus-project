@@ -11,6 +11,13 @@
   color: #fff;
 }
 
+.header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
 .header-title {
   font-size: 36rpx;
   font-weight: bold;
@@ -20,6 +27,23 @@
 .header-info {
   font-size: 24rpx;
   opacity: 0.9;
+}
+
+.subscribe-btn {
+  flex: 0 0 auto;
+  min-width: 148rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 20rpx;
+  border: none;
+  border-radius: 28rpx;
+  background: #ff9900;
+  color: #fff;
+  font-size: 24rpx;
+}
+
+.subscribe-btn::after {
+  border: none;
 }
 
 .chat-content {

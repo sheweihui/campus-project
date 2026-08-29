@@ -50,8 +50,11 @@ async function sendMessage(data, openid) {
     }
   })
 
-  // 发送消息通知
-  await sendMessageNotification(senderId, receiverId, content, relatedType, relatedId)
+  // 发送站内消息通知，并异步尝试微信订阅消息推送
+  const notification = await sendMessageNotification(senderId, receiverId, content, relatedType, relatedId)
+  sendWechatChatNotice(receiverId, senderId, notification.senderName, content, relatedType, relatedId).catch(error => {
+    console.error('发送微信聊天订阅消息失败:', error)
+  })
 
   return { code: 0, data: result._id }
 }
@@ -88,9 +91,37 @@ async function sendMessageNotification(senderId, receiverId, content, relatedTyp
         createTime: db.serverDate()
       }
     })
+    return { senderName, title }
   } catch (error) {
     console.error('发送消息通知失败:', error)
+    return { senderName: '用户', title: '新消息' }
   }
+}
+
+async function sendWechatChatNotice(touser, senderId, senderName, content, relatedType, relatedId) {
+  if (!touser) return
+  const page = buildChatPage(senderId, relatedType, relatedId)
+  await cloud.callFunction({
+    name: 'sendMessage',
+    data: {
+      action: 'chat',
+      data: {
+        touser,
+        fromName: senderName,
+        content,
+        page
+      }
+    }
+  })
+}
+
+function buildChatPage(senderId, relatedType, relatedId) {
+  const params = [
+    `otherOpenid=${encodeURIComponent(senderId || '')}`,
+    `relatedId=${encodeURIComponent(relatedId || '')}`,
+    `relatedType=${encodeURIComponent(relatedType || '')}`
+  ]
+  return `/pages/chat/chat?${params.join('&')}`
 }
 
 async function listMessages(data, openid) {

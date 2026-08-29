@@ -133,6 +133,11 @@ function missingTemplateResponse() {
   return { code: -1, msg: '\u672a\u914d\u7f6e\u6a21\u677fID' }
 }
 
+function templateValue(value, maxLength = 20) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim()
+  return text.length > maxLength ? `${text.slice(0, maxLength - 1)}...` : text
+}
+
 exports.main = async (event = {}, context) => {
   const { action, data = {} } = event
   const { OPENID } = cloud.getWXContext()
@@ -218,12 +223,12 @@ exports.main = async (event = {}, context) => {
       }
 
       case 'chat': {
-        const { touser, fromStuId, content } = data
+        const { touser, fromStuId, fromName, content, page = '/pages/profile/messages' } = data
         const templateId = templates.CHAT_MESSAGE
         if (!templateId) return missingTemplateResponse()
 
-        const result = await sendSubscribeMessage(touser, templateId, '/pages/chat/chat', {
-          thing1: { value: `${fromStuId}: ${content}` },
+        const result = await sendSubscribeMessage(touser, templateId, page, {
+          thing1: { value: templateValue(`${fromName || fromStuId || '用户'}: ${content}`, 20) },
           phrase2: { value: '\u6536\u5230\u65b0\u6d88\u606f' },
           time3: { value: new Date().toLocaleString('zh-CN') }
         })

@@ -1,4 +1,5 @@
 const { showToast } = require('../../utils/util.js')
+const TEMPLATES = require('../../config/templateIds.js')
 
 Page({
   data: {
@@ -114,6 +115,52 @@ Page({
 
   onInput(e) {
     this.setData({ inputText: e.detail.value })
+  },
+
+  async getTemplateIds() {
+    const localTemplateIds = Object.values(TEMPLATES).filter(id => id)
+    if (localTemplateIds.length > 0) return TEMPLATES
+
+    try {
+      const { result } = await wx.cloud.callFunction({
+        name: 'sendMessage',
+        data: {
+          action: 'getTemplateIds',
+          data: {}
+        }
+      })
+      if (result && result.code === 0) {
+        return result.data || {}
+      }
+    } catch (error) {
+      console.log('Failed to load subscribe template ids:', error)
+    }
+
+    return TEMPLATES
+  },
+
+  async requestChatSubscribe() {
+    const templates = await this.getTemplateIds()
+    const templateId = templates.CHAT_MESSAGE
+    if (!templateId) {
+      showToast('未配置聊天消息模板ID')
+      return
+    }
+
+    wx.requestSubscribeMessage({
+      tmplIds: [templateId],
+      success: (res) => {
+        if (res[templateId] === 'accept') {
+          showToast('已开启一次消息提醒', 'success')
+        } else {
+          showToast('未授权消息提醒')
+        }
+      },
+      fail: (err) => {
+        console.log('聊天订阅消息授权失败:', err)
+        showToast('授权失败')
+      }
+    })
   },
 
   async sendMessage() {

@@ -1,7 +1,12 @@
 <view class="container">
   <view class="chat-header">
-    <view class="header-title">{{otherUserInfo.nickName || '聊天'}}</view>
-    <view class="header-info">{{otherUserInfo.phoneMask || ''}}</view>
+    <view class="header-main">
+      <view>
+        <view class="header-title">{{otherUserInfo.nickName || '聊天'}}</view>
+        <view class="header-info">{{otherUserInfo.phoneMask || ''}}</view>
+      </view>
+      <button class="subscribe-btn" size="mini" bindtap="requestChatSubscribe">消息提醒</button>
+    </view>
   </view>
 
   <scroll-view 
