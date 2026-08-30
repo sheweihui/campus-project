@@ -25,8 +25,16 @@ Page({
   },
 
   onLoad() {
+    this.enableShareMenu()
     this._skipNextShowLoad = true
     this.loadData()
+  },
+
+  enableShareMenu() {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   onShow() {
@@ -154,5 +162,19 @@ Page({
   goToDetail(e) {
     const { type, id } = e.currentTarget.dataset
     navigateTo(`/pages/help/detail?type=${type}&id=${id}`)
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '校园互助信息',
+      path: '/pages/help/help'
+    }
+  },
+
+  onShareTimeline() {
+    return {
+      title: '校园互助信息',
+      query: ''
+    }
   }
 })

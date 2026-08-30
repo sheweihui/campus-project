@@ -33,6 +33,7 @@ Page({
   },
 
   onLoad() {
+    this.enableShareMenu()
     this._skipNextShowLoad = true
     this.computeSky()
     const hasCache = this.restoreHomeCache()
@@ -41,6 +42,13 @@ Page({
     } else {
       this.refreshAnnouncement()
     }
+  },
+
+  enableShareMenu() {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   onShow() {
@@ -320,6 +328,20 @@ Page({
     
     if (pages[type]) {
       navigateTo(pages[type])
+    }
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '校园便利圈',
+      path: '/pages/index/index'
+    }
+  },
+
+  onShareTimeline() {
+    return {
+      title: '校园便利圈',
+      query: ''
     }
   },
 

@@ -8,9 +8,17 @@ Page({
   },
 
   onLoad(options) {
+    this.enableShareMenu()
     if (options.id) {
       this.loadDetail(options.id)
     }
+  },
+
+  enableShareMenu() {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   async loadDetail(id) {
@@ -176,5 +184,22 @@ Page({
       showCancel: false,
       confirmText: '知道了'
     })
+  },
+
+  onShareAppMessage() {
+    const detail = this.data.detail || {}
+    return {
+      title: detail.title ? `失物招领：${detail.title}` : '校园失物招领',
+      path: detail._id ? `/pages/lostfound/detail?id=${detail._id}` : '/pages/lostfound/lostfound',
+      imageUrl: detail.images && detail.images[0] ? detail.images[0] : ''
+    }
+  },
+
+  onShareTimeline() {
+    const detail = this.data.detail || {}
+    return {
+      title: detail.title ? `失物招领：${detail.title}` : '校园失物招领',
+      query: detail._id ? `id=${detail._id}` : ''
+    }
   }
 })

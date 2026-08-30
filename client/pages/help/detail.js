@@ -28,11 +28,19 @@ Page({
   },
 
   onLoad(options) {
+    this.enableShareMenu()
     const { type, id } = options
     this.setData({ type })
     if (id) {
       this.loadDetail(type, id)
     }
+  },
+
+  enableShareMenu() {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   async loadDetail(type, id) {
@@ -434,6 +442,29 @@ Page({
       })
     } catch (error) {
       console.error('发送通知失败:', error)
+    }
+  },
+
+  getShareTitle() {
+    const detail = this.data.detail || {}
+    return detail.title || detail.from || detail.description || '校园互助信息'
+  },
+
+  onShareAppMessage() {
+    const detail = this.data.detail || {}
+    const type = this.data.type || detail.type || ''
+    return {
+      title: `互助信息：${this.getShareTitle()}`,
+      path: detail._id && type ? `/pages/help/detail?type=${type}&id=${detail._id}` : '/pages/help/help'
+    }
+  },
+
+  onShareTimeline() {
+    const detail = this.data.detail || {}
+    const type = this.data.type || detail.type || ''
+    return {
+      title: `互助信息：${this.getShareTitle()}`,
+      query: detail._id && type ? `type=${type}&id=${detail._id}` : ''
     }
   }
 })

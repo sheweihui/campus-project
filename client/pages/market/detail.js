@@ -27,9 +27,17 @@ Page({
   },
 
   onLoad(options) {
+    this.enableShareMenu()
     if (options.id) {
       this.loadDetail(options.id)
     }
+  },
+
+  enableShareMenu() {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   async loadDetail(id) {
@@ -302,6 +310,23 @@ Page({
       showToast('删除失败')
     } finally {
       hideLoading()
+    }
+  },
+
+  onShareAppMessage() {
+    const detail = this.data.detail || {}
+    return {
+      title: detail.title ? `二手商品：${detail.title}` : '校园二手商品',
+      path: detail._id ? `/pages/market/detail?id=${detail._id}` : '/pages/market/market',
+      imageUrl: detail.imageUrls && detail.imageUrls[0] ? detail.imageUrls[0] : ''
+    }
+  },
+
+  onShareTimeline() {
+    const detail = this.data.detail || {}
+    return {
+      title: detail.title ? `二手商品：${detail.title}` : '校园二手商品',
+      query: detail._id ? `id=${detail._id}` : ''
     }
   }
 })

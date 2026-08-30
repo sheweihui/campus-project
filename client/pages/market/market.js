@@ -28,6 +28,7 @@ Page({
   },
 
   onLoad(options) {
+    this.enableShareMenu()
     this._skipNextShowLoad = true
     // 支持从首页搜索框带入 keyword 自动搜索
     if (options && options.keyword) {
@@ -35,7 +36,17 @@ Page({
       this.searchData()
       return
     }
+    if (options && options.category) {
+      this.setData({ currentCategory: decodeURIComponent(options.category) })
+    }
     this.loadData()
+  },
+
+  enableShareMenu() {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   onShow() {
@@ -225,5 +236,22 @@ Page({
   goToPublish() {
     if (!requireLogin()) return
     navigateTo('/pages/market/publish')
+  },
+
+  onShareAppMessage() {
+    const category = this.data.currentCategory
+    const path = category && category !== 'all' ? `/pages/market/market?category=${category}` : '/pages/market/market'
+    return {
+      title: '校园二手集市',
+      path
+    }
+  },
+
+  onShareTimeline() {
+    const category = this.data.currentCategory
+    return {
+      title: '校园二手集市',
+      query: category && category !== 'all' ? `category=${category}` : ''
+    }
   }
 })

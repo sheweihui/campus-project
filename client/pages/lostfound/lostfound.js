@@ -14,8 +14,16 @@ Page({
   },
 
   onLoad() {
+    this.enableShareMenu()
     this._skipNextShowLoad = true
     this.loadData()
+  },
+
+  enableShareMenu() {
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   onShow() {
@@ -126,5 +134,19 @@ Page({
   goToPublish() {
     if (!requireLogin()) return
     navigateTo('/pages/lostfound/publish')
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '校园失物招领',
+      path: '/pages/lostfound/lostfound'
+    }
+  },
+
+  onShareTimeline() {
+    return {
+      title: '校园失物招领',
+      query: ''
+    }
   }
 })
