@@ -1,6 +1,8 @@
 Page({
   data: {
-    loading: false
+    loading: false,
+    name: '',
+    stuId: ''
   },
 
   onLoad() {
@@ -20,9 +22,25 @@ Page({
     }
   },
 
+  onInput(e) {
+    const field = e.currentTarget.dataset.field
+    this.setData({ [field]: e.detail.value })
+  },
+
   // 微信手机号一键登录
   getPhoneNumber(e) {
     if (this.data.loading) return
+
+    const name = (this.data.name || '').trim()
+    const stuId = (this.data.stuId || '').trim()
+    if (!name) {
+      wx.showToast({ title: '请先填写姓名', icon: 'none' })
+      return
+    }
+    if (!stuId) {
+      wx.showToast({ title: '请先填写学号', icon: 'none' })
+      return
+    }
 
     const errMsg = e.detail && e.detail.errMsg
     if (errMsg && errMsg.indexOf('ok') === -1) {
@@ -45,20 +63,20 @@ Page({
       name: 'user',
       data: {
         action: 'loginByPhone',
-        data: { code }
+        data: { code, name, stuId }
       },
       success: (res) => {
         const result = res.result
         if (result.code === 0) {
-          const { openid, phone } = result.data
+          const { openid, phone, name: savedName, stuId: savedStuId } = result.data
           wx.setStorageSync('openid', openid)
 
-          // 手机号登录成功即视为登录完成（姓名/学号稍后在"我的"中完善）
+          // 登录即采集姓名/学号；用户名（昵称）自动等于姓名
           const userInfo = {
             phone: phone || '',
-            nickName: '微信用户',
-            name: '',
-            stuId: '',
+            nickName: savedName || '微信用户',
+            name: savedName || '',
+            stuId: savedStuId || '',
             avatarUrl: ''
           }
           wx.setStorageSync('userInfo', userInfo)

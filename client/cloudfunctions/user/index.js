@@ -64,9 +64,15 @@ async function login(openid, data) {
 
 // 微信手机号一键登录：用手机号快速验证组件返回的 code 换取真实手机号并绑定
 async function loginByPhone(openid, data) {
-  const { code } = data || {}
+  const { code, name, stuId } = data || {}
   if (!code) {
     return { code: -1, msg: '缺少授权code' }
+  }
+
+  const cleanName = String(name || '').trim()
+  const cleanStuId = String(stuId || '').trim()
+  if (!cleanName || !cleanStuId) {
+    return { code: -1, msg: '请填写姓名和学号' }
   }
 
   let phone = ''
@@ -89,16 +95,26 @@ async function loginByPhone(openid, data) {
       data: {
         openid,
         phone,
+        name: cleanName,
+        stuId: cleanStuId,
+        // 用户名即姓名：昵称与姓名保持一致，便于聊天/订单等场景展示真实姓名
+        nickName: cleanName,
         createTime: db.serverDate(),
         updateTime: db.serverDate()
       }
     })
   } else {
-    const updateData = { phone, updateTime: db.serverDate() }
+    const updateData = {
+      phone,
+      name: cleanName,
+      stuId: cleanStuId,
+      nickName: cleanName,
+      updateTime: db.serverDate()
+    }
     await db.collection('users').doc(user.data[0]._id).update({ data: updateData })
   }
 
-  return { code: 0, msg: '登录成功', data: { openid, phone } }
+  return { code: 0, msg: '登录成功', data: { openid, phone, name: cleanName, stuId: cleanStuId } }
 }
 
 async function getUserInfo(openid, data) {

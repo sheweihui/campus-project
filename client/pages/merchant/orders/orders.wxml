@@ -4,7 +4,7 @@
   <!-- 搜索栏 -->
   <view class="search-bar">
     <input class="search-input"
-      placeholder="搜索买家/卖家昵称"
+      placeholder="搜索买家/卖家姓名"
       value="{{keyword}}"
       bindinput="onSearchInput"
       bindconfirm="onSearch"
@@ -100,10 +100,10 @@
         </view>
         <view class="order-body">
           <view class="order-people">
-            <text class="people-label">买家：</text>{{item.buyerNickName || '匿名用户'}}
+            <text class="people-label">买家：</text>{{item.buyerName || item.buyerNickName || '匿名用户'}}
           </view>
           <view class="order-people">
-            <text class="people-label">卖家：</text>{{item.sellerNickName || '匿名用户'}}
+            <text class="people-label">卖家：</text>{{item.sellerName || item.sellerNickName || '匿名用户'}}
           </view>
         </view>
         <view class="order-remark" wx:if="{{item.remark}}">备注：{{item.remark}}</view>

@@ -174,3 +174,30 @@
   box-shadow: 1rpx 1rpx 0 rgba(26, 26, 26, 0.18);
   transform: translate(3rpx, 3rpx);
 }
+
+/* 姓名/学号输入框 */
+.form-field {
+  width: 100%;
+  margin-bottom: 24rpx;
+}
+
+.field-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #6b4d2a;
+  margin-bottom: 12rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 88rpx;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 3rpx solid #1a1a1a;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 30rpx;
+  color: #1a1a1a;
+  box-shadow: 4rpx 4rpx 0 rgba(26, 26, 26, 0.12);
+}

@@ -17,6 +17,14 @@
   <!-- 漫画风登录卡片 -->
   <view class="form-section">
     <view class="wx-login">
+      <view class="form-field">
+        <text class="field-label">姓名</text>
+        <input class="form-input" placeholder="请输入真实姓名" value="{{name}}" bindinput="onInput" data-field="name" />
+      </view>
+      <view class="form-field">
+        <text class="field-label">学号</text>
+        <input class="form-input" placeholder="请输入学号" value="{{stuId}}" bindinput="onInput" data-field="stuId" />
+      </view>
       <button
         class="weui-btn weui-btn_primary"
         open-type="getPhoneNumber"
@@ -24,7 +32,7 @@
         loading="{{loading}}"
         disabled="{{loading}}"
       >一键登录</button>
-      <text class="wx-tips">使用微信手机号快捷登录，登录后可发布、交易、聊天</text>
+      <text class="wx-tips">填写姓名与学号后，使用微信手机号快捷登录</text>
     </view>
   </view>
 </view>

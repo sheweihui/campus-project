@@ -478,6 +478,39 @@ async function getPaymentStats(dateFilter) {
 
 // ============ 订单管理 ============
 
+// 为订单补充买卖家真实姓名（优先 users.name，其次 users.nickName，最后回退订单内已存昵称）
+async function attachBuyerSellerNames(orders) {
+  if (!orders || orders.length === 0) return orders
+
+  const openids = new Set()
+  orders.forEach(o => {
+    if (o.buyerOpenid) openids.add(o.buyerOpenid)
+    if (o.sellerOpenid) openids.add(o.sellerOpenid)
+  })
+
+  if (openids.size > 0) {
+    const nameMap = {}
+    const all = [...openids]
+    for (let i = 0; i < all.length; i += 100) {
+      const batch = all.slice(i, i + 100)
+      const users = await db.collection('users')
+        .where({ openid: _.in(batch) })
+        .field({ openid: true, name: true, nickName: true })
+        .get()
+      users.data.forEach(u => {
+        nameMap[u.openid] = u.name || u.nickName || ''
+      })
+    }
+
+    orders.forEach(o => {
+      o.buyerName = (o.buyerOpenid && nameMap[o.buyerOpenid]) || o.buyerNickName || ''
+      o.sellerName = (o.sellerOpenid && nameMap[o.sellerOpenid]) || o.sellerNickName || ''
+    })
+  }
+
+  return orders
+}
+
 async function getOrders(data) {
   const {
     page = 1,
@@ -677,6 +710,8 @@ async function getOrders(data) {
     const merged = [...orders, ...paymentOrders, ...marketOrders]
       .sort((a, b) => new Date(b.createTime || 0) - new Date(a.createTime || 0))
 
+    await attachBuyerSellerNames(merged)
+
     const total = merged.length
     const list = merged.slice((page - 1) * pageSize, page * pageSize)
 
@@ -703,6 +738,7 @@ async function getOrderDetail(data) {
     if (!order.data) {
       return { code: -1, msg: '订单不存在' }
     }
+    await attachBuyerSellerNames([order.data])
     return { code: 0, data: order.data }
   } catch (e) {
     return { code: -1, msg: e.message }

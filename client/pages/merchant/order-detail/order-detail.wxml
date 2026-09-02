@@ -53,7 +53,7 @@
     <view class="card-title">交易双方</view>
     <view class="info-row">
       <text class="info-label">买家</text>
-      <text class="info-value">{{order.buyerNickName || '匿名用户'}}</text>
+      <text class="info-value">{{order.buyerName || order.buyerNickName || '匿名用户'}}</text>
     </view>
     <view class="info-row" wx:if="{{order.buyerOpenid}}">
       <text class="info-label">买家ID</text>
@@ -61,7 +61,7 @@
     </view>
     <view class="info-row">
       <text class="info-label">卖家</text>
-      <text class="info-value">{{order.sellerNickName || '匿名用户'}}</text>
+      <text class="info-value">{{order.sellerName || order.sellerNickName || '匿名用户'}}</text>
     </view>
     <view class="info-row" wx:if="{{order.sellerOpenid}}">
       <text class="info-label">卖家ID</text>
