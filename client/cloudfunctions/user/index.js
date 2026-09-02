@@ -71,9 +71,6 @@ async function loginByPhone(openid, data) {
 
   const cleanName = String(name || '').trim()
   const cleanStuId = String(stuId || '').trim()
-  if (!cleanName || !cleanStuId) {
-    return { code: -1, msg: '请填写姓名和学号' }
-  }
 
   let phone = ''
   try {
@@ -89,32 +86,51 @@ async function loginByPhone(openid, data) {
   }
 
   const user = await db.collection('users').where({ openid }).get()
+  const existingUser = user.data[0] || {}
 
   if (user.data.length === 0) {
+    const addData = {
+      openid,
+      phone,
+      createTime: db.serverDate(),
+      updateTime: db.serverDate()
+    }
+    if (cleanName) {
+      addData.name = cleanName
+      // 用户名即姓名：昵称与姓名保持一致，便于聊天/订单等场景展示真实姓名
+      addData.nickName = cleanName
+    }
+    if (cleanStuId) {
+      addData.stuId = cleanStuId
+    }
     await db.collection('users').add({
-      data: {
-        openid,
-        phone,
-        name: cleanName,
-        stuId: cleanStuId,
-        // 用户名即姓名：昵称与姓名保持一致，便于聊天/订单等场景展示真实姓名
-        nickName: cleanName,
-        createTime: db.serverDate(),
-        updateTime: db.serverDate()
-      }
+      data: addData
     })
   } else {
     const updateData = {
       phone,
-      name: cleanName,
-      stuId: cleanStuId,
-      nickName: cleanName,
       updateTime: db.serverDate()
+    }
+    if (cleanName) {
+      updateData.name = cleanName
+      updateData.nickName = cleanName
+    }
+    if (cleanStuId) {
+      updateData.stuId = cleanStuId
     }
     await db.collection('users').doc(user.data[0]._id).update({ data: updateData })
   }
 
-  return { code: 0, msg: '登录成功', data: { openid, phone, name: cleanName, stuId: cleanStuId } }
+  return {
+    code: 0,
+    msg: '登录成功',
+    data: {
+      openid,
+      phone,
+      name: cleanName || existingUser.name || existingUser.nickName || '',
+      stuId: cleanStuId || existingUser.stuId || ''
+    }
+  }
 }
 
 async function getUserInfo(openid, data) {

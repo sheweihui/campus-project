@@ -33,14 +33,6 @@ Page({
 
     const name = (this.data.name || '').trim()
     const stuId = (this.data.stuId || '').trim()
-    if (!name) {
-      wx.showToast({ title: '请先填写姓名', icon: 'none' })
-      return
-    }
-    if (!stuId) {
-      wx.showToast({ title: '请先填写学号', icon: 'none' })
-      return
-    }
 
     const errMsg = e.detail && e.detail.errMsg
     if (errMsg && errMsg.indexOf('ok') === -1) {
@@ -71,7 +63,7 @@ Page({
           const { openid, phone, name: savedName, stuId: savedStuId } = result.data
           wx.setStorageSync('openid', openid)
 
-          // 登录即采集姓名/学号；用户名（昵称）自动等于姓名
+          // 姓名/学号可稍后完善；下单前由支付云函数统一校验
           const userInfo = {
             phone: phone || '',
             nickName: savedName || '微信用户',
