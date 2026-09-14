@@ -478,7 +478,7 @@ async function getPaymentStats(dateFilter) {
 
 // ============ 订单管理 ============
 
-// 为订单补充买卖家真实姓名（优先 users.name，其次 users.nickName，最后回退订单内已存昵称）
+// 为订单补充买卖家手机号（优先 users.phone，回退订单内已存昵称/联系方式）
 async function attachBuyerSellerNames(orders) {
   if (!orders || orders.length === 0) return orders
 
@@ -489,22 +489,22 @@ async function attachBuyerSellerNames(orders) {
   })
 
   if (openids.size > 0) {
-    const nameMap = {}
+    const phoneMap = {}
     const all = [...openids]
     for (let i = 0; i < all.length; i += 100) {
       const batch = all.slice(i, i + 100)
       const users = await db.collection('users')
         .where({ openid: _.in(batch) })
-        .field({ openid: true, name: true, nickName: true })
+        .field({ openid: true, phone: true })
         .get()
       users.data.forEach(u => {
-        nameMap[u.openid] = u.name || u.nickName || ''
+        phoneMap[u.openid] = u.phone || ''
       })
     }
 
     orders.forEach(o => {
-      o.buyerName = (o.buyerOpenid && nameMap[o.buyerOpenid]) || o.buyerNickName || ''
-      o.sellerName = (o.sellerOpenid && nameMap[o.sellerOpenid]) || o.sellerNickName || ''
+      o.buyerName = (o.buyerOpenid && phoneMap[o.buyerOpenid]) || o.buyerNickName || ''
+      o.sellerName = (o.sellerOpenid && phoneMap[o.sellerOpenid]) || o.sellerNickName || ''
     })
   }
 

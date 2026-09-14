@@ -75,27 +75,6 @@ Page({
     })
   },
 
-  startChat() {
-    if (!requireLogin()) return
-
-    const { detail, isOwner } = this.data
-    
-    if (isOwner) {
-      // 卖家：跳转到买家列表
-      navigateTo(`/pages/chat/buyerList?relatedId=${detail._id}`)
-    } else {
-      // 买家：跳转到聊天页面
-      const otherOpenid = detail.openid
-      
-      if (!otherOpenid) {
-        showToast('发布者信息不存在')
-        return
-      }
-
-      navigateTo(`/pages/chat/chat?otherOpenid=${otherOpenid}&relatedId=${detail._id}&relatedType=lostfound`)
-    }
-  },
-
   async updateStatus() {
     if (!requireLogin()) return
 

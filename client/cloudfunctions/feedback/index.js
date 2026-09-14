@@ -15,6 +15,25 @@ async function ensureCollection(name) {
   feedbackCollectionReady = true
 }
 
+// 文本检测（msgSecCheck v2）：命中违规返回 false
+async function checkTextSecure(openid, text) {
+  const content = String(text || '').trim()
+  if (!content) return true
+  try {
+    const res = await cloud.openapi.security.msgSecCheck({
+      version: 2,
+      openid,
+      scene: 2,
+      content: content.slice(0, 2500)
+    })
+    return !(res && res.result && res.result.suggest === 'risky')
+  } catch (e) {
+    // 检测接口异常时放行，避免阻断正常提交
+    console.error('文本安全检测失败:', e)
+    return true
+  }
+}
+
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   const data = event.data || {}
@@ -32,6 +51,12 @@ exports.main = async (event, context) => {
 
   try {
     await ensureCollection('feedback')
+
+    // 内容安全检测：文本
+    if (!(await checkTextSecure(OPENID, `${content} ${data.contact || ''}`))) {
+      return { code: -1, msg: '反馈内容包含违规信息，请修改后重新提交' }
+    }
+
     await db.collection('feedback').add({
       data: {
         type: data.type || '',

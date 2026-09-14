@@ -17,8 +17,6 @@
     "pages/help/other",
     "pages/help/publish",
     "pages/help/detail",
-    "pages/chat/chat",
-    "pages/chat/buyerList",
     "pages/tools/tools",
     "pages/tools/map",
     "pages/tools/docs",

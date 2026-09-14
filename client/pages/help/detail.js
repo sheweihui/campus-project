@@ -109,39 +109,6 @@ Page({
     })
   },
 
-  startChat() {
-    if (!requireLogin()) return
-
-    const { detail, isOwner } = this.data
-    // 获取对方学号
-    let otherOpenid = ''
-    
-    if (isOwner) {
-      // 发布者：拼车和找搭子显示联系过的人列表
-      if (detail.type === 'carpool' || detail.type === 'partner') {
-        navigateTo(`/pages/chat/buyerList?relatedId=${detail._id}&relatedType=help-${detail.type}`)
-        return
-      }
-      // 代取快递/其他互助：如果有接单者，发给接单者
-      if (detail.acceptorOpenid) {
-        otherOpenid = detail.acceptorOpenid
-      } else {
-        showToast('还没有接单者')
-        return
-      }
-    } else {
-      // 浏览者：发给发布者
-      if (detail.openid) {
-        otherOpenid = detail.openid
-      } else {
-        showToast('发布者信息不存在')
-        return
-      }
-    }
-
-    navigateTo(`/pages/chat/chat?otherOpenid=${otherOpenid}&relatedId=${detail._id}&relatedType=help-${detail.type}`)
-  },
-
   async updateStatus() {
     if (!requireLogin()) return
 

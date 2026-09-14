@@ -106,6 +106,11 @@ async function addHelp(data, openid) {
     return { code: -1, msg: lenErr }
   }
 
+  // 内容安全检测：文本
+  if (!(await checkTextSecure(openid, gatherText(cleanData)))) {
+    return { code: -1, msg: '内容包含违规信息，请修改后重新提交' }
+  }
+
   const result = await db.collection(collection).add({
     data: {
       ...cleanData,
@@ -226,6 +231,11 @@ async function updateHelp(data, openid) {
   const lenErr = checkFieldLength(updateData)
   if (lenErr) {
     return { code: -1, msg: lenErr }
+  }
+
+  // 内容安全检测：文本
+  if (!(await checkTextSecure(openid, gatherText(updateData)))) {
+    return { code: -1, msg: '内容包含违规信息，请修改后重新提交' }
   }
 
   // 酬金校验：必须为合法正数且最多两位小数；已被接单/预付/支付后锁定
@@ -678,5 +688,35 @@ async function sendMessage(messageData) {
     })
   } catch (error) {
     console.error('发送消息失败:', error)
+  }
+}
+
+// ===== 内容安全检测（微信 msgSecCheck）=====
+
+// 收集数据中的文本字段用于检测（仅字符串字段）
+function gatherText(data) {
+  return Object.keys(data || {})
+    .filter(k => typeof data[k] === 'string')
+    .map(k => data[k])
+    .filter(s => s && s.trim())
+    .join(' ')
+}
+
+// 文本检测（msgSecCheck v2）：命中违规返回 false
+async function checkTextSecure(openid, text) {
+  const content = String(text || '').trim()
+  if (!content) return true
+  try {
+    const res = await cloud.openapi.security.msgSecCheck({
+      version: 2,
+      openid,
+      scene: 3,
+      content: content.slice(0, 2500)
+    })
+    return !(res && res.result && res.result.suggest === 'risky')
+  } catch (e) {
+    // 检测接口异常时放行，避免阻断正常发布
+    console.error('文本安全检测失败:', e)
+    return true
   }
 }

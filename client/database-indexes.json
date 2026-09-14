@@ -227,37 +227,6 @@
       "usedBy": "后台支付按日期统计"
     },
     {
-      "collection": "chats",
-      "name": "idx_sender_receiver_related_createTime",
-      "fields": [
-        { "field": "senderId", "order": "asc" },
-        { "field": "receiverId", "order": "asc" },
-        { "field": "relatedId", "order": "asc" },
-        { "field": "createTime", "order": "asc" }
-      ],
-      "usedBy": "聊天详情消息列表"
-    },
-    {
-      "collection": "chats",
-      "name": "idx_sender_receiver_related_isRead",
-      "fields": [
-        { "field": "senderId", "order": "asc" },
-        { "field": "receiverId", "order": "asc" },
-        { "field": "relatedId", "order": "asc" },
-        { "field": "isRead", "order": "asc" }
-      ],
-      "usedBy": "聊天详情标记对方消息已读"
-    },
-    {
-      "collection": "chats",
-      "name": "idx_relatedId_createTime",
-      "fields": [
-        { "field": "relatedId", "order": "asc" },
-        { "field": "createTime", "order": "desc" }
-      ],
-      "usedBy": "卖家买家聊天列表"
-    },
-    {
       "collection": "finance",
       "name": "idx_openid",
       "fields": [

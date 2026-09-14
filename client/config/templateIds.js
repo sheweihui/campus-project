@@ -3,8 +3,7 @@
 const TEMPLATE_IDS = {
   ORDER_ACCEPT: '',
   ORDER_PAY: '',
-  ORDER_COMPLETE: '',
-  CHAT_MESSAGE: ''
+  ORDER_COMPLETE: ''
 }
 
 module.exports = TEMPLATE_IDS

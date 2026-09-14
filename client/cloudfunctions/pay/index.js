@@ -110,13 +110,9 @@ async function unifiedOrder(data, openid) {
   try {
     // 自愈式清理：超时未支付的残留记录（释放商品占用 + 取消支付记录）
     await cleanupStalePayments()
-    // 下单前必须完成手机号登录，并完善姓名/学号
-    const orderUser = await getOrderUserProfile(openid)
-    if (!orderUser || !orderUser.phone) {
+    // 支付必须完成微信登录并绑定手机号（拦截游客）
+    if (!(await requirePhone(openid))) {
       return { code: -1, msg: '请先完成微信登录并绑定手机号后再支付' }
-    }
-    if (!String(orderUser.name || '').trim() || !String(orderUser.stuId || '').trim()) {
-      return { code: -1, msg: '下单前请先完善姓名和学号' }
     }
 
     // 下单前校验商品状态和金额，防止重复售卖/金额篡改
@@ -194,22 +190,16 @@ async function unifiedOrder(data, openid) {
   }
 }
 
-// 获取下单所需的用户资料
-async function getOrderUserProfile(openid) {
+// 校验调用者是否已绑定手机号
+async function requirePhone(openid) {
   try {
     const res = await db.collection('users')
       .where({ openid })
-      .field({
-        phone: true,
-        name: true,
-        stuId: true
-      })
-      .limit(1)
+      .field({ phone: true })
       .get()
-    return res.data[0] || null
+    return res.data.length > 0 && !!res.data[0].phone
   } catch (e) {
-    console.error('查询下单用户资料失败:', e)
-    return null
+    return false
   }
 }
 

@@ -104,6 +104,14 @@ async function addLostFound(data, openid) {
     return { code: -1, msg: '图片最多 6 张' }
   }
 
+  // 内容安全检测：文本 + 图片
+  if (!(await checkTextSecure(openid, gatherText(cleanData)))) {
+    return { code: -1, msg: '内容包含违规信息，请修改后重新提交' }
+  }
+  if (!(await checkImagesSecure(cleanData.images))) {
+    return { code: -1, msg: '图片包含违规信息，请更换后重新提交' }
+  }
+
   const result = await db.collection('lostfound').add({
     data: {
       ...cleanData,
@@ -209,6 +217,14 @@ async function updateLostFound(data, openid) {
     return { code: -1, msg: '图片最多 6 张' }
   }
 
+  // 内容安全检测：文本 + 图片
+  if (!(await checkTextSecure(openid, gatherText(updateData)))) {
+    return { code: -1, msg: '内容包含违规信息，请修改后重新提交' }
+  }
+  if (updateData.images !== undefined && !(await checkImagesSecure(updateData.images))) {
+    return { code: -1, msg: '图片包含违规信息，请更换后重新提交' }
+  }
+
   await db.collection('lostfound').doc(id).update({
     data: {
       ...updateData,
@@ -309,4 +325,58 @@ async function getPhoneByOpenid(openid) {
   } catch (e) {
     return ''
   }
+}
+
+// ===== 内容安全检测（微信 msgSecCheck / imgSecCheck）=====
+
+// 收集数据中的文本字段用于检测（仅字符串字段）
+function gatherText(data) {
+  return Object.keys(data || {})
+    .filter(k => typeof data[k] === 'string')
+    .map(k => data[k])
+    .filter(s => s && s.trim())
+    .join(' ')
+}
+
+// 文本检测（msgSecCheck v2）：命中违规返回 false
+async function checkTextSecure(openid, text) {
+  const content = String(text || '').trim()
+  if (!content) return true
+  try {
+    const res = await cloud.openapi.security.msgSecCheck({
+      version: 2,
+      openid,
+      scene: 3,
+      content: content.slice(0, 2500)
+    })
+    return !(res && res.result && res.result.suggest === 'risky')
+  } catch (e) {
+    // 检测接口异常时放行，避免阻断正常发布
+    console.error('文本安全检测失败:', e)
+    return true
+  }
+}
+
+// 图片检测（imgSecCheck）：逐张下载检测，命中违规返回 false
+async function checkImagesSecure(images) {
+  const list = Array.isArray(images) ? images : []
+  for (const fileID of list) {
+    if (typeof fileID !== 'string' || !fileID.startsWith('cloud://')) continue
+    try {
+      const { fileContent } = await cloud.downloadFile({ fileID })
+      if (!fileContent) continue
+      const res = await cloud.openapi.security.imgSecCheck({
+        media: {
+          contentType: 'image/jpeg',
+          value: fileContent
+        }
+      })
+      if (res && res.errCode === 87014) {
+        return false
+      }
+    } catch (e) {
+      console.error('图片安全检测失败:', e)
+    }
+  }
+  return true
 }
