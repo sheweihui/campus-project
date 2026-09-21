@@ -4,7 +4,8 @@ cloud.init({ env: ENV_ID })
 
 const db = cloud.database()
 const _ = db.command
-const MERCHANT_ID = '1115083816'
+// 微信支付子商户号：在 pay 云函数的环境变量 MERCHANT_ID 中配置，不要硬编码进仓库
+const MERCHANT_ID = process.env.MERCHANT_ID || ''
 
 // 商品被占位（已下单未支付）超过该时长后允许重新下单
 const CLAIM_TIMEOUT_MS = 10 * 60 * 1000
@@ -107,12 +108,20 @@ async function unifiedOrder(data, openid) {
   const { itemId, amount, description, itemType } = data
   const outTradeNo = `${Date.now()}_${openid.slice(-8)}_${Math.random().toString(36).slice(2, 8)}`
 
+  if (!MERCHANT_ID) {
+    return { code: -1, msg: '支付未配置：请在 pay 云函数的环境变量中设置 MERCHANT_ID' }
+  }
+
   try {
     // 自愈式清理：超时未支付的残留记录（释放商品占用 + 取消支付记录）
     await cleanupStalePayments()
-    // 支付必须完成微信登录并绑定手机号（拦截游客）
-    if (!(await requirePhone(openid))) {
+    // 支付前必须完成微信登录，并提供完整的交易资料（手机号 + 姓名 + 学号）
+    const profile = await getTradeProfile(openid)
+    if (!profile.phone) {
       return { code: -1, msg: '请先完成微信登录并绑定手机号后再支付' }
+    }
+    if (!profile.name || !profile.stuId) {
+      return { code: -1, msg: '请先完善姓名和学号后再支付', needProfile: true }
     }
 
     // 下单前校验商品状态和金额，防止重复售卖/金额篡改
@@ -190,16 +199,21 @@ async function unifiedOrder(data, openid) {
   }
 }
 
-// 校验调用者是否已绑定手机号
-async function requirePhone(openid) {
+// 读取调用者的交易资料：手机号 / 真实姓名 / 学号
+async function getTradeProfile(openid) {
   try {
     const res = await db.collection('users')
       .where({ openid })
-      .field({ phone: true })
+      .field({ phone: true, name: true, stuId: true })
       .get()
-    return res.data.length > 0 && !!res.data[0].phone
+    const user = res.data[0] || {}
+    return {
+      phone: user.phone || '',
+      name: user.name || '',
+      stuId: user.stuId || ''
+    }
   } catch (e) {
-    return false
+    return { phone: '', name: '', stuId: '' }
   }
 }
 

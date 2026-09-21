@@ -1,4 +1,4 @@
-const { showLoading, hideLoading, showToast, navigateTo, navigateBack, requireLogin } = require('../../utils/util.js')
+const { showLoading, hideLoading, showToast, navigateTo, navigateBack, requireLogin, hasTradeProfile } = require('../../utils/util.js')
 const TEMPLATES = require('../../config/templateIds.js')
 
 Page({
@@ -34,6 +34,39 @@ Page({
     if (id) {
       this.loadDetail(type, id)
     }
+  },
+
+  onShow() {
+    // 从「完善资料」页返回后，自动继续刚才被拦截的支付
+    const pending = this._pendingTradeAction
+    if (!pending) return
+    this._pendingTradeAction = ''
+    if (!hasTradeProfile()) return
+    showToast('资料已完善', 'none')
+    setTimeout(() => {
+      const fn = this[pending]
+      if (typeof fn === 'function') fn.call(this)
+    }, 300)
+  },
+
+  // 支付前要求资料齐全（姓名 + 学号）；缺则引导补全，返回 true 表示可以继续
+  ensureTradeProfile(nextAction) {
+    if (hasTradeProfile()) return true
+    this._pendingTradeAction = nextAction
+    wx.showModal({
+      title: '需要完善资料',
+      content: '交易前请先填写真实姓名和学号，便于交易双方识别',
+      confirmText: '去完善',
+      cancelText: '暂不',
+      success: (res) => {
+        if (res.confirm) {
+          wx.navigateTo({ url: '/pages/profile/complete' })
+        } else {
+          this._pendingTradeAction = ''
+        }
+      }
+    })
+    return false
   },
 
   enableShareMenu() {
@@ -231,6 +264,7 @@ Page({
   // 发布者预支付（担保交易：先付钱到平台，完成后才打给接单者）
   async payToEscrow() {
     if (!requireLogin()) return
+    if (!this.ensureTradeProfile('payToEscrow')) return
 
     const { detail } = this.data
 
@@ -264,6 +298,10 @@ Page({
       console.log('支付云函数返回:', JSON.stringify(result, null, 2))
 
       if (result.code !== 0) {
+        if (result.needProfile) {
+          this.ensureTradeProfile('payToEscrow')
+          return
+        }
         showToast(result.msg || '支付失败')
         return
       }

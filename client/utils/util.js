@@ -214,6 +214,12 @@ const requireLogin = () => {
   return false
 }
 
+// 交易资料是否齐全（真实姓名 + 学号）：支付等交易环节需要
+const hasTradeProfile = () => {
+  const userInfo = wx.getStorageSync('userInfo') || {}
+  return !!(userInfo.name && userInfo.stuId)
+}
+
 const getOpenid = async () => {
   const { result } = await wx.cloud.callFunction({
     name: 'user',
@@ -262,6 +268,7 @@ module.exports = {
   switchTab,
   navigateBack,
   isLoggedIn,
+  hasTradeProfile,
   requireLogin,
   refreshUnreadBadge,
   getOpenid,

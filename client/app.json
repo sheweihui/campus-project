@@ -42,7 +42,8 @@
     "pages/merchant/users/users",
     "pages/merchant/settings/settings",
     "pages/privacy/privacy",
-    "pages/agreement/agreement"
+    "pages/agreement/agreement",
+    "pages/profile/complete"
   ],
   "window": {
     "backgroundTextStyle": "light",
