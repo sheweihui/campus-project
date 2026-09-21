@@ -113,18 +113,20 @@ campus-service-circle/
 2. 确认云环境 ID 与 `app.js` / 各云函数中配置一致（`cloudbase-d6gny18wlbad9e070`）。
 3. 创建数据库集合（见上表）。
 4. 在 `cloudfunctions/` 下，将全部云函数逐个右键「上传并部署：云端安装依赖」。
-5. 配置管理员：云开发控制台 → `config` 集合添加文档：
+5. **配置管理员（推荐：数据库方式，无需配置任何环境变量）**：云开发控制台 → 数据库 → `config` 集合 → 添加文档（若已存在 `_id` 为 `admin` 的文档则直接编辑）：
 
 ```json
 {
   "_id": "admin",
-  "openidList": ["你的openid"]
+  "openidList": ["管理员的openid"]
 }
 ```
 
-   > 管理员名单只认两种来源，代码中不再硬编码任何 openid 或手机号：
-   > - 云函数环境变量 `ADMIN_OPENIDS`（逗号分隔的 openid 列表，在云开发控制台为 `admin`、`config` 两个云函数分别配置，无需改代码）；
-   > - 数据库 `config/admin` 文档（见上）。
+   - `_id` 必须是字符串 `admin`（代码按文档 ID 读取，不是按字段查询）；字段名写 `openidList` 或 `openids` 都可以；多个管理员就写多个数组元素。
+   - openid 的取值：用该账号登录小程序后，在开发者工具「调试器 → Storage」中查看 `openid` 字段；或从数据库 `users` 集合中该用户记录的 `openid` 字段复制。
+   - 建议把 `config` 集合的权限设为「所有用户不可读写」，客户端一律通过云函数访问（云函数不受该权限限制）。
+   - 备选来源：也可以在云函数环境变量 `ADMIN_OPENIDS` 中配置（英文逗号分隔），需为 `admin` 和 `config` 两个云函数**分别**配置。数据库文档与环境变量任一命中即为管理员。
+   - 安全约束：代码不会依据手机号判定管理员，也不会硬编码任何 openid 或手机号 —— 手机号可由用户自行填写，用它做权限判定会导致任何用户都能自封管理员。
 
 6. （可选）公告位用户：`config` 云函数通过环境变量 `ANNOUNCEMENT_USER_NAME` / `ANNOUNCEMENT_USER_PHONE` 定位承载公告的账号，需与 `users` 集合中该用户的 `name` / `phone` 一致；未配置时公告返回空，不会误匹配其他用户。
 
