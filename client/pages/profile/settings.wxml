@@ -69,6 +69,16 @@
         <view class="weui-cell__bd">关于我们</view>
         <view class="weui-cell__ft">版本信息和联系方式</view>
       </view>
+      <!-- 用户协议 -->
+      <view class="weui-cell weui-cell_access" bindtap="goAgreement" hover-class="weui-cell_active">
+        <view class="weui-cell__bd">用户协议</view>
+        <view class="weui-cell__ft">查看服务条款</view>
+      </view>
+      <!-- 隐私政策 -->
+      <view class="weui-cell weui-cell_access" bindtap="goPrivacy" hover-class="weui-cell_active">
+        <view class="weui-cell__bd">隐私政策</view>
+        <view class="weui-cell__ft">了解信息收集与使用</view>
+      </view>
       <!-- 退出登录 -->
       <view class="weui-cell weui-cell_access" bindtap="logout" hover-class="weui-cell_active">
         <view class="weui-cell__bd" style="color:#e11d48;">退出登录</view>

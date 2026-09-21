@@ -201,3 +201,37 @@
   color: #1a1a1a;
   box-shadow: 4rpx 4rpx 0 rgba(26, 26, 26, 0.12);
 }
+
+/* 同意用户协议与隐私政策 */
+.agree-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20rpx;
+}
+
+.agree-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.agree-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.agree-checkbox {
+  transform: scale(0.8);
+}
+
+.agree-text {
+  font-size: 24rpx;
+  color: #8a6d43;
+}
+
+.agree-link {
+  font-size: 24rpx;
+  color: #c9973f;
+  font-weight: 600;
+}

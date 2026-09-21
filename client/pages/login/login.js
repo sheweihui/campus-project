@@ -2,7 +2,8 @@ Page({
   data: {
     loading: false,
     name: '',
-    stuId: ''
+    stuId: '',
+    agreed: false
   },
 
   onLoad() {
@@ -27,9 +28,27 @@ Page({
     this.setData({ [field]: e.detail.value })
   },
 
+  // 同意/取消勾选用户协议与隐私政策
+  onAgreeChange(e) {
+    this.setData({ agreed: (e.detail.value || []).length > 0 })
+  },
+
+  goAgreement() {
+    wx.navigateTo({ url: '/pages/agreement/agreement' })
+  },
+
+  goPrivacy() {
+    wx.navigateTo({ url: '/pages/privacy/privacy' })
+  },
+
   // 微信手机号一键登录
   getPhoneNumber(e) {
     if (this.data.loading) return
+
+    if (!this.data.agreed) {
+      wx.showToast({ title: '请先阅读并同意用户协议和隐私政策', icon: 'none' })
+      return
+    }
 
     const name = (this.data.name || '').trim()
     const stuId = (this.data.stuId || '').trim()

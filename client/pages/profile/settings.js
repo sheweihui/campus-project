@@ -150,6 +150,14 @@ Page({
     })
   },
 
+  goAgreement() {
+    navigateTo('/pages/agreement/agreement')
+  },
+
+  goPrivacy() {
+    navigateTo('/pages/privacy/privacy')
+  },
+
   logout() {
     wx.showModal({
       title: '提示',

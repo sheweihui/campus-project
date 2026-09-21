@@ -32,6 +32,17 @@
         loading="{{loading}}"
         disabled="{{loading}}"
       >一键登录</button>
+      <view class="agree-row">
+        <checkbox-group class="agree-group" bindchange="onAgreeChange">
+          <label class="agree-label">
+            <checkbox class="agree-checkbox" value="agree" checked="{{agreed}}" color="#1a1a1a" />
+            <text class="agree-text">我已阅读并同意</text>
+          </label>
+        </checkbox-group>
+        <text class="agree-link" catchtap="goAgreement">《用户协议》</text>
+        <text class="agree-text">与</text>
+        <text class="agree-link" catchtap="goPrivacy">《隐私政策》</text>
+      </view>
       <text class="wx-tips">填写姓名与学号后，使用微信手机号快捷登录</text>
     </view>
   </view>

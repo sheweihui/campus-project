@@ -40,7 +40,9 @@
     "pages/merchant/finance/finance",
     "pages/merchant/withdraws/withdraws",
     "pages/merchant/users/users",
-    "pages/merchant/settings/settings"
+    "pages/merchant/settings/settings",
+    "pages/privacy/privacy",
+    "pages/agreement/agreement"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -79,5 +81,6 @@
   "lazyCodeLoading":"requiredComponents",
   "usingComponents": {},
   "cloud": true,
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "__usePrivacyCheck__": true
 }
