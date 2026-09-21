@@ -3,17 +3,12 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const CONFIG_CACHE_TTL = 5 * 60 * 1000
 const configCache = {}
+// 公告位对应的用户：不硬编码，改在云函数环境变量中配置
+//   ANNOUNCEMENT_USER_NAME / ANNOUNCEMENT_USER_PHONE（详见 README）
 const ANNOUNCEMENT_USER = {
-  name: 'snake',
-  phone: '13276057867'
+  name: process.env.ANNOUNCEMENT_USER_NAME || '',
+  phone: process.env.ANNOUNCEMENT_USER_PHONE || ''
 }
-const BUILTIN_ADMIN_OPENIDS = [
-  '698a4c596a6b6efe017045e41894fbb8'
-]
-const BUILTIN_ADMIN_PHONES = [
-  '13276057867',
-  '15940995665'
-]
 
 function getEnvAdminOpenids() {
   return (process.env.ADMIN_OPENIDS || '')
@@ -24,20 +19,8 @@ function getEnvAdminOpenids() {
 
 async function isAdmin(openid) {
   if (!openid) return false
-  if (BUILTIN_ADMIN_OPENIDS.includes(openid)) return true
   const envOpenids = getEnvAdminOpenids()
   if (envOpenids.includes(openid)) return true
-
-  try {
-    const userRes = await db.collection('users')
-      .where({ openid })
-      .field({ phone: true })
-      .get()
-    const phone = userRes.data && userRes.data[0] && userRes.data[0].phone
-    if (BUILTIN_ADMIN_PHONES.includes(String(phone || ''))) return true
-  } catch (e) {
-    console.error('查询管理员手机号失败:', e)
-  }
 
   const cached = getConfigCache('adminOpenids')
   if (cached) return cached.includes(openid)
@@ -102,6 +85,8 @@ async function updateHomeConfig(data, openid) {
 }
 
 async function getAnnouncementUser() {
+  // 未配置公告用户时直接返回，避免 where({name:''}) 误匹配任意用户
+  if (!ANNOUNCEMENT_USER.name) return null
   const userRes = await db.collection('users')
     .where({ name: ANNOUNCEMENT_USER.name })
     .field({

@@ -1,4 +1,5 @@
 const { showLoading, hideLoading, navigateTo, isLoggedIn, requireLogin, refreshUnreadBadge } = require('../../utils/util.js')
+const { SUPPORT_PHONE, SUPPORT_EMAIL, WORK_TIME } = require('../../config/contact.js')
 
 Page({
   data: {
@@ -244,9 +245,16 @@ Page({
   },
 
   contactService() {
+    const lines = []
+    if (SUPPORT_PHONE) lines.push(`客服电话：${SUPPORT_PHONE}`)
+    if (SUPPORT_EMAIL) lines.push(`客服邮箱：${SUPPORT_EMAIL}`)
+    lines.push(`工作时间：${WORK_TIME}`)
+    if (!SUPPORT_PHONE && !SUPPORT_EMAIL) {
+      lines.unshift('客服联系方式尚未配置，请在 client/config/contact.js 中填写。')
+    }
     wx.showModal({
       title: '联系客服',
-      content: '客服电话：15940995665\n工作时间：9:00-18:00',
+      content: lines.join('\n'),
       showCancel: false
     })
   }

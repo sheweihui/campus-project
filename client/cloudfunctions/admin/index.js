@@ -4,14 +4,9 @@ cloud.init({ env: ENV_ID })
 
 const db = cloud.database()
 const _ = db.command
-const BUILTIN_ADMIN_OPENIDS = [
-  '698a4c596a6b6efe017045e41894fbb8'
-]
-const BUILTIN_ADMIN_PHONES = [
-  '13276057867',
-  '15940995665'
-]
-
+// 管理员名单只来自环境变量 ADMIN_OPENIDS 或数据库 config/admin 文档，不硬编码；
+// 也绝不依据「用户可自行填写的手机号」判定权限（否则任何用户改手机号即可自封管理员）。
+// 配置方式见 README「配置管理员」一节。
 function getEnvAdminOpenids() {
   return (process.env.ADMIN_OPENIDS || '')
     .split(',')
@@ -21,20 +16,8 @@ function getEnvAdminOpenids() {
 
 async function isAdmin(openid) {
   if (!openid) return false
-  if (BUILTIN_ADMIN_OPENIDS.includes(openid)) return true
   const envOpenids = getEnvAdminOpenids()
   if (envOpenids.includes(openid)) return true
-
-  try {
-    const userRes = await db.collection('users')
-      .where({ openid })
-      .field({ phone: true })
-      .get()
-    const phone = userRes.data && userRes.data[0] && userRes.data[0].phone
-    if (BUILTIN_ADMIN_PHONES.includes(String(phone || ''))) return true
-  } catch (e) {
-    console.error('查询管理员手机号失败:', e)
-  }
 
   try {
     const adminDoc = await db.collection('config').doc('admin').get()

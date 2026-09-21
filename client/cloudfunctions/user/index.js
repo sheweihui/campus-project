@@ -4,6 +4,26 @@ cloud.init({ env: ENV_ID })
 
 const db = cloud.database()
 
+// 客户端只允许写入这些自填资料字段。
+// openid / 权限标识等敏感字段一律由服务端决定，客户端传入一律忽略。
+const PROFILE_FIELDS = ['nickName', 'name', 'stuId', 'avatarUrl', 'phone']
+
+function pickProfileFields(data) {
+  const out = {}
+  if (!data || typeof data !== 'object') return out
+  PROFILE_FIELDS.forEach((key) => {
+    const value = data[key]
+    if (typeof value === 'string') {
+      out[key] = value.slice(0, 200)
+    }
+  })
+  // 手机号必须是合法的 11 位号码，否则丢弃（防止脏数据）
+  if (out.phone && !/^1[3-9]\d{9}$/.test(out.phone)) {
+    delete out.phone
+  }
+  return out
+}
+
 exports.main = async (event, context) => {
   const { action, data } = event
   const { OPENID } = cloud.getWXContext()
@@ -34,10 +54,8 @@ exports.main = async (event, context) => {
 
 async function login(openid, data) {
   const user = await db.collection('users').where({ openid }).get()
-  // 防止客户端注入 openid/code 覆盖服务端身份（code 是 wx.login 临时码，无保存价值）
-  const cleanData = { ...(data || {}) }
-  delete cleanData.openid
-  delete cleanData.code
+  // 字段白名单：code 是 wx.login 临时码，无保存价值；openid 由服务端注入
+  const cleanData = pickProfileFields(data)
 
   if (user.data.length === 0) {
     await db.collection('users').add({
@@ -136,10 +154,8 @@ async function getUserInfo(openid, data) {
 
 async function updateUser(openid, data) {
   const user = await db.collection('users').where({ openid }).get()
-  // 防止客户端注入 openid/code 覆盖服务端身份
-  const cleanData = { ...(data || {}) }
-  delete cleanData.openid
-  delete cleanData.code
+  // 字段白名单：只允许修改自填资料，禁止客户端写入 openid / 权限相关字段
+  const cleanData = pickProfileFields(data)
 
   if (user.data.length === 0) {
     await db.collection('users').add({
